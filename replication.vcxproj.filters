@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{b95a023f-385a-4cb5-bbf8-371e8b62102b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\zen">
+      <UniqueIdentifier>{2b7709d4-6d16-486d-9b15-0e8c6ec701c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\zen\data">
+      <UniqueIdentifier>{cd512231-87d4-4818-8660-5d5f17ebd3be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\zen\core">
+      <UniqueIdentifier>{cdbaae74-045e-4403-8f16-090a815355c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\zen\bitstream">
+      <UniqueIdentifier>{85144d80-297c-4412-9cae-ea775d993cdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\zen\debug">
+      <UniqueIdentifier>{12d8c4e1-a8f8-4e39-9508-8252cae29385}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\functional_tests_main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\bitstream\zen_bitstream_reader.cpp">
+      <Filter>source\zen\bitstream</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\bitstream\zen_bitstream_utils.cpp">
+      <Filter>source\zen\bitstream</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\bitstream\zen_bitstream_writer.cpp">
+      <Filter>source\zen\bitstream</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\debug\zen_debug.cpp">
+      <Filter>source\zen\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\debug\zen_debug_output.cpp">
+      <Filter>source\zen\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\debug\zen_debug_random.cpp">
+      <Filter>source\zen\debug</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\data\zen_data_serializers.cpp">
+      <Filter>source\zen\data</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\zen\core\zen_core_ostream.h">
+      <Filter>source\zen\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\core\zen_core_vector.h">
+      <Filter>source\zen\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\core\zen_core_vector.hpp">
+      <Filter>source\zen\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\bitstream\zen_bitstream_reader.h">
+      <Filter>source\zen\bitstream</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\bitstream\zen_bitstream_utils.h">
+      <Filter>source\zen\bitstream</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\bitstream\zen_bitstream_writer.h">
+      <Filter>source\zen\bitstream</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\debug\zen_debug.h">
+      <Filter>source\zen\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\debug\zen_debug_assert.h">
+      <Filter>source\zen\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\debug\zen_debug_output.h">
+      <Filter>source\zen\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\debug\zen_debug_random.h">
+      <Filter>source\zen\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\core\zen_core_endian.h">
+      <Filter>source\zen\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\core\zen_core_defines.h">
+      <Filter>source\zen\core</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_boolean.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_boolean.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_float.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_float.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_float_ranged.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_float_ranged.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_integer.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_integer.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_integer_ranged.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_integer_ranged.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_serializers.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_serializers.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_string.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_string.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_value.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_value.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_vector.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_vector.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

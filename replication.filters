@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\templates">
+      <UniqueIdentifier>{72440b5d-447e-40e1-823a-05b58ab5b90d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xmls">
+      <UniqueIdentifier>{22300810-d330-4f2e-82db-32394383605b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tinyXML">
+      <UniqueIdentifier>{60d4cee2-2d2f-4f4e-a61f-dfeadd4de10c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test">
+      <UniqueIdentifier>{1fc50470-5299-4ca7-90d0-3d3ae3309662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hsm">
+      <UniqueIdentifier>{71736b62-80cd-47aa-8967-363dbe5b4488}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\main_state_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tinyXML\tinystr.cpp">
+      <Filter>Source Files\tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tinyXML\tinyxml.cpp">
+      <Filter>Source Files\tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tinyXML\tinyxmlerror.cpp">
+      <Filter>Source Files\tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\tinyXML\tinyxmlparser.cpp">
+      <Filter>Source Files\tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\test\test_generator.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\test\test_utils.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\hsm\debug.cpp">
+      <Filter>Source Files\hsm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\hsm\state_machine_xml_loader.cpp">
+      <Filter>Source Files\hsm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\hsm\random.cpp">
+      <Filter>Source Files\hsm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\hsm\timer.cpp">
+      <Filter>Source Files\hsm</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\templates\state.cpp.template">
+      <Filter>Source Files\templates</Filter>
+    </None>
+    <None Include="..\templates\state.h.template">
+      <Filter>Source Files\templates</Filter>
+    </None>
+    <None Include="..\templates\state_factory_table.cpp.template">
+      <Filter>Source Files\templates</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\xmls\state_machine.xml">
+      <Filter>Source Files\xmls</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\tinyXML\tinystr.h">
+      <Filter>Source Files\tinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\tinyXML\tinyxml.h">
+      <Filter>Source Files\tinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\test\test_generator.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\test\test_utils.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\hsm\debug.h">
+      <Filter>Source Files\hsm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\hsm\schema.h">
+      <Filter>Source Files\hsm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\hsm\state_machine_xml_loader.h">
+      <Filter>Source Files\hsm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\hsm\random.h">
+      <Filter>Source Files\hsm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\hsm\timer.h">
+      <Filter>Source Files\hsm</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
