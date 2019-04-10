@@ -295,19 +295,19 @@ namespace zen
         }
 
         template<typename TYPE, typename Serializer>
-        bool deserialize_value(const TYPE& value, bitstream::Writer& out, const Serializer& serializer)
+        bool deserialize_value(TYPE& value, bitstream::Reader& in, const Serializer& serializer)
         {
-            return serializer.deserialize_value(value, out);
+            return serializer.deserialize_value(value, in);
         }
 
         template<typename TYPE, typename FirstSerializer, typename... NextSerialisers>
-        bool deserialize_value(const TYPE& value, bitstream::Writer& out, const FirstSerializer& first_serializer, const NextSerialisers&... next_serializers)
+        bool deserialize_value(TYPE& value, bitstream::Reader& in, const FirstSerializer& first_serializer, const NextSerialisers&... next_serializers)
         {
-            if (!first_serializer.deserialize_value(value, out))
+            if (!first_serializer.deserialize_value(value, in))
             {
                 return false;
             }
-            return deserialize_value(value, out, next_serializers...);
+            return deserialize_value(value, in, next_serializers...);
         }
 
         template<typename TYPE, typename Serializer>

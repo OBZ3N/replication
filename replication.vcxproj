@@ -64,7 +64,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{76504311-DD88-4F8D-88DA-6B8ABC59EA82}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>replication</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

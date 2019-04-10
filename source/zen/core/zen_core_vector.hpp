@@ -258,7 +258,7 @@ namespace zen
             if (m_free.empty())
             {
                 // expand pool by half.
-                allocate(m_pool.size() < 8 ? m_pool.size() / 2 : 8);
+                allocate((m_pool.size() > 8) ? m_pool.size() / 2 : 8);
             }
 
             ItemId item_id = m_free.front();

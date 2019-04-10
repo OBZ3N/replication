@@ -20,6 +20,7 @@ namespace zen
             : m_bitfields(bitfields)
             , m_bitcount(bitcount)
             , m_position(0)
+            , m_last_result(core::Result::Ok)
         {}
 
         core::Result Reader::get_last_result() const
@@ -33,7 +34,7 @@ namespace zen
             m_last_result = result;
         }
 
-        bool Reader::is_ok() const 
+        bool Reader::ok() const 
         { 
             return m_last_result == core::Result::Ok;
         }

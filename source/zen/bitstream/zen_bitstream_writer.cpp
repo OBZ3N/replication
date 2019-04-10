@@ -21,6 +21,7 @@ namespace zen
             : m_bitfields(bitfields)
             , m_bitcount(0)
             , m_bitcapacity(bitfield_capacity)
+            , m_last_result(core::Result::Ok)
         {
             ZEN_ASSERT((bitfield_capacity & 31) == 0, "bitfield_capacity(", bitfield_capacity, ") should be a multiple of 64 bits.");
         }
@@ -39,7 +40,7 @@ namespace zen
                 m_last_result = result;
         }
 
-        bool Writer::is_ok() const
+        bool Writer::ok() const
         {
             return m_last_result == core::Result::Ok;
         }

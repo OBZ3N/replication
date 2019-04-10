@@ -38,6 +38,8 @@ void verify_delta_compression()
 
     array_zen[0].serialize_delta( array_zen[1], writer );
 
+    ZEN_ASSERT(writer.ok(), "    ", test_number, "/", num_tests, " stream writer error : ", (uint32_t)writer.get_last_result(), ".");
+
     if( !writer.empty() )
     {
         zen::data::Vector<zen::data::UInt32> array_copy = array_zen[1];
@@ -47,6 +49,8 @@ void verify_delta_compression()
         array_copy.deserialize_delta( array_zen[1], reader );
 
         array_copy.sanity_check();
+
+        ZEN_ASSERT(reader.ok(), "    ", test_number, "/", num_tests, " stream reader error : ", (uint32_t)reader.get_last_result(), ".");
 
         ZEN_ASSERT( reader.eof(), "    ", test_number, "/", num_tests, " delta compression reader has data remaining : ", (reader.bitcount() - reader.position()), " bits reaming" );
 
@@ -270,7 +274,7 @@ void test_container()
 
     for ( test_number = 0; test_number < num_tests; ++test_number )
     {
-        uint32_t test_function = randomizer.get_ranged(10);
+        uint32_t test_function = randomizer.get_ranged(2);
         switch ( test_function )
         {
         default:
