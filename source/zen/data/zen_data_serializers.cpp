@@ -14,7 +14,7 @@ namespace zen
 
         bool deserialize_boolean(bool& value, bitstream::Reader& in)
         {
-            uint8_t flag;
+            uint8_t flag = 0;
             
             if (!in.read(&flag, 1))
                 return false;

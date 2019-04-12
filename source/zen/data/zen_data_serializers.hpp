@@ -74,7 +74,7 @@ namespace zen
 
             constexpr uint64_t n_value_max = (uint64_t(1) << uint64_t(num_bits)) - uint64_t(1);
 
-            uint64_t n_value;
+            uint64_t n_value = 0;
 
             if (!in.read(&n_value, num_bits))
                 return false;
@@ -121,7 +121,7 @@ namespace zen
         {
             constexpr size_t num_bits = Log2<value_max - value_min + 1>::get();
 
-            TYPE n_value;
+            TYPE n_value = 0;
             if (!in.read(&n_value, num_bits))
                 return false;
 

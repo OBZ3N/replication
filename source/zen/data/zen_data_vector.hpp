@@ -180,11 +180,11 @@ namespace zen
 
             if (flags & 1)
             {
-                uint32_t items_added;
+                size_t items_added;
                 if (!serializers::deserialize_raw(items_added, in))
                     return false;
 
-                for (uint32_t i = 0; i < items_added; ++i)
+                for (size_t i = 0; i < items_added; ++i)
                 {
                     ItemId item_id;
                     ItemId prev;
@@ -217,11 +217,11 @@ namespace zen
 
             if (flags & 2)
             {
-                uint32_t items_removed;
+                size_t items_removed;
                 if(!serializers::deserialize_raw(items_removed, in))
                     return false;
 
-                for (uint32_t i = 0; i < items_removed; ++i)
+                for (size_t i = 0; i < items_removed; ++i)
                 {
                     ItemId item_id;
                     if(!serializers::deserialize_raw(item_id, in))
@@ -246,11 +246,11 @@ namespace zen
 
             if (flags & 4)
             {
-                uint32_t items_modified;
+                size_t items_modified;
                 if(!serializers::deserialize_raw(items_modified, in))
                     return false;
 
-                for (uint32_t i = 0; i < items_modified; ++i)
+                for (size_t i = 0; i < items_modified; ++i)
                 {
                     ItemId item_id;
                     if (!serializers::deserialize_raw(item_id, in))

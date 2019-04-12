@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "zen/bitstream/zen_bitstream_writer.h"
 #include "zen/debug/zen_debug_assert.h"
+#include "zen/bitstream/zen_bitstream_utils.h"
 
 #undef min
 #undef max
@@ -55,6 +56,10 @@ namespace zen
 
         bool Writer::write( const void* bits, size_t num_bits )
         {
+        #if defined(STREAMING_ALIGN_TO_BYTES)
+            num_bits = align_to_bytes(num_bits);
+    #endif
+
             if ( !write_internal( bits, num_bits, m_bitcount ) )
                 return false;
 
@@ -64,6 +69,10 @@ namespace zen
 
         bool Writer::poke( const void* bits, size_t num_bits, size_t position )
         {
+        #if defined(STREAMING_ALIGN_TO_BYTES)
+            num_bits = align_to_bytes(num_bits);
+        #endif
+
             if (position + num_bits > m_bitcount)
             {
                 set_last_result(core::Result::WriteOverflow);

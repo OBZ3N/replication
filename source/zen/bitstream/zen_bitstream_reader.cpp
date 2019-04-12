@@ -3,7 +3,10 @@
 #include "zen/bitstream/zen_bitstream_reader.h"
 #include "zen/bitstream/zen_bitstream_utils.h"
 #include "zen/debug/zen_debug_assert.h"
+#include "zen/bitstream/zen_bitstream_utils.h"
+
 #undef min
+#undef max
 
 namespace zen
 {
@@ -49,11 +52,19 @@ namespace zen
 
         bool Reader::peek( void* bits, size_t num_bits, size_t position )
         {
+        #if defined(STREAMING_ALIGN_TO_BYTES)
+            num_bits = align_to_bytes(num_bits);
+        #endif
+
             return read_internal( bits, num_bits, position );
         }
 
         bool Reader::read(void* bits, size_t num_bits)
         {
+        #if defined(STREAMING_ALIGN_TO_BYTES)
+            num_bits = align_to_bytes(num_bits);
+        #endif
+
             if(!read_internal(bits, num_bits, m_position) )
                 return false;
 
