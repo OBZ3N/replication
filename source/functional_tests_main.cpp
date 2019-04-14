@@ -9,7 +9,7 @@
 
 #include "zen/debug/zen_debug.h"
 #include "zen/data/zen_data_vector.h"
-#include "zen/data/zen_data_integer.h"
+#include "zen/data/zen_data_raw.h"
 #include "zen/data/zen_data_vector.h"
 #include "zen/bitstream/zen_bitstream_utils.h"
 #include "zen/bitstream/zen_bitstream_reader.h"
@@ -69,7 +69,7 @@ void verify_arrays()
             std::list<uint32_t>::iterator it = array_ref[t].begin();
             std::advance( it, i );
 
-            ZEN_ASSERT((*it) == array_zen[t][i], "    ", test_number, "/", num_tests, "array element[", i, "] mismatch : ref(", (*it), "), zen(", array_zen[t][i], ")");
+            ZEN_ASSERT((*it) == array_zen[t][i].get_value(), "    ", test_number, "/", num_tests, "array element[", i, "] mismatch : ref(", (*it), "), zen(", array_zen[t][i].get_value(), ")");
         }
         
         array_zen[t].sanity_check();

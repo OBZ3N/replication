@@ -19,6 +19,9 @@
     <Filter Include="source\zen\debug">
       <UniqueIdentifier>{12d8c4e1-a8f8-4e39-9508-8252cae29385}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\zen\serializer">
+      <UniqueIdentifier>{2ed8d80e-bf7f-472f-a1a8-a69cb9cc58bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\functional_tests_main.cpp">
@@ -41,9 +44,6 @@
     </ClCompile>
     <ClCompile Include="source\zen\debug\zen_debug_random.cpp">
       <Filter>source\zen\debug</Filter>
-    </ClCompile>
-    <ClCompile Include="source\zen\data\zen_data_serializers.cpp">
-      <Filter>source\zen\data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,22 +89,10 @@
     <ClInclude Include="source\zen\data\zen_data_boolean.hpp">
       <Filter>source\zen\data</Filter>
     </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_float.h">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_float.hpp">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_float_ranged.h">
       <Filter>source\zen\data</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_float_ranged.hpp">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_integer.h">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_integer.hpp">
       <Filter>source\zen\data</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_integer_ranged.h">
@@ -113,22 +101,10 @@
     <ClInclude Include="source\zen\data\zen_data_integer_ranged.hpp">
       <Filter>source\zen\data</Filter>
     </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_serializers.h">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_serializers.hpp">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_string.h">
       <Filter>source\zen\data</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_string.hpp">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_value.h">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_value.hpp">
       <Filter>source\zen\data</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_vector.h">
@@ -136,6 +112,45 @@
     </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_vector.hpp">
       <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_raw.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_raw.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_float_ranged.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_float_ranged.hpp">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_integer_ranged.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_integer_ranged.hpp">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_log2.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_raw.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_raw.hpp">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_string.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_string.hpp">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_boolean.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_boolean.hpp">
+      <Filter>source\zen\serializer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

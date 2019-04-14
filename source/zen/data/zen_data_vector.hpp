@@ -1,7 +1,8 @@
 #pragma once
 
-#include "./zen_data_serializers.h"
 #include "./zen_data_vector.h"
+#include "zen/serializer/zen_serializer_boolean.h"
+#include "zen/serializer/zen_serializer_raw.h"
 
 namespace zen
 {
@@ -180,7 +181,7 @@ namespace zen
 
             if (flags & 1)
             {
-                uint32_t items_added;
+                size_t items_added;
                 if (!serializers::deserialize_raw(items_added, in))
                     return false;
 
@@ -217,7 +218,7 @@ namespace zen
 
             if (flags & 2)
             {
-                uint32_t items_removed;
+                size_t items_removed;
                 if(!serializers::deserialize_raw(items_removed, in))
                     return false;
 
@@ -246,7 +247,7 @@ namespace zen
 
             if (flags & 4)
             {
-                uint32_t items_modified;
+                size_t items_modified;
                 if(!serializers::deserialize_raw(items_modified, in))
                     return false;
 
@@ -340,6 +341,35 @@ namespace zen
                     items_removed.push_back(item_id);
                 }
             }
+        }
+
+        template<typename TYPE>
+        bool Vector<TYPE>::operator == (const Vector& rhs) const
+        {
+            if (size() != rhs.size())
+                return false;
+
+            for (size_t i = 0; i < m_array.size(); ++i)
+            {
+                ItemId index_lhs = m_array[i];
+                ItemId index_rhs = rhs.m_array[i];
+                
+                if (index_lhs != index_rhs)
+                    return false;
+
+                const Item& item_lhs = *get_item(index_lhs);
+                const Item& item_rhs = *rhs.get_item(index_rhs);
+
+                if (item_lhs != item_rhs)
+                    return false;
+            }
+            return true;
+        }
+
+        template<typename TYPE>
+        bool Vector<TYPE>::operator != (const Vector& rhs) const
+        {
+            return !((*this) == rhs);
         }
     }
 }

@@ -1,24 +1,20 @@
 #pragma once
 
-#include "zen/data/zen_data_string.h"
-#include "zen/serializer/zen_serializer_boolean.h"
-#include "zen/serializer/zen_serializer_string.h"
+#include "zen/data/zen_data_raw.h"
+#include "zen/serializer/zen_serializer_raw.h"
 
 namespace zen
 {
     namespace data
     {
-        inline String::String(const std::string& value, const std::string& value_default)
+        template<typename TYPE>
+        Raw<TYPE>::Raw(TYPE value, TYPE value_default)
             : m_value(value)
-            , m_value_default(value)
+            , m_value_default(value_default)
         {}
 
-        inline String::String(const char* value, const char* value_default)
-            : m_value(value)
-            , m_value_default(value)
-        {}
-
-        inline bool String::serialize_value(bitstream::Writer& out) const
+        template<typename TYPE>
+        bool Raw<TYPE>::serialize_value(bitstream::Writer& out) const
         {
             if (m_value == m_value_default)
             {
@@ -28,10 +24,11 @@ namespace zen
             if (!zen::serializers::serialize_boolean(false, out))
                 return false;
 
-            return zen::serializers::serialize_string(m_value, out);
+            return zen::serializers::serialize_raw(m_value, out);
         }
 
-        inline bool String::deserialize_value(bitstream::Reader& in)
+        template<typename TYPE>
+        bool Raw<TYPE>::deserialize_value(bitstream::Reader& in)
         {
             bool is_default;
             if (!zen::serializers::deserialize_boolean(is_default, in))
@@ -44,8 +41,8 @@ namespace zen
             }
             else
             {
-                std::string value;
-                if (!zen::serializers::deserialize_string(value, in))
+                TYPE value;
+                if (!zen::serializers::deserialize_raw(value, in))
                     return false;
 
                 m_value = value;
@@ -53,7 +50,8 @@ namespace zen
             }
         }
 
-        inline bool String::serialize_delta(const String& reference, bitstream::Writer& out) const
+        template<typename TYPE>
+        bool Raw<TYPE>::serialize_delta(const Raw& reference, bitstream::Writer& out) const
         {
             if (m_value != reference.m_value)
                 return false;
@@ -61,12 +59,14 @@ namespace zen
             return serialize_value(out);
         }
 
-        inline bool String::deserialize_delta(const String& reference, bitstream::Reader& in)
+        template<typename TYPE>
+        bool Raw<TYPE>::deserialize_delta(const Raw& reference, bitstream::Reader& in)
         {
             return deserialize_value(in);
         }
 
-        inline bool String::set_value(const std::string& value)
+        template<typename TYPE>
+        bool Raw<TYPE>::set_value(TYPE value)
         {
             if (m_value == value)
                 return false;
@@ -75,17 +75,20 @@ namespace zen
             return true;
         }
 
-        inline const std::string& String::get_value() const
+        template<typename TYPE>
+        TYPE Raw<TYPE>::get_value() const
         {
             return m_value;
         }
 
-        inline bool String::operator == (const String& rhs) const
+        template<typename TYPE>
+        bool Raw<TYPE>::operator == (const Raw& rhs) const
         {
             return m_value == rhs.m_value;
         }
 
-        inline bool String::operator != (const String& rhs) const
+        template<typename TYPE>
+        bool Raw<TYPE>::operator != (const Raw& rhs) const
         {
             return m_value != rhs.m_value;
         }

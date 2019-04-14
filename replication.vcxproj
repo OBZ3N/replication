@@ -23,7 +23,6 @@
     <ClCompile Include="source\zen\bitstream\zen_bitstream_reader.cpp" />
     <ClCompile Include="source\zen\bitstream\zen_bitstream_utils.cpp" />
     <ClCompile Include="source\zen\bitstream\zen_bitstream_writer.cpp" />
-    <ClCompile Include="source\zen\data\zen_data_serializers.cpp" />
     <ClCompile Include="source\zen\debug\zen_debug.cpp" />
     <ClCompile Include="source\zen\debug\zen_debug_output.cpp" />
     <ClCompile Include="source\zen\debug\zen_debug_random.cpp" />
@@ -39,33 +38,38 @@
     <ClInclude Include="source\zen\core\zen_core_vector.hpp" />
     <ClInclude Include="source\zen\data\zen_data_boolean.h" />
     <ClInclude Include="source\zen\data\zen_data_boolean.hpp" />
-    <ClInclude Include="source\zen\data\zen_data_float.h" />
-    <ClInclude Include="source\zen\data\zen_data_float.hpp" />
     <ClInclude Include="source\zen\data\zen_data_float_ranged.h" />
     <ClInclude Include="source\zen\data\zen_data_float_ranged.hpp" />
-    <ClInclude Include="source\zen\data\zen_data_integer.h" />
-    <ClInclude Include="source\zen\data\zen_data_integer.hpp" />
     <ClInclude Include="source\zen\data\zen_data_integer_ranged.h" />
     <ClInclude Include="source\zen\data\zen_data_integer_ranged.hpp" />
-    <ClInclude Include="source\zen\data\zen_data_serializers.h" />
-    <ClInclude Include="source\zen\data\zen_data_serializers.hpp" />
+    <ClInclude Include="source\zen\data\zen_data_raw.h" />
+    <ClInclude Include="source\zen\data\zen_data_raw.hpp" />
     <ClInclude Include="source\zen\data\zen_data_string.h" />
     <ClInclude Include="source\zen\data\zen_data_string.hpp" />
-    <ClInclude Include="source\zen\data\zen_data_value.h" />
-    <ClInclude Include="source\zen\data\zen_data_value.hpp" />
     <ClInclude Include="source\zen\data\zen_data_vector.h" />
     <ClInclude Include="source\zen\data\zen_data_vector.hpp" />
     <ClInclude Include="source\zen\debug\zen_debug.h" />
     <ClInclude Include="source\zen\debug\zen_debug_assert.h" />
     <ClInclude Include="source\zen\debug\zen_debug_output.h" />
     <ClInclude Include="source\zen\debug\zen_debug_random.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_boolean.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_boolean.hpp" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_float_ranged.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_float_ranged.hpp" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_integer_ranged.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_integer_ranged.hpp" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_log2.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_raw.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_raw.hpp" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_string.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_string.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{76504311-DD88-4F8D-88DA-6B8ABC59EA82}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>replication</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -1,21 +1,29 @@
 #pragma once
 
-#include "zen/data/zen_data_value.h"
-
 namespace zen
 {
     namespace data
     {
-        template<std::string value_default = "">
-        class String: public Value<std::string>
+        class String
         {
         public:
-            String(const std::string& value = value_default);
+            String(const std::string& value="", const std::string& value_default="");
+            String(const char* value="", const char* value_default = "");
 
             bool serialize_value(bitstream::Writer& out) const;
             bool deserialize_value(bitstream::Reader& in);
             bool serialize_delta(const String& reference, bitstream::Writer& out) const;
             bool deserialize_delta(const String& reference, bitstream::Reader& in);
+
+            bool set_value(const std::string& value);
+            const std::string& get_value() const;
+
+            bool operator == (const String& rhs) const;
+            bool operator != (const String& rhs) const;
+
+        private:
+            std::string m_value;
+            std::string m_value_default;
         };
     }
 }

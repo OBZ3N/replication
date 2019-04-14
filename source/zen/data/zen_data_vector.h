@@ -21,6 +21,9 @@ namespace zen
             bool serialize_delta(const Vector<TYPE>& reference, bitstream::Writer& out) const;
             bool deserialize_delta(const Vector<TYPE>& reference, bitstream::Reader& in);
 
+            bool operator == (const Vector& rhs) const;
+            bool operator != (const Vector& rhs) const;
+
         private:
             static void calculate_delta(
                 const Vector& value,

@@ -1,58 +1,67 @@
 #pragma once
 
 #include "zen/data/zen_data_boolean.h"
+#include "zen/serializer/zen_serializer_boolean.h"
 
 namespace zen
 {
     namespace data
     {
-        template<bool value_default>
-        Boolean<value_default>::Boolean(bool value = value_default)
-            : Value<bool>(value)
+        inline Boolean::Boolean(bool value, bool value_default)
+            : m_value(value)
+            , m_value_default(value_default)
         {}
 
-        template<bool value_default>
-        bool Boolean<value_default>::serialize_value(bitstream::Writer& out) const
+        inline bool Boolean::serialize_value(bitstream::Writer& out) const
         {
-            zen::serializers::serialize_value(
-                m_value,
-                out,
-                zen::serializers::Boolean());
-            return out.ok();
+            return zen::serializers::serialize_boolean(m_value, out);
         }
 
-        template<bool value_default>
-        bool Boolean<value_default>::deserialize_value(bitstream::Reader& in)
+        inline bool Boolean::deserialize_value(bitstream::Reader& in)
         {
-            zen::serializers::deserialize_delta(
-                m_value,
-                in,
-                zen::serializers::Boolean());
+            bool value;
+            if (!zen::serializers::deserialize_boolean(m_value, in))
+                return false;
+
+            m_value = value;
             return in.ok();
         }
 
-        template<bool value_default>
-        bool Boolean<value_default>::serialize_delta(const Boolean& reference, bitstream::Writer& out) const
+        inline bool Boolean::serialize_delta(const Boolean& reference, bitstream::Writer& out) const
         {
-            zen::serializers::serialize_delta(
-                m_value,
-                reference.m_value,
-                out,
-                zen::serializers::Diff<bool>(),
-                zen::serializers::Boolean());
-            return out.ok();
+            if (m_value != reference.m_value)
+                return false;
+
+            return serialize_value(out);
         }
 
-        template<bool value_default>
-        bool Boolean<value_default>::deserialize_delta(const Boolean& reference, bitstream::Reader& in)
+        inline bool Boolean::deserialize_delta(const Boolean& reference, bitstream::Reader& in)
         {
-            zen::serializers::deserialize_delta(
-                m_value,
-                reference.m_value,
-                in,
-                zen::serializers::Diff<bool>(),
-                zen::serializers::Boolean());
-            return in.ok();
+            return deserialize_value(in);
+        }
+
+        inline bool Boolean::set_value(bool value)
+        {
+            if (m_value == value)
+                return false;
+
+            m_value = value;
+            return true;
+        }
+
+        inline bool Boolean::get_value() const
+        {
+            return m_value;
+        }
+
+        inline bool Boolean::operator == (const Boolean& rhs) const
+        {
+            return m_value == rhs.m_value;
+        }
+
+        inline bool Boolean::operator != (const Boolean& rhs) const
+        {
+            return m_value != rhs.m_value;
         }
     }
 }
