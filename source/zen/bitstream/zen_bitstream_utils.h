@@ -4,10 +4,18 @@
 #include <cinttypes>
 #include "zen/debug/zen_debug.h"
 
+//#define STREAMING_ALIGN_TO_BYTES
+
 namespace zen
 {
     namespace bitstream
     {
+        template<typename TYPE> TYPE align_to_bytes(TYPE num_bits)
+        {
+            TYPE num_bytes = (num_bits / 8) + ((num_bits & 7) ? 1 : 0);
+            return num_bytes * 8;
+        }
+
         // merge a uint32 bitfield into a uint32 output at bit 'position'.
         // returns the number of bits written.
         inline uint32_t merge_bits(uint32_t output, size_t output_position, uint32_t input, size_t input_size, size_t input_offset)
