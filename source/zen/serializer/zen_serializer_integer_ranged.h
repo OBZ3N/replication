@@ -8,11 +8,11 @@ namespace zen
 {
     namespace serializers
     {
-        template<typename TYPE, TYPE value_min, TYPE value_max>
-        bool serialize_integer_ranged(const TYPE& value, bitstream::Writer& out);
+        template<typename TYPE>
+        bool serialize_integer_ranged(const TYPE& value, const TYPE& value_min, const TYPE& value_max, size_t num_bits, bitstream::Writer& out);
 
-        template<typename TYPE, TYPE value_min, TYPE value_max>
-        bool deserialize_integer_ranged(TYPE& value, bitstream::Reader& in);
+        template<typename TYPE>
+        bool deserialize_integer_ranged(TYPE& value, const TYPE& value_min, const TYPE& value_max, size_t num_bits, bitstream::Reader& in);
     }
 }
 

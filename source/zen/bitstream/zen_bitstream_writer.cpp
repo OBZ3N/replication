@@ -15,14 +15,14 @@ namespace zen
             : m_bitfields(nullptr)
             , m_bitcount(0)
             , m_bitcapacity(0)
-            , m_last_result(core::Result::Ok)
+            , m_last_result(Result::Ok)
         {}
 
         Writer::Writer(uint32_t* bitfields, size_t bitfield_capacity)
             : m_bitfields(bitfields)
             , m_bitcount(0)
             , m_bitcapacity(bitfield_capacity)
-            , m_last_result(core::Result::Ok)
+            , m_last_result(Result::Ok)
         {
             ZEN_ASSERT((bitfield_capacity & 31) == 0, "bitfield_capacity(", bitfield_capacity, ") should be a multiple of 64 bits.");
         }
@@ -30,12 +30,12 @@ namespace zen
         Writer::~Writer()
         {}
 
-        core::Result Writer::get_last_result() const
+        Writer::Result Writer::get_last_result() const
         {
             return m_last_result;
         }
 
-        void Writer::set_last_result(core::Result result)
+        void Writer::set_last_result(Result result)
         {
             ZEN_LOG("bitstream::Reader(", this, ") last result set from (", (int)m_last_result, ") to (", (int)result, ").")
                 m_last_result = result;
@@ -43,14 +43,14 @@ namespace zen
 
         bool Writer::ok() const
         {
-            return m_last_result == core::Result::Ok;
+            return m_last_result == Result::Ok;
         }
 
         void Writer::clear_last_result()
         {
-            if (m_last_result != core::Result::Ok)
+            if (m_last_result != Result::Ok)
             {
-                set_last_result(core::Result::Ok);
+                set_last_result(Result::Ok);
             }
         }
 
@@ -75,7 +75,7 @@ namespace zen
 
             if (position + num_bits > m_bitcount)
             {
-                set_last_result(core::Result::WriteOverflow);
+                set_last_result(Result::WriteOverflow);
                 return false;
             }
 
@@ -129,7 +129,7 @@ namespace zen
             {
                 if (!allocate(m_bitfields, m_bitcapacity))
                 {
-                    set_last_result(core::Result::WriteOverflow);
+                    set_last_result(Result::WriteOverflow);
                     return false;
                 }
             }

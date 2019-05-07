@@ -46,7 +46,10 @@ namespace zen
                 item->m_next = front_id;
                 front->m_prev = item_id;
             }
+
             m_array.insert(std::begin(m_array), item_id);
+
+            on_vector_touched();
         }
 
         template<typename TYPE>
@@ -63,7 +66,10 @@ namespace zen
                 item->m_prev = back_id;
                 back->m_next = item_id;
             }
+
             m_array.insert(std::end(m_array), item_id);
+
+            on_vector_touched();
         }
 
         template<typename TYPE>
@@ -89,6 +95,8 @@ namespace zen
             item->m_next = INVALID_ITEM_ID;
 
             m_free.push_back(item_id);
+
+            on_vector_touched();
         }
 
         template<typename TYPE>
@@ -117,12 +125,17 @@ namespace zen
             std::advance(it, index);
 
             m_array.insert(it, item_id);
+
+            on_vector_touched();
         }
 
         template<typename TYPE>
         TYPE& Vector<TYPE>::get(uint32_t index)
         {
             ItemId item_id = m_array[index];
+
+            on_vector_touched();
+
             return get_item(item_id)->m_value;
         }
 
@@ -137,6 +150,9 @@ namespace zen
         TYPE& Vector<TYPE>::operator[](uint32_t index)
         {
             ItemId item_id = m_array[index];
+
+            on_vector_touched();
+
             return get_item(item_id)->m_value;
         }
 
@@ -151,6 +167,9 @@ namespace zen
         TYPE& Vector<TYPE>::front()
         {
             ItemId item_id = m_array.front();
+            
+            on_vector_touched();
+
             return get_item(item_id)->m_value;
         }
 
@@ -158,6 +177,9 @@ namespace zen
         TYPE& Vector<TYPE>::back()
         {
             ItemId item_id = m_array.back();
+
+            on_vector_touched();
+
             return get_item(item_id)->m_value;
         }
 
@@ -193,6 +215,8 @@ namespace zen
                 front->m_prev = INVALID_ITEM_ID;
                 front->m_next = INVALID_ITEM_ID;
             }
+
+            on_vector_touched();
         }
 
         template<typename TYPE>
@@ -213,6 +237,8 @@ namespace zen
                 back->m_prev = INVALID_ITEM_ID;
                 back->m_next = INVALID_ITEM_ID;
             }
+
+            on_vector_touched();
         }
 
         template<typename TYPE>
@@ -278,7 +304,6 @@ namespace zen
             item->m_prev = INVALID_ITEM_ID;
             item->m_next = INVALID_ITEM_ID;
             m_free.push_back(item_id);
-
             return item;
         }
 
@@ -288,6 +313,9 @@ namespace zen
             m_array = rhs.m_array;
             m_free = rhs.m_free;
             m_pool = rhs.m_pool;
+            
+            on_vector_touched();
+            
             return *this;
         }
 
@@ -309,6 +337,8 @@ namespace zen
             m_array.clear();
             m_free.clear();
             m_pool.clear();
+
+            on_vector_touched();
         }
 
         template<typename TYPE>

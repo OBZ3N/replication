@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./zen_data_vector.h"
+#include "zen/data/zen_data_vector.h"
 #include "zen/serializer/zen_serializer_boolean.h"
 #include "zen/serializer/zen_serializer_raw.h"
 
@@ -14,9 +14,24 @@ namespace zen
         {}
 
         template<typename TYPE>
-        bool Vector<TYPE>::serialize_value(bitstream::Writer& out) const
+        Vector<TYPE>& Vector<TYPE>::operator = (const Vector<TYPE>& rhs)
         {
-            if (!serializers::serialize_raw(m_array.size()))
+            clear();
+
+            reserve(rhs.size());
+
+            for (size_t i = 0; i < rhs.size(); ++i)
+            {
+                push_back(rhs[i]);
+            }
+
+            return *this;
+        }
+
+        template<typename TYPE>
+        bool Vector<TYPE>::serialize_full(bitstream::Writer& out) const
+        {
+            if (!serializers::serialize_raw(m_array.size(), out))
                 return false;
             
             for (ItemId item_id : m_array)
@@ -29,38 +44,40 @@ namespace zen
                 if (!out.ok())
                     return false;
 
-                if (!item->m_value.serialize_value(out, nullptr))
+                if (!item->m_value.serialize_full(out))
                     return false;
             }
             return out.ok();
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::deserialize_value(bitstream::Reader& in)
+        bool Vector<TYPE>::deserialize_full(bitstream::Reader& in)
         {
             clear();
 
             size_t array_size;
-            if(!serializers::deserialize_raw(array_size))
+            if(!serializers::deserialize_raw(array_size, in))
                 return false;
 
-            m_value.reserve(array_size);
+            ItemId head_id = m_array.empty() ? INVALID_ITEM_ID : m_array[0];
+
+            reserve(array_size);
 
             for (uint32_t i = 0; i < array_size; ++i)
             {
                 ItemId item_id;
                 ItemId prev;
                 ItemId next;
-                serializers::deserialize_raw(item_id);
-                serializers::deserialize_raw(prev);
-                serializers::deserialize_raw(next);
+                serializers::deserialize_raw(item_id, in);
+                serializers::deserialize_raw(prev, in);
+                serializers::deserialize_raw(next, in);
                 if (!in.ok()) return false;
 
                 Item* item = get_item(item_id);
                 item->m_prev = prev;
                 item->m_next = next;
                 
-                if(!item->m_value.deserialize_value(in))
+                if(!item->m_value.deserialize_full(in))
                     return false;
 
                 if (item->m_prev == INVALID_ITEM_ID)
@@ -72,6 +89,9 @@ namespace zen
 
                 m_free.erase(it);
             }
+
+            set_touched(true);
+
             return in.ok();
         }
 
@@ -111,7 +131,7 @@ namespace zen
                     serializers::serialize_raw(item_id, out);
                     serializers::serialize_raw(item->m_prev, out);
                     serializers::serialize_raw(item->m_next, out);
-                    item->m_value.serialize_value(out);
+                    item->m_value.serialize_full(out);
                     if (!out.ok()) return false;
                 }
             }
@@ -200,7 +220,7 @@ namespace zen
                     item->m_prev = prev;
                     item->m_next = next;
                     
-                    if (!item->m_value.deserialize_value(in))
+                    if (!item->m_value.deserialize_full(in))
                         return false;
 
                     if (item->m_prev == INVALID_ITEM_ID)
@@ -344,7 +364,7 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::operator == (const Vector& rhs) const
+        bool Vector<TYPE>::operator == (const Vector<TYPE>& rhs) const
         {
             if (size() != rhs.size())
                 return false;
@@ -367,9 +387,15 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::operator != (const Vector& rhs) const
+        bool Vector<TYPE>::operator != (const Vector<TYPE>& rhs) const
         {
             return !((*this) == rhs);
+        }
+
+        template<typename TYPE>
+        void Vector<TYPE>::on_vector_touched()
+        {
+            set_touched(true);
         }
     }
 }

@@ -1,31 +1,43 @@
 #pragma once
 
+#include "zen/data/zen_data_element.h"
+#include "zen/bitstream/zen_bitstream_reader.h"
+#include "zen/bitstream/zen_bitstream_writer.h"
+
 namespace zen
 {
     namespace data
     {
         template<typename TYPE>
-        class IntegerRanged
+        class IntegerRanged : public Element
         {
         public:
-            IntegerRanged(TYPE value = 0, TYPE value_min = 0, TYPE value_max = 0, TYPE value_default = 0);
+            IntegerRanged();
+            IntegerRanged(TYPE value, TYPE value_min, TYPE value_max);
 
-            bool serialize_value(bitstream::Writer& out) const;
-            bool deserialize_value(bitstream::Reader& in);
-            bool serialize_delta(const IntegerRanged& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const IntegerRanged& reference, bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const override;
+            bool deserialize_full(bitstream::Reader& in) override;
+            bool serialize_delta(const IntegerRanged& reference, bitstream::Writer& out) const override;
+            bool deserialize_delta(const IntegerRanged& reference, bitstream::Reader& in) override;
 
             bool set_value(TYPE value);
             TYPE get_value() const;
 
+            bool set_value_min(TYPE value_min);
+            TYPE get_value_min() const;
+
+            bool set_value_max(TYPE value_max);
+            TYPE get_value_max() const;
+
             bool operator == (const IntegerRanged& rhs) const;
             bool operator != (const IntegerRanged& rhs) const;
+
+            IntegerRanged& operator = (const IntegerRanged& rhs);
 
         private:
             TYPE m_value;
             TYPE m_value_min;
             TYPE m_value_max;
-            TYPE m_value_default;
         };
     }
 }

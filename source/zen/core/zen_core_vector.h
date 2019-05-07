@@ -49,6 +49,8 @@ namespace zen
             bool operator != (const Vector& rhs) const;
 
         protected:
+            virtual void on_vector_touched() {}
+
 #undef max
             typedef uint32_t ItemId;
             static const ItemId INVALID_ITEM_ID = (uint32_t)(-1);

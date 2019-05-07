@@ -1,29 +1,35 @@
 #pragma once
 
+#include "zen/data/zen_data_element.h"
+#include "zen/bitstream/zen_bitstream_reader.h"
+#include "zen/bitstream/zen_bitstream_writer.h"
+
 namespace zen
 {
     namespace data
     {
-        class Boolean
+        class Boolean : public Element
         {
         public:
-            Boolean(bool value = false, bool value_default = false);
+            Boolean();
+            Boolean(bool value);
 
-        protected:
-            bool serialize_value(bitstream::Writer& out) const;
-            bool deserialize_value(bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const;
+            bool deserialize_full(bitstream::Reader& in);
+
             bool serialize_delta(const Boolean& reference, bitstream::Writer& out) const;
             bool deserialize_delta(const Boolean& reference, bitstream::Reader& in);
 
             bool set_value(bool value);
             bool get_value() const;
 
-            bool operator == (const Boolean& rhs) const;
-            bool operator != (const Boolean& rhs) const;
+            inline bool operator == (const Boolean& rhs) const;
+            inline bool operator != (const Boolean& rhs) const;
+
+            inline Boolean& operator = (const Boolean& rhs);
 
         private:
             bool m_value;
-            bool m_value_default;
         };
     }
 }

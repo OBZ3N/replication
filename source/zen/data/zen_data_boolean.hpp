@@ -7,38 +7,13 @@ namespace zen
 {
     namespace data
     {
-        inline Boolean::Boolean(bool value, bool value_default)
-            : m_value(value)
-            , m_value_default(value_default)
+        inline Boolean::Boolean()
+            : m_value(false)
         {}
 
-        inline bool Boolean::serialize_value(bitstream::Writer& out) const
-        {
-            return zen::serializers::serialize_boolean(m_value, out);
-        }
-
-        inline bool Boolean::deserialize_value(bitstream::Reader& in)
-        {
-            bool value;
-            if (!zen::serializers::deserialize_boolean(m_value, in))
-                return false;
-
-            m_value = value;
-            return in.ok();
-        }
-
-        inline bool Boolean::serialize_delta(const Boolean& reference, bitstream::Writer& out) const
-        {
-            if (m_value != reference.m_value)
-                return false;
-
-            return serialize_value(out);
-        }
-
-        inline bool Boolean::deserialize_delta(const Boolean& reference, bitstream::Reader& in)
-        {
-            return deserialize_value(in);
-        }
+        inline Boolean::Boolean(bool value)
+            : m_value(value)
+        {}
 
         inline bool Boolean::set_value(bool value)
         {
@@ -46,6 +21,9 @@ namespace zen
                 return false;
 
             m_value = value;
+
+            set_touched(true);
+
             return true;
         }
 
@@ -56,12 +34,52 @@ namespace zen
 
         inline bool Boolean::operator == (const Boolean& rhs) const
         {
-            return m_value == rhs.m_value;
+            if (m_value != rhs.m_value)
+                return false;
+
+            return true;
         }
 
         inline bool Boolean::operator != (const Boolean& rhs) const
         {
-            return m_value != rhs.m_value;
+            return !((*this) == rhs);
+        }
+
+        inline Boolean& Boolean::operator = (const Boolean& rhs)
+        {
+            set_value(rhs.m_value);
+
+            return *this;
+        }
+
+        inline bool Boolean::serialize_full(bitstream::Writer& out) const
+        {
+            zen::serializers::serialize_boolean(m_value, out);
+            return out.ok();
+        }
+
+        inline bool Boolean::deserialize_full(bitstream::Reader& in)
+        {
+            bool value;
+            zen::serializers::deserialize_boolean(value, in);
+            if (!in.ok()) return false;
+
+            set_value(value);
+
+            return true;
+        }
+
+        inline bool Boolean::serialize_delta(const Boolean& reference, bitstream::Writer& out) const
+        {
+            if ((*this) == reference)
+                return false;
+
+            return serialize_full(out);
+        }
+
+        inline bool Boolean::deserialize_delta(const Boolean& reference, bitstream::Reader& in)
+        {
+            return deserialize_full(in);
         }
     }
 }

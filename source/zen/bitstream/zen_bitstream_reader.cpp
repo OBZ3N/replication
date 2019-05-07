@@ -16,22 +16,22 @@ namespace zen
             : m_bitfields(nullptr)
             , m_bitcount(0)
             , m_position(0)
-            , m_last_result(core::Result::Ok)
+            , m_last_result(Result::Ok)
         {}
 
         Reader::Reader(const uint32_t* bitfields, size_t bitcount)
             : m_bitfields(bitfields)
             , m_bitcount(bitcount)
             , m_position(0)
-            , m_last_result(core::Result::Ok)
+            , m_last_result(Result::Ok)
         {}
 
-        core::Result Reader::get_last_result() const
+        Reader::Result Reader::get_last_result() const
         {
             return m_last_result;
         }
 
-        void Reader::set_last_result(core::Result result)
+        void Reader::set_last_result(Result result)
         {
             ZEN_LOG("bitstream::Reader(", this, ") last result set from (", (int)m_last_result, ") to (", (int)result, ").")
             m_last_result = result;
@@ -39,14 +39,14 @@ namespace zen
 
         bool Reader::ok() const 
         { 
-            return m_last_result == core::Result::Ok;
+            return m_last_result == Result::Ok;
         }
 
         void Reader::clear_last_result()
         {
-            if (m_last_result != core::Result::Ok)
+            if (m_last_result != Result::Ok)
             {
-                set_last_result(core::Result::Ok);
+                set_last_result(Result::Ok);
             }
         }
 
@@ -77,7 +77,7 @@ namespace zen
             // reading past the data.
             if (m_position + num_bits > m_bitcount)
             {
-                set_last_result(core::Result::ReadOverflow);
+                set_last_result(Result::ReadOverflow);
                 return false;
             }
 
@@ -121,7 +121,7 @@ namespace zen
         {
             if (position > m_bitcount)
             {
-                set_last_result(core::Result::PositionOverflow);
+                set_last_result(Result::PositionInvalid);
                 return false;
             }
 

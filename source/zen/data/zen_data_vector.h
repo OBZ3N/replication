@@ -1,8 +1,7 @@
 #pragma once
 
-#include <istream>
-#include <ostream>
 #include "zen/core/zen_core_vector.h"
+#include "zen/data/zen_data_element.h"
 #include "zen/bitstream/zen_bitstream_reader.h"
 #include "zen/bitstream/zen_bitstream_writer.h"
 
@@ -11,18 +10,23 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        class Vector: public core::Vector<TYPE>
+        class Vector: public Element, public core::Vector<TYPE>
         {
         public:
             Vector(size_t capcity = 0);
 
-            bool serialize_value(bitstream::Writer& out) const;
-            bool deserialize_value(bitstream::Reader& in);
-            bool serialize_delta(const Vector<TYPE>& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const Vector<TYPE>& reference, bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const;
+            bool deserialize_full(bitstream::Reader& in);
+            bool serialize_delta(const Vector& reference, bitstream::Writer& out) const;
+            bool deserialize_delta(const Vector& reference, bitstream::Reader& in);
+            
+            inline bool operator == (const Vector& rhs) const;
+            inline bool operator != (const Vector& rhs) const;
 
-            bool operator == (const Vector& rhs) const;
-            bool operator != (const Vector& rhs) const;
+            Vector& operator = (const Vector& rhs);
+
+        protected:
+            void on_vector_touched() override;
 
         private:
             static void calculate_delta(

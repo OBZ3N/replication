@@ -2,7 +2,6 @@
 #pragma once
 
 #include <cinttypes>
-#include "zen/core/zen_core_defines.h"
 
 namespace zen
 {
@@ -11,6 +10,14 @@ namespace zen
         class Writer
         {
         public:
+            enum class Result
+            {
+                Ok = 0,
+                OutOfMemory,
+                PositionOverflow,
+                WriteOverflow,
+            };
+
             Writer();
             Writer(uint32_t* bitfields, size_t bitfield_capacity);
             virtual ~Writer();
@@ -21,8 +28,8 @@ namespace zen
             template<typename TYPE>  bool write( const TYPE& value);
             bool write(const void* bits, size_t num_bits);
             
-            core::Result get_last_result() const;
-            void set_last_result(core::Result result);
+            Result get_last_result() const;
+            void set_last_result(Result result);
             void clear_last_result();
             bool ok() const;
 
@@ -37,10 +44,10 @@ namespace zen
             virtual bool allocate(uint32_t*& bitfields, size_t& bitcapacity);
 
         private:
-            uint32_t*       m_bitfields;
-            size_t          m_bitcount;
-            size_t          m_bitcapacity;
-            core::Result    m_last_result;
+            uint32_t*   m_bitfields;
+            size_t      m_bitcount;
+            size_t      m_bitcapacity;
+            Result      m_last_result;
 
         private:
             bool write_internal(const void* bits, size_t num_bits, size_t position);

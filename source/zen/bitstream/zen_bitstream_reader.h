@@ -2,7 +2,6 @@
 #pragma once
 
 #include <cinttypes>
-#include "zen/core/zen_core_defines.h"
 
 namespace zen
 {
@@ -11,6 +10,14 @@ namespace zen
         class Reader
         {
         public:
+            enum class Result
+            {
+                Ok = 0,
+                OutOfMemory,
+                PositionInvalid,
+                ReadOverflow,
+            };
+
             Reader();
             Reader(const uint32_t* bitfields, size_t bitcount);
             virtual ~Reader() {}
@@ -25,8 +32,8 @@ namespace zen
             size_t position() const;
             size_t bitcount() const;
 
-            core::Result get_last_result() const;
-            void set_last_result(core::Result result);
+            Result get_last_result() const;
+            void set_last_result(Result result);
             void clear_last_result();
             bool ok() const;
 
@@ -35,10 +42,10 @@ namespace zen
             void get_buffer(const void*& bitfields, size_t& bitcount);
 
         private:
-            const uint32_t*     m_bitfields;
-            size_t              m_bitcount;
-            size_t              m_position;
-            core::Result        m_last_result;
+            const uint32_t* m_bitfields;
+            size_t          m_bitcount;
+            size_t          m_position;
+            Result          m_last_result;
 
         private:
             bool read_internal(void* bits, size_t num_bits, size_t position);

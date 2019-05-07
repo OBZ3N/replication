@@ -1,17 +1,22 @@
 #pragma once
 
+#include "zen/data/zen_data_element.h"
+#include "zen/bitstream/zen_bitstream_reader.h"
+#include "zen/bitstream/zen_bitstream_writer.h"
+
 namespace zen
 {
     namespace data
     {
         template<typename TYPE>
-        class Raw
+        class Raw : public Element
         {
         public:
-            Raw(TYPE value = 0, TYPE value_default=0);
+            Raw();
+            Raw(TYPE value);
 
-            bool serialize_value(bitstream::Writer& out) const;
-            bool deserialize_value(bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const;
+            bool deserialize_full(bitstream::Reader& in);
             bool serialize_delta(const Raw& reference, bitstream::Writer& out) const;
             bool deserialize_delta(const Raw& reference, bitstream::Reader& in);
 
@@ -21,9 +26,10 @@ namespace zen
             bool operator == (const Raw& rhs) const;
             bool operator != (const Raw& rhs) const;
 
+            Raw& operator = (const Raw& rhs);
+
         private:
             TYPE m_value;
-            TYPE m_value_default;
         };
 
         typedef Raw<int8_t> Int8;

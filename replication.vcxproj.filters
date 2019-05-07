@@ -45,6 +45,12 @@
     <ClCompile Include="source\zen\debug\zen_debug_random.cpp">
       <Filter>source\zen\debug</Filter>
     </ClCompile>
+    <ClCompile Include="source\zen\data\zen_data_factory.cpp">
+      <Filter>source\zen\data</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\data\zen_data_mutable.cpp">
+      <Filter>source\zen\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\zen\core\zen_core_ostream.h">
@@ -78,9 +84,6 @@
       <Filter>source\zen\debug</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\core\zen_core_endian.h">
-      <Filter>source\zen\core</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\core\zen_core_defines.h">
       <Filter>source\zen\core</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_boolean.h">
@@ -151,6 +154,21 @@
     </ClInclude>
     <ClInclude Include="source\zen\serializer\zen_serializer_boolean.hpp">
       <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_element.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_element.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_factory.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_factory.hpp">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_mutable.h">
+      <Filter>source\zen\data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

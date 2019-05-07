@@ -8,61 +8,54 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        Raw<TYPE>::Raw(TYPE value, TYPE value_default)
-            : m_value(value)
-            , m_value_default(value_default)
+        Raw<TYPE>::Raw()
+            : m_value(0)
         {}
 
         template<typename TYPE>
-        bool Raw<TYPE>::serialize_value(bitstream::Writer& out) const
+        Raw<TYPE>::Raw(TYPE value)
+            : m_value(value)
+        {}
+
+        template<typename TYPE>
+        Raw<TYPE>& Raw<TYPE>::operator = (const Raw<TYPE>& rhs)
         {
-            if (m_value == m_value_default)
-            {
-                return zen::serializers::serialize_boolean(true, out);
-            }
+            set_value(rhs.m_value);
 
-            if (!zen::serializers::serialize_boolean(false, out))
-                return false;
+            return *this;
+        }
 
+        template<typename TYPE>
+        bool Raw<TYPE>::serialize_full(bitstream::Writer& out) const
+        {
             return zen::serializers::serialize_raw(m_value, out);
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::deserialize_value(bitstream::Reader& in)
+        bool Raw<TYPE>::deserialize_full(bitstream::Reader& in)
         {
-            bool is_default;
-            if (!zen::serializers::deserialize_boolean(is_default, in))
+            TYPE value;
+            if (!zen::serializers::deserialize_raw(value, in))
                 return false;
 
-            if (is_default)
-            {
-                m_value = m_value_default;
-                return in.ok();
-            }
-            else
-            {
-                TYPE value;
-                if (!zen::serializers::deserialize_raw(value, in))
-                    return false;
+            set_value(value);
 
-                m_value = value;
-                return in.ok();
-            }
+            return in.ok();
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::serialize_delta(const Raw& reference, bitstream::Writer& out) const
+        bool Raw<TYPE>::serialize_delta(const Raw<TYPE>& reference, bitstream::Writer& out) const
         {
             if (m_value != reference.m_value)
                 return false;
 
-            return serialize_value(out);
+            return serialize_full(out);
         }
 
         template<typename TYPE>
         bool Raw<TYPE>::deserialize_delta(const Raw& reference, bitstream::Reader& in)
         {
-            return deserialize_value(in);
+            return deserialize_full(in);
         }
 
         template<typename TYPE>
@@ -72,6 +65,9 @@ namespace zen
                 return false;
 
             m_value = value;
+
+            set_touched(true);
+
             return true;
         }
 

@@ -8,49 +8,38 @@ namespace zen
 {
     namespace data
     {
-        inline String::String(const std::string& value, const std::string& value_default)
-            : m_value(value)
-            , m_value_default(value)
+        inline String::String()
         {}
 
-        inline String::String(const char* value, const char* value_default)
+        inline String::String(const std::string& value)
             : m_value(value)
-            , m_value_default(value)
         {}
 
-        inline bool String::serialize_value(bitstream::Writer& out) const
+        inline String::String(const char* value)
+            : m_value(value)
+        {}
+
+        inline String& String::operator = (const String& rhs)
         {
-            if (m_value == m_value_default)
-            {
-                return zen::serializers::serialize_boolean(true, out);
-            }
+            set_value(rhs.m_value);
 
-            if (!zen::serializers::serialize_boolean(false, out))
-                return false;
-
+            return *this;
+        }
+        
+        inline bool String::serialize_full(bitstream::Writer& out) const
+        {
             return zen::serializers::serialize_string(m_value, out);
         }
 
-        inline bool String::deserialize_value(bitstream::Reader& in)
+        inline bool String::deserialize_full(bitstream::Reader& in)
         {
-            bool is_default;
-            if (!zen::serializers::deserialize_boolean(is_default, in))
+            std::string value;
+            if (!zen::serializers::deserialize_string(value, in))
                 return false;
 
-            if (is_default)
-            {
-                m_value = m_value_default;
-                return in.ok();
-            }
-            else
-            {
-                std::string value;
-                if (!zen::serializers::deserialize_string(value, in))
-                    return false;
+            set_value(value);
 
-                m_value = value;
-                return in.ok();
-            }
+            return in.ok();
         }
 
         inline bool String::serialize_delta(const String& reference, bitstream::Writer& out) const
@@ -58,12 +47,12 @@ namespace zen
             if (m_value != reference.m_value)
                 return false;
 
-            return serialize_value(out);
+            return serialize_full(out);
         }
 
         inline bool String::deserialize_delta(const String& reference, bitstream::Reader& in)
         {
-            return deserialize_value(in);
+            return deserialize_full(in);
         }
 
         inline bool String::set_value(const std::string& value)
@@ -72,6 +61,9 @@ namespace zen
                 return false;
 
             m_value = value;
+
+            set_touched(true);
+
             return true;
         }
 
