@@ -2,6 +2,7 @@
 
 #include "zen/data/zen_data_integer_ranged.h"
 #include "zen/serializer/zen_serializer_boolean.h"
+#include "zen/serializer/zen_serializer_log2.h"
 #include "zen/serializer/zen_serializer_integer_ranged.h"
 
 namespace zen
@@ -13,6 +14,7 @@ namespace zen
             : m_value(0)
             , m_value_min(0)
             , m_value_max(0)
+            , m_num_bits(0)
         {}
 
         template<typename TYPE>
@@ -20,7 +22,12 @@ namespace zen
             : m_value(value)
             , m_value_min(value_min)
             , m_value_max(value_max)
-        {}
+            , m_num_bits(zen::serializers::number_of_bits_required(value_max - value_min))
+        {
+            ZEN_ASSERT(m_value_max > m_value_min, "value_max(", m_value_max, ") <= value_min(", m_value_min, ").");
+            ZEN_ASSERT(m_value >= m_value_min, "value(", m_value, ") < value_min(", m_value_min, ").");
+            ZEN_ASSERT(m_value <= m_value_max, "value(", m_value, ") > value_max(", m_value_max, ").");
+        }
 
         template<typename TYPE>
         bool IntegerRanged<TYPE>::serialize_full(bitstream::Writer& out) const
@@ -130,12 +137,17 @@ namespace zen
                 {
                     zen::serializers::deserialize_raw(m_value_max, in);
                 }
+                m_num_bits = zen::serializers::num_bits_required(m_value_max, m_value_min);
             }
 
             if (value_changed)
             {
                 zen::serializers::deserialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, in);
             }
+
+            ZEN_ASSERT(m_value_max > m_value_min, "value_max(", m_value_max, ") <= value_min(", m_value_min, ").");
+            ZEN_ASSERT(m_value >= m_value_min, "value(", m_value, ") < value_min(", m_value_min, ").");
+            ZEN_ASSERT(m_value <= m_value_max, "value(", m_value, ") > value_max(", m_value_max, ").");
 
             return in.ok();
         }
@@ -169,6 +181,11 @@ namespace zen
 
             set_touched(true);
 
+            if (m_value_min < m_value_max)
+            {
+                m_num_bits = zen::serializers::num_bits_required(m_value_max, m_value_min);
+            }
+
             return true;
         }
 
@@ -187,6 +204,11 @@ namespace zen
             m_value_max = value_max;
 
             set_touched(true);
+
+            if (m_value_max > m_value_min)
+            {
+                m_num_bits = zen::serializers::num_bits_required(m_value_max, m_value_min);
+            }
 
             return true;
         }

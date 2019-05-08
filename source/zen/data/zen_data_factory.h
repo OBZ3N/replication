@@ -5,6 +5,8 @@
 #include <unordered_map>
 
 #include "zen/data/zen_data_element.h"
+#include "zen/bitstream/zen_bitstream_reader.h"
+#include "zen/bitstream/zen_bitstream_writer.h"
 
 namespace zen
 {
@@ -27,6 +29,9 @@ namespace zen
             uint32_t  get_num_types() const;
             Element* construct_element(uint32_t type_id) const;
 
+            bool serialize_type_id(uint32_t type_id, zen::bitstream::Writer& out);
+            bool deserialize_type_id(uint32_t& type_id, zen::bitstream::Reader& in);
+
         private:
             template<typename DerivedType> 
             DerivedType* element_constructor();
@@ -40,6 +45,9 @@ namespace zen
 
             std::unordered_map<std::string, Item>   m_type_table;
             std::vector<Item>                       m_type_registry;
+
+            uint32_t m_num_type_ids;
+            uint32_t m_num_bits;
         };
     }
 }

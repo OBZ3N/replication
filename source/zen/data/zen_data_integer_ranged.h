@@ -35,9 +35,10 @@ namespace zen
             IntegerRanged& operator = (const IntegerRanged& rhs);
 
         private:
-            TYPE m_value;
-            TYPE m_value_min;
-            TYPE m_value_max;
+            TYPE    m_value;
+            TYPE    m_value_min;
+            TYPE    m_value_max;
+            size_t  m_num_bits;
         };
     }
 }

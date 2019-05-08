@@ -20,6 +20,10 @@ namespace zen
 
             m_registry.push_back(item);
 
+            m_num_type_ids = (uint32_t)m_registry.size();
+
+            m_num_bits = zen::serializers::num_bits_required(m_num_type_ids - 1);
+
             m_table[class_name] = m_registry.back();
 
             return item.m_factory_id;
