@@ -15,11 +15,17 @@ namespace zen
             FloatRanged();
             FloatRanged(TYPE value, TYPE value_min, TYPE value_max, size_t num_bits);
 
-            bool serialize_full(bitstream::Writer& out) const;
-            bool deserialize_full(bitstream::Reader& in);
-            bool serialize_delta(const FloatRanged& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const FloatRanged& reference, bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const override;
+            bool deserialize_full(bitstream::Reader& in) override;
 
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
+            bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
+
+            bool operator == (const Element& rhs) const override;
+            bool operator != (const Element& rhs) const override;
+
+            Element& operator = (const Element& rhs) override;
+            
             bool set_value(TYPE value);
             TYPE get_value() const;
 
@@ -31,11 +37,6 @@ namespace zen
 
             bool set_num_bits(size_t num_bits);
             size_t get_num_bits() const;
-
-            bool operator == (const FloatRanged& rhs) const;
-            bool operator != (const FloatRanged& rhs) const;
-
-            inline FloatRanged& operator = (const FloatRanged& rhs);
 
         private:
             TYPE m_value;

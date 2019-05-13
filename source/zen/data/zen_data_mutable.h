@@ -17,15 +17,16 @@ namespace zen
             Mutable();
             ~Mutable();
 
-            bool serialize_full(bitstream::Writer& out) const;
-            bool deserialize_full(bitstream::Reader& in);
-            bool serialize_delta(const Mutable& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const Mutable& reference, bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const override;
+            bool deserialize_full(bitstream::Reader& in) override;
 
-            inline bool operator == (const Mutable& rhs) const;
-            inline bool operator != (const Mutable& rhs) const;
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
+            bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
 
-            Mutable& operator = (const Mutable& rhs);
+            inline bool operator == (const Element& rhs) const override;
+            inline bool operator != (const Element& rhs) const override;
+
+            Element& operator = (const Element& rhs) override;
 
             bool is_null() const { return m_element == nullptr; }
 

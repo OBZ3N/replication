@@ -15,18 +15,19 @@ namespace zen
             Raw();
             Raw(TYPE value);
 
-            bool serialize_full(bitstream::Writer& out) const;
-            bool deserialize_full(bitstream::Reader& in);
-            bool serialize_delta(const Raw& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const Raw& reference, bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const override;
+            bool deserialize_full(bitstream::Reader& in) override;
+
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
+            bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
 
             bool set_value(TYPE value);
             TYPE get_value() const;
 
-            bool operator == (const Raw& rhs) const;
-            bool operator != (const Raw& rhs) const;
+            bool operator == (const Element& rhs) const override;
+            bool operator != (const Element& rhs) const override;
 
-            Raw& operator = (const Raw& rhs);
+            Element& operator = (const Raw& rhs) override;
 
         private:
             TYPE m_value;

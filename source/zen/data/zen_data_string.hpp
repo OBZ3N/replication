@@ -19,8 +19,10 @@ namespace zen
             : m_value(value)
         {}
 
-        inline String& String::operator = (const String& rhs)
+        inline Element& String::operator = (const Element& element_rhs)
         {
+            const String& rhs = (const String&)element_rhs;
+
             set_value(rhs.m_value);
 
             return *this;
@@ -42,17 +44,38 @@ namespace zen
             return in.ok();
         }
 
-        inline bool String::serialize_delta(const String& reference, bitstream::Writer& out) const
+        inline bool String::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
-            if (m_value != reference.m_value)
+            const String& reference = (const String&)element_reference;
+
+            bool value_changed = (m_value != reference.m_value);
+
+            if (!serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 
-            return serialize_full(out);
+            if (value_changed)
+            {
+                if (!zen::serializers::serialize_string(m_value, out))
+                    return false;
+            }
+
+            return out.ok();
         }
 
-        inline bool String::deserialize_delta(const String& reference, bitstream::Reader& in)
+        inline bool String::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            return deserialize_full(in);
+            const String& reference = (const String&) element_reference;
+            
+            bool value_changed;
+            if (!serializers::deserialize_boolean(value_changed, delta_bits))
+                return false;
+
+            if (value_changed)
+            {
+                if (!zen::serializers::deserialize_string(m_value, in))
+                    return false;
+            }
+            return in.ok();
         }
 
         inline bool String::set_value(const std::string& value)
@@ -72,13 +95,17 @@ namespace zen
             return m_value;
         }
 
-        inline bool String::operator == (const String& rhs) const
+        inline bool String::operator == (const Element& element_rhs) const
         {
+            const String& rhs = (const String&)element_rhs;
+
             return m_value == rhs.m_value;
         }
 
-        inline bool String::operator != (const String& rhs) const
+        inline bool String::operator != (const Element& element_rhs) const
         {
+            const String& rhs = (const String&)element_rhs;
+
             return m_value != rhs.m_value;
         }
     }

@@ -18,8 +18,10 @@ namespace zen
         {}
 
         template<typename TYPE>
-        Raw<TYPE>& Raw<TYPE>::operator = (const Raw<TYPE>& rhs)
+        Element& Raw<TYPE>::operator = (const Element& element_rhs)
         {
+            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
+
             set_value(rhs.m_value);
 
             return *this;
@@ -44,18 +46,39 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::serialize_delta(const Raw<TYPE>& reference, bitstream::Writer& out) const
+        bool Raw<TYPE>::serialize_delta(const Raw<TYPE>& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
-            if (m_value != reference.m_value)
+            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
+
+            bool value_changed = (m_value != reference.m_value);
+
+            if (!serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 
-            return serialize_full(out);
+            if (value_changed)
+            {
+                if (!zen::serializers::serialize_raw(m_value, out))
+                    return false;
+            }
+
+            return out.ok();
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::deserialize_delta(const Raw& reference, bitstream::Reader& in)
+        bool Raw<TYPE>::deserialize_delta(const Raw& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            return deserialize_full(in);
+            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_reference;
+
+            bool value_changed;
+            if (!serializers::deserialize_boolean(value_changed, delta_bits))
+                return false;
+
+            if (value_changed)
+            {
+                if (!zen::serializers::deserialize_raw(m_value, in))
+                    return false;
+            }
+            return in.ok();
         }
 
         template<typename TYPE>
@@ -78,14 +101,18 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::operator == (const Raw& rhs) const
+        bool Raw<TYPE>::operator == (const Element& element_rhs) const
         {
+            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
+
             return m_value == rhs.m_value;
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::operator != (const Raw& rhs) const
+        bool Raw<TYPE>::operator != (const Element& element_rhs) const
         {
+            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
+
             return m_value != rhs.m_value;
         }
     }

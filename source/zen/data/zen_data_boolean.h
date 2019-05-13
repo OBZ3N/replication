@@ -14,19 +14,19 @@ namespace zen
             Boolean();
             Boolean(bool value);
 
-            bool serialize_full(bitstream::Writer& out) const;
-            bool deserialize_full(bitstream::Reader& in);
+            bool serialize_full(bitstream::Writer& out) const override;
+            bool deserialize_full(bitstream::Reader& in) override;
 
-            bool serialize_delta(const Boolean& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const Boolean& reference, bitstream::Reader& in);
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
+            bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
 
             bool set_value(bool value);
             bool get_value() const;
 
-            inline bool operator == (const Boolean& rhs) const;
-            inline bool operator != (const Boolean& rhs) const;
+            inline bool operator == (const Element& rhs) const override;
+            inline bool operator != (const Element& rhs) const override;
 
-            inline Boolean& operator = (const Boolean& rhs);
+            inline Element& operator = (const Element& rhs) override;
 
         private:
             bool m_value;

@@ -17,8 +17,14 @@ namespace zen
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;
-            bool serialize_delta(const IntegerRanged& reference, bitstream::Writer& out) const override;
-            bool deserialize_delta(const IntegerRanged& reference, bitstream::Reader& in) override;
+
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Reader& delta_bits) const override;
+            bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
+
+            bool operator == (const Element& rhs) const override;
+            bool operator != (const Element& rhs) const override;
+
+            Element& operator = (const Element& rhs) override;
 
             bool set_value(TYPE value);
             TYPE get_value() const;
@@ -28,11 +34,6 @@ namespace zen
 
             bool set_value_max(TYPE value_max);
             TYPE get_value_max() const;
-
-            bool operator == (const IntegerRanged& rhs) const;
-            bool operator != (const IntegerRanged& rhs) const;
-
-            IntegerRanged& operator = (const IntegerRanged& rhs);
 
         private:
             TYPE    m_value;

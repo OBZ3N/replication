@@ -15,15 +15,16 @@ namespace zen
         public:
             Vector(size_t capcity = 0);
 
-            bool serialize_full(bitstream::Writer& out) const;
-            bool deserialize_full(bitstream::Reader& in);
-            bool serialize_delta(const Vector& reference, bitstream::Writer& out) const;
-            bool deserialize_delta(const Vector& reference, bitstream::Reader& in);
-            
-            inline bool operator == (const Vector& rhs) const;
-            inline bool operator != (const Vector& rhs) const;
+            bool serialize_full(bitstream::Writer& out) const override;
+            bool deserialize_full(bitstream::Reader& in) override;
 
-            Vector& operator = (const Vector& rhs);
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
+            bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
+            
+            inline bool operator == (const Element& rhs) const override;
+            inline bool operator != (const Element& rhs) const override;
+
+            Element& operator = (const Element& rhs) override;
 
         protected:
             void on_vector_touched() override;

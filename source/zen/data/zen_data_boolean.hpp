@@ -32,21 +32,27 @@ namespace zen
             return m_value;
         }
 
-        inline bool Boolean::operator == (const Boolean& rhs) const
+        inline bool Boolean::operator == (const Element& element_rhs) const
         {
+            const Boolean& rhs = (const Boolean&)element_rhs;
+
             if (m_value != rhs.m_value)
                 return false;
 
             return true;
         }
 
-        inline bool Boolean::operator != (const Boolean& rhs) const
+        inline bool Boolean::operator != (const Element& element_rhs) const
         {
+            const Boolean& rhs = (const Boolean&)element_rhs;
+
             return !((*this) == rhs);
         }
 
-        inline Boolean& Boolean::operator = (const Boolean& rhs)
+        inline Element& Boolean::operator = (const Element& element_rhs)
         {
+            const Boolean& rhs = (const Boolean&)element_rhs;
+
             set_value(rhs.m_value);
 
             return *this;
@@ -69,17 +75,42 @@ namespace zen
             return true;
         }
 
-        inline bool Boolean::serialize_delta(const Boolean& reference, bitstream::Writer& out) const
+        inline bool Boolean::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
-            if ((*this) == reference)
+            const Boolean& element = (const Boolean&)element_reference;
+
+            bool value_changed = ((*this) != reference);
+            
+            if (!serializers::serialize_boolean(is_delta, delta_bits))
                 return false;
 
-            return serialize_full(out);
+            if (value_changed)
+            {
+                if (!zen::serializers::serialize_boolean(m_value, out))
+                    return false;
+            }
+
+            return out.ok();
         }
 
-        inline bool Boolean::deserialize_delta(const Boolean& reference, bitstream::Reader& in)
+        inline bool Boolean::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            return deserialize_full(in);
+            const Boolean& element = (const Boolean&)element_reference;
+
+            bool is_delta;
+            if(!zen::serializers::deserialize_boolean(is_delta, delta_bits))
+                return false;
+
+            if (value_changed)
+            {
+                bool value;
+                if (!zen::serializers::deserialize_boolean(value, in))
+                    return false;
+
+                set_value(value);
+            }
+
+            return in.ok();
         }
     }
 }

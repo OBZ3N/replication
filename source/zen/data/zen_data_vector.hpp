@@ -14,8 +14,10 @@ namespace zen
         {}
 
         template<typename TYPE>
-        Vector<TYPE>& Vector<TYPE>::operator = (const Vector<TYPE>& rhs)
+        Element& Vector<TYPE>::operator = (const Element& rhs)
         {
+            const Vector<TYPE>& rhs = (const Vector<TYPE>&) element_rhs;
+
             clear();
 
             reserve(rhs.size());
@@ -96,231 +98,254 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::serialize_delta(const Vector<TYPE>& reference, bitstream::Writer& out) const
+        bool Vector<TYPE>::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
+            const Vector<TYPE>& reference = (const Vector<TYPE>&) element_reference;
+
             std::vector<ItemId> items_added;
             std::vector<ItemId> items_removed;
             std::vector<ItemId> items_modified;
             calculate_delta(*this, reference, items_added, items_removed, items_modified);
 
-            // no change.
-            if (items_added.empty() &&
-                items_removed.empty() &&
-                items_modified.empty())
-            {
-                return false;
-            }
+            bool values_added    = !items_added.empty();
+            bool values_removed  = !items_removed.empty();
+            bool values_modified = !items_modified.empty();
+            bool value_changed   = values_added || values_removed || values_modified;
 
-            uint8_t flags = 0;
-            if (!items_added.empty()) flags |= 1;
-            if (!items_removed.empty()) flags |= 2;
-            if (!items_modified.empty()) flags |= 4;
-
-            // serialize header.
-            if(!serializers::serialize_raw(flags, out))
+            if (!serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 
-            if (!items_added.empty())
+            if (value_changed)
             {
-                if(!serializers::serialize_raw(items_added.size(), out))
+                if (!serializers::serialize_boolean(values_added, out))
                     return false;
 
-                for (ItemId item_id : items_added)
+                if (values_added)
                 {
-                    const Item* item = get_item(item_id);
-                    serializers::serialize_raw(item_id, out);
-                    serializers::serialize_raw(item->m_prev, out);
-                    serializers::serialize_raw(item->m_next, out);
-                    item->m_value.serialize_full(out);
-                    if (!out.ok()) return false;
-                }
-            }
-
-            if (!items_removed.empty())
-            {
-                if (!serializers::serialize_raw(items_removed.size(), out))
-                    return false;
-
-                for (ItemId item_id : items_removed)
-                {
-                    if (!serializers::serialize_raw(item_id, out))
+                    if (!serializers::serialize_raw(items_added.size(), out))
                         return false;
-                }
-            }
 
-            if (!items_modified.empty())
-            {
-                if (!serializers::serialize_raw(items_modified.size(), out))
+                    for (ItemId item_id : items_added)
+                    {
+                        const Item* item = get_item(item_id);
+                        serializers::serialize_raw(item_id, out);
+                        serializers::serialize_raw(item->m_prev, out);
+                        serializers::serialize_raw(item->m_next, out);
+                        item->m_value.serialize_full(out);
+                        if (!out.ok()) return false;
+                    }
+                }
+
+                if (!serializers::serialize_boolean(values_removed, out))
                     return false;
 
-                for (ItemId item_id : items_modified)
+                if (values_removed)
                 {
-                    const Item* item_latest = get_item(item_id);
-                    const Item* item_reference = reference.get_item(item_id);
+                    if (!serializers::serialize_raw(items_removed.size(), out))
+                        return false;
 
-                    uint8_t item_flags = 0;
-                    if (item_latest->m_prev != item_reference->m_prev) item_flags |= 1;
-                    if (item_latest->m_next != item_reference->m_next) item_flags |= 2;
-                    if (item_latest->m_value != item_reference->m_value) item_flags |= 4;
-
-                    if (item_flags != 0)
+                    for (ItemId item_id : items_removed)
                     {
-                        serializers::serialize_raw(item_id, out);
-                        serializers::serialize_raw(item_flags, out);
-                        if (!out.ok()) return false;
+                        if (!serializers::serialize_raw(item_id, out))
+                            return false;
+                    }
+                }
 
-                        if (item_flags & 1)
+                if (!serializers::serialize_boolean(values_modified, out))
+                    return false;
+
+                if (values_modified)
+                {
+                    if (!serializers::serialize_raw(items_modified.size(), out))
+                        return false;
+
+                    for (ItemId item_id : items_modified)
+                    {
+                        const Item* item_latest = get_item(item_id);
+                        const Item* item_reference = reference.get_item(item_id);
+
+                        uint8_t item_flags = 0;
+                        if (item_latest->m_prev != item_reference->m_prev) item_flags |= 1;
+                        if (item_latest->m_next != item_reference->m_next) item_flags |= 2;
+                        if (item_latest->m_value != item_reference->m_value) item_flags |= 4;
+
+                        if (item_flags != 0)
                         {
-                            if (!serializers::serialize_raw(item_latest->m_prev, out))
-                                return false;
-                        }
-                        if (item_flags & 2)
-                        {
-                            if (!serializers::serialize_raw(item_latest->m_next, out))
-                                return false;
-                        }
-                        if (item_flags & 4)
-                        {
-                            if (!item_latest->m_value.serialize_delta(item_reference->m_value, out))
-                                return false;
+                            serializers::serialize_raw(item_id, out);
+                            serializers::serialize_raw(item_flags, out);
+                            if (!out.ok()) return false;
+
+                            if (item_flags & 1)
+                            {
+                                if (!serializers::serialize_raw(item_latest->m_prev, out))
+                                    return false;
+                            }
+                            if (item_flags & 2)
+                            {
+                                if (!serializers::serialize_raw(item_latest->m_next, out))
+                                    return false;
+                            }
+                            if (item_flags & 4)
+                            {
+                                if (!item_latest->m_value.serialize_delta(item_reference->m_value, out))
+                                    return false;
+                            }
                         }
                     }
                 }
             }
+
             return out.ok();
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::deserialize_delta(const Vector<TYPE>& reference, bitstream::Reader& in)
+        bool Vector<TYPE>::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            uint8_t flags = 0;
-            if (!serializers::deserialize_raw(flags, in))
+            const Vector<TYPE>& reference = (const Vector<TYPE>&) element_reference;
+
+            bool value_changed;
+            if (!serializers::deserialize_boolean(value_changed, delta_bits))
                 return false;
 
-            ItemId head_id = m_array.empty() ? INVALID_ITEM_ID : m_array[0];
-
-            if (flags & 1)
+            if (value_changed)
             {
-                size_t items_added;
-                if (!serializers::deserialize_raw(items_added, in))
+                ItemId head_id = m_array.empty() ? INVALID_ITEM_ID : m_array[0];
+
+                bool values_added;
+                if (!serializers::deserialize_boolean(values_added, in))
                     return false;
 
-                for (size_t i = 0; i < items_added; ++i)
+                if (values_added)
                 {
-                    ItemId item_id;
-                    ItemId prev;
-                    ItemId next;
-                    serializers::deserialize_raw(item_id, in);
-                    serializers::deserialize_raw(prev, in);
-                    serializers::deserialize_raw(next, in);
-
-                    reserve(item_id + 1);
-
-                    Item* item = get_item(item_id);
-                    item->m_prev = prev;
-                    item->m_next = next;
-                    
-                    if (!item->m_value.deserialize_full(in))
+                    size_t items_added;
+                    if (!serializers::deserialize_raw(items_added, in))
                         return false;
 
-                    if (item->m_prev == INVALID_ITEM_ID)
+                    for (size_t i = 0; i < items_added; ++i)
                     {
-                        head_id = item_id;
-                    }
+                        ItemId item_id;
+                        ItemId prev;
+                        ItemId next;
+                        serializers::deserialize_raw(item_id, in);
+                        serializers::deserialize_raw(prev, in);
+                        serializers::deserialize_raw(next, in);
 
-                    std::list<ItemId>::iterator it = std::find(m_free.begin(), m_free.end(), item_id);
+                        reserve(item_id + 1);
 
-                    ZEN_ASSERT(it != m_free.end(), "item ", item_id, " was added, but couldn't be found in free list");
+                        Item* item = get_item(item_id);
+                        item->m_prev = prev;
+                        item->m_next = next;
 
-                    m_free.erase(it);
-                }
-            }
-
-            if (flags & 2)
-            {
-                size_t items_removed;
-                if(!serializers::deserialize_raw(items_removed, in))
-                    return false;
-
-                for (size_t i = 0; i < items_removed; ++i)
-                {
-                    ItemId item_id;
-                    if(!serializers::deserialize_raw(item_id, in))
-                        return false;
-
-                    Item* item = get_item(item_id);
-
-                    if (item_id == head_id)
-                    {
-                        head_id = INVALID_ITEM_ID;
-                    }
-
-                    item->m_prev = INVALID_ITEM_ID;
-                    item->m_next = INVALID_ITEM_ID;
-                    item->m_value = TYPE();
-
-                    ZEN_ASSERT(std::find(m_free.begin(), m_free.end(), item_id) == m_free.end(), "item ", item_id, " already found in free list");
-
-                    m_free.push_back(item_id);
-                }
-            }
-
-            if (flags & 4)
-            {
-                size_t items_modified;
-                if(!serializers::deserialize_raw(items_modified, in))
-                    return false;
-
-                for (size_t i = 0; i < items_modified; ++i)
-                {
-                    ItemId item_id;
-                    if (!serializers::deserialize_raw(item_id, in))
-                        return false;
-
-                    Item* item = get_item(item_id);
-                    const Item* item_reference = reference.get_item(item_id);
-
-                    uint8_t item_flags;
-                    serializers::deserialize_raw(item_flags, in);
-
-                    if (item_flags & 1)
-                    {
-                        if (!serializers::deserialize_raw(item->m_prev, in))
+                        if (!item->m_value.deserialize_full(in))
                             return false;
 
                         if (item->m_prev == INVALID_ITEM_ID)
                         {
-                            //ZEN_ASSERT( head_id  == INVALID_ITEM_ID, "item ", item_id, " set as head, but head ", head_id, "already found set" );
                             head_id = item_id;
                         }
-                    }
-                    if (item_flags & 2)
-                    {
-                        if (!serializers::deserialize_raw(item->m_next, in))
-                            return false;
-                    }
-                    if (item_flags & 4)
-                    {
-                        if (!item->m_value.deserialize_delta(item_reference->m_value, in))
-                            return false;
+
+                        std::list<ItemId>::iterator it = std::find(m_free.begin(), m_free.end(), item_id);
+
+                        ZEN_ASSERT(it != m_free.end(), "item ", item_id, " was added, but couldn't be found in free list");
+
+                        m_free.erase(it);
                     }
                 }
+
+
+                bool values_removed;
+                if (!serializers::deserialize_boolean(values_removed, in))
+                    return false;
+
+                if (values_removed)
+                {
+                    size_t items_removed;
+                    if (!serializers::deserialize_raw(items_removed, in))
+                        return false;
+
+                    for (size_t i = 0; i < items_removed; ++i)
+                    {
+                        ItemId item_id;
+                        if (!serializers::deserialize_raw(item_id, in))
+                            return false;
+
+                        Item* item = get_item(item_id);
+
+                        if (item_id == head_id)
+                        {
+                            head_id = INVALID_ITEM_ID;
+                        }
+
+                        item->m_prev = INVALID_ITEM_ID;
+                        item->m_next = INVALID_ITEM_ID;
+                        item->m_value = TYPE();
+
+                        ZEN_ASSERT(std::find(m_free.begin(), m_free.end(), item_id) == m_free.end(), "item ", item_id, " already found in free list");
+
+                        m_free.push_back(item_id);
+                    }
+                }
+
+                bool values_modified;
+                if (!serializers::deserialize_boolean(values_modified, in))
+                    return false;
+
+                if (values_modified)
+                {
+                    size_t items_modified;
+                    if (!serializers::deserialize_raw(items_modified, in))
+                        return false;
+
+                    for (size_t i = 0; i < items_modified; ++i)
+                    {
+                        ItemId item_id;
+                        if (!serializers::deserialize_raw(item_id, in))
+                            return false;
+
+                        Item* item = get_item(item_id);
+                        const Item* item_reference = reference.get_item(item_id);
+
+                        uint8_t item_flags;
+                        serializers::deserialize_raw(item_flags, in);
+
+                        if (item_flags & 1)
+                        {
+                            if (!serializers::deserialize_raw(item->m_prev, in))
+                                return false;
+
+                            if (item->m_prev == INVALID_ITEM_ID)
+                            {
+                                //ZEN_ASSERT( head_id  == INVALID_ITEM_ID, "item ", item_id, " set as head, but head ", head_id, "already found set" );
+                                head_id = item_id;
+                            }
+                        }
+                        if (item_flags & 2)
+                        {
+                            if (!serializers::deserialize_raw(item->m_next, in))
+                                return false;
+                        }
+                        if (item_flags & 4)
+                        {
+                            if (!item->m_value.deserialize_delta(item_reference->m_value, in))
+                                return false;
+                        }
+                    }
+                }
+
+                // rebuild array.
+                m_array.clear();
+
+                ItemId item_id = head_id;
+
+                while (item_id != INVALID_ITEM_ID)
+                {
+                    m_array.push_back(item_id);
+
+                    Item* item = get_item(item_id);
+
+                    item_id = item->m_next;
+                }
             }
-
-            // rebuild array.
-            m_array.clear();
-
-            ItemId item_id = head_id;
-
-            while (item_id != INVALID_ITEM_ID)
-            {
-                m_array.push_back(item_id);
-
-                Item* item = get_item(item_id);
-
-                item_id = item->m_next;
-            }
-
             return in.ok();
         }
 
@@ -364,8 +389,10 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::operator == (const Vector<TYPE>& rhs) const
+        bool Vector<TYPE>::operator == (const Element& element_rhs) const
         {
+            const Vector<TYPE>& rhs = (const Vector<TYPE>&) element_rhs;
+
             if (size() != rhs.size())
                 return false;
 
@@ -387,8 +414,10 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::operator != (const Vector<TYPE>& rhs) const
+        bool Vector<TYPE>::operator != (const Element& element_rhs) const
         {
+            const Vector<TYPE>& rhs = (const Vector<TYPE>&) element_rhs;
+            
             return !((*this) == rhs);
         }
 

@@ -72,19 +72,16 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool FloatRanged<TYPE>::serialize_delta(const FloatRanged& reference, bitstream::Writer& out) const
+        bool FloatRanged<TYPE>::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
+            const FloatRanged<TYPE>& reference = (const FloatRanged<TYPE>&) element_reference;
+
             bool attributes_changed =   (m_value_min != reference.m_value_min) || 
                                         (m_value_max != reference.m_value_max) ||
                                         (m_num_bits != reference.m_num_bits);
 
-            bool value_changed      =   (m_value != reference.m_value);
-
-            if (!attributes_changed && !value_changed)
+            if (!zen::serializers::serialize_boolean(attributes_changed, delta_bits))
                 return false;
-
-            zen::serializers::serialize_boolean(value_changed, out);
-            zen::serializers::serialize_boolean(attributes_changed, out);
 
             if (attributes_changed)
             {
@@ -92,70 +89,98 @@ namespace zen
                 bool value_max_changed = (m_value_max != reference.m_value_max);
                 bool num_bits_changed  = (m_num_bits  != reference.m_num_bits);
 
-                zen::serializers::serialize_boolean(value_min_changed, out);
-                zen::serializers::serialize_boolean(value_max_changed, out);
-                zen::serializers::serialize_boolean(num_bits_changed, out);
+                if (!zen::serializers::serialize_boolean(value_min_changed, delta_bits))
+                    return false;
+
+                if (!zen::serializers::serialize_boolean(value_max_changed, delta_bits))
+                    return false;
+
+                if (!zen::serializers::serialize_boolean(num_bits_changed, delta_bits))
+                    return false;
 
                 if (value_min_changed)
                 {
-                    zen::serializers::serialize_raw(m_value_min, out);
+                    if (!zen::serializers::serialize_raw(m_value_min, out))
+                        return false;
                 }
 
                 if (value_max_changed)
                 {
-                    zen::serializers::serialize_raw(m_value_max, out);
+                    if(!zen::serializers::serialize_raw(m_value_max, out))
+                        return false;
                 }
 
                 if (num_bits_changed)
                 {
-                    zen::serializers::serialize_raw(m_num_bits, out);
+                    if(!zen::serializers::serialize_raw(m_num_bits, out))
+                        return false;
                 }
             }
 
+            bool value_changed = (m_value != reference.m_value);
+
+            if (!zen::serializers::serialize_boolean(value_changed, delta_bits))
+                return false;
+
             if (value_changed)
             {
-                zen::serializers::serialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, out);
+                if (!zen::serializers::serialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, out))
+                    return false;
             }
 
             return out.ok();
         }
 
         template<typename TYPE>
-        bool FloatRanged<TYPE>::deserialize_delta(const FloatRanged& reference, bitstream::Reader& in)
+        bool FloatRanged<TYPE>::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
+            const FloatRanged<TYPE>& reference = (const FloatRanged<TYPE>&) element_reference;
+
             bool attributes_changed;
-            bool value_changed;
-            zen::serializers::deserialize_boolean(value_changed, in);
-            zen::serializers::deserialize_boolean(attributes_changed, in);
+            if (!zen::serializers::deserialize_boolean(attributes_changed, delta_bits))
+                return false;
 
             if (attributes_changed)
             {
                 bool value_min_changed;
+                if (!zen::serializers::deserialize_boolean(value_min_changed, in))
+                    return false;
+
                 bool value_max_changed;
+                if (!zen::serializers::deserialize_boolean(value_max_changed, in))
+                    return false;
+
                 bool num_bits_changed;
-                zen::serializers::deserialize_boolean(value_min_changed, in);
-                zen::serializers::deserialize_boolean(value_max_changed, in);
-                zen::serializers::deserialize_boolean(num_bits_changed, in);
+                if (!zen::serializers::deserialize_boolean(num_bits_changed, in))
+                    return false;
 
                 if (value_min_changed)
                 {
-                    zen::serializers::deserialize_raw(m_value_min, in);
+                    if (!zen::serializers::deserialize_raw(m_value_min, in))
+                        return false;
                 }
 
                 if (value_max_changed)
                 {
-                    zen::serializers::deserialize_raw(m_value_max, in);
+                    if (!zen::serializers::deserialize_raw(m_value_max, in))
+                        return false;
                 }
 
                 if (num_bits_changed)
                 {
-                    zen::serializers::deserialize_raw(m_num_bits, in);
+                    if (!zen::serializers::deserialize_raw(m_num_bits, in))
+                        return false;
                 }
             }
 
+            bool value_changed;
+            if (!zen::serializers::deserialize_boolean(value_changed, delta_bits))
+                return false;
+
             if (value_changed)
             {
-                zen::serializers::deserialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, in);
+                if (!zen::serializers::deserialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, in))
+                    return false;
             }
 
             return in.ok();
@@ -238,8 +263,10 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool FloatRanged<TYPE>::operator == (const FloatRanged& rhs) const
+        bool FloatRanged<TYPE>::operator == (const Element& element_rhs_rhs) const
         {
+            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+
             if (m_value != rhs.m_value)
                 return false;
 
@@ -256,14 +283,18 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool FloatRanged<TYPE>::operator != (const FloatRanged& rhs) const
+        bool FloatRanged<TYPE>::operator != (const Element& element_rhs) const
         {
+            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+
             return !((*this) == rhs);
         }
 
         template<typename TYPE>
-        FloatRanged<TYPE>& FloatRanged<TYPE>::operator = (const FloatRanged<TYPE>& rhs)
+        Element& FloatRanged<TYPE>::operator = (const Element& element_rhs)
         {
+            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+
             set_value(rhs.m_value);
 
             set_value_min(rhs.m_value_min);
