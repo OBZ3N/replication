@@ -11,10 +11,11 @@ namespace zen
     namespace core
     {
         template<typename TYPE>
-        Vector<TYPE>::Vector(size_t capcity = 0)
-            : m_array(capcity)
-            , m_pool(capcity)
-        {}
+        Vector<TYPE>::Vector(size_t capacity = 0)
+            : m_array(capacity)
+            , m_pool(capacity)
+        {
+        }
 
         template<typename TYPE>
         Vector<TYPE>::~Vector()
@@ -264,6 +265,8 @@ namespace zen
             {
                 m_free.push_back(i);
             }
+
+            on_pool_resized();
         }
 
         template<typename TYPE>
@@ -315,6 +318,7 @@ namespace zen
             m_pool = rhs.m_pool;
             
             on_vector_touched();
+            on_pool_resized();
             
             return *this;
         }
@@ -339,6 +343,7 @@ namespace zen
             m_pool.clear();
 
             on_vector_touched();
+            on_pool_resized();
         }
 
         template<typename TYPE>

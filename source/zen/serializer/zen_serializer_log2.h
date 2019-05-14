@@ -21,5 +21,12 @@ namespace zen
             if (value >= 0x1) { value >>= 1; num_bits += 1; }
             return num_bits;
         }
+
+        inline size_t num_bits_required(size_t value_min, size_t value_max)
+        {
+            ZEN_ASSERT(value_max >= value_min, "value_max(", value_max, ") < value_min(", value_min, ").");
+
+            return num_bits_required(value_max - value_min);
+        }
     }
 }

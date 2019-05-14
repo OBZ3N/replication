@@ -60,8 +60,7 @@ namespace zen
 
         inline bool Boolean::serialize_full(bitstream::Writer& out) const
         {
-            zen::serializers::serialize_boolean(m_value, out);
-            return out.ok();
+            return zen::serializers::serialize_boolean(m_value, out);
         }
 
         inline bool Boolean::deserialize_full(bitstream::Reader& in)
@@ -79,9 +78,8 @@ namespace zen
         {
             const Boolean& element = (const Boolean&)element_reference;
 
-            bool value_changed = ((*this) != reference);
-            
-            if (!serializers::serialize_boolean(is_delta, delta_bits))
+            bool value_changed = ((*this) != reference);            
+            if (!serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 
             if (value_changed)
@@ -97,8 +95,8 @@ namespace zen
         {
             const Boolean& element = (const Boolean&)element_reference;
 
-            bool is_delta;
-            if(!zen::serializers::deserialize_boolean(is_delta, delta_bits))
+            bool value_changed;
+            if(!zen::serializers::deserialize_boolean(value_changed, delta_bits))
                 return false;
 
             if (value_changed)

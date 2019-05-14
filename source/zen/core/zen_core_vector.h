@@ -50,10 +50,11 @@ namespace zen
 
         protected:
             virtual void on_vector_touched() {}
+            virtual void on_pool_resized() {}
 
 #undef max
-            typedef uint32_t ItemId;
-            static const ItemId INVALID_ITEM_ID = (uint32_t)(-1);
+            typedef int32_t ItemId;
+            static const ItemId INVALID_ITEM_ID = (int32_t)(-1);
 
             struct Item
             {

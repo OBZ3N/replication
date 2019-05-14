@@ -51,7 +51,6 @@ namespace zen
             const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
 
             bool value_changed = (m_value != reference.m_value);
-
             if (!serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 

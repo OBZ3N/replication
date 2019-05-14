@@ -49,7 +49,6 @@ namespace zen
             const String& reference = (const String&)element_reference;
 
             bool value_changed = (m_value != reference.m_value);
-
             if (!serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 

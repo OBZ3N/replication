@@ -27,6 +27,7 @@ namespace zen
             Element& operator = (const Element& rhs) override;
 
         protected:
+            void on_pool_resized() override;
             void on_vector_touched() override;
 
         private:
@@ -36,6 +37,12 @@ namespace zen
                 std::vector<ItemId>& items_added,
                 std::vector<ItemId>& items_removed,
                 std::vector<ItemId>& items_modified);
+
+            bool serialize_index(const ItemId& item_id, bitstream::Writer& out) const;
+            bool deserialize_index(ItemId& item_id, bitstream::Reader& in);
+
+            ItemId m_index_value_max;
+            size_t m_index_value_bits;
         };
     }
 }

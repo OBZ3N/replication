@@ -47,19 +47,18 @@ namespace zen
         bool FloatRanged<TYPE>::deserialize_full(bitstream::Reader& in)
         {
             TYPE value;
-            TYPE value_min;
-            TYPE value_max;
-            size_t num_bits;
-
             if (!zen::serializers::deserialize_raw(value, in))
                 return false;
 
+            TYPE value_min;
             if (!zen::serializers::deserialize_raw(value_min, in))
                 return false;
 
+            TYPE value_max;
             if (!zen::serializers::deserialize_raw(value_max, in))
                 return false;
 
+            size_t num_bits;
             if (!zen::serializers::deserialize_raw(num_bits, in))
                 return false;
 
@@ -79,23 +78,21 @@ namespace zen
             bool attributes_changed =   (m_value_min != reference.m_value_min) || 
                                         (m_value_max != reference.m_value_max) ||
                                         (m_num_bits != reference.m_num_bits);
-
             if (!zen::serializers::serialize_boolean(attributes_changed, delta_bits))
                 return false;
 
             if (attributes_changed)
             {
                 bool value_min_changed = (m_value_min != reference.m_value_min);
+                if (!zen::serializers::serialize_boolean(value_min_changed, out))
+                    return false;
+
                 bool value_max_changed = (m_value_max != reference.m_value_max);
-                bool num_bits_changed  = (m_num_bits  != reference.m_num_bits);
-
-                if (!zen::serializers::serialize_boolean(value_min_changed, delta_bits))
+                if (!zen::serializers::serialize_boolean(value_max_changed, out))
                     return false;
 
-                if (!zen::serializers::serialize_boolean(value_max_changed, delta_bits))
-                    return false;
-
-                if (!zen::serializers::serialize_boolean(num_bits_changed, delta_bits))
+                bool num_bits_changed = (m_num_bits != reference.m_num_bits);
+                if (!zen::serializers::serialize_boolean(num_bits_changed, out))
                     return false;
 
                 if (value_min_changed)
@@ -118,7 +115,6 @@ namespace zen
             }
 
             bool value_changed = (m_value != reference.m_value);
-
             if (!zen::serializers::serialize_boolean(value_changed, delta_bits))
                 return false;
 
