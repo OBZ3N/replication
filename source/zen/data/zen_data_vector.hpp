@@ -140,10 +140,10 @@ namespace zen
                     for (ItemId item_id : items_added)
                     {
                         const Item* item = get_item(item_id);
-                        serialize_index(item_id, out);
-                        serialize_index(item->m_prev, out);
-                        serialize_index(item->m_next, out);
-
+                        serializers::serialize_integer_ranged(item_id,      INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
+                        serializers::serialize_integer_ranged(item->m_prev, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
+                        serializers::serialize_integer_ranged(item->m_next, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
+                        
                         TYPE reference;
                         item->m_value.serialize_delta(reference, out, out);
                     }
@@ -156,7 +156,7 @@ namespace zen
 
                     for (ItemId item_id : items_removed)
                     {
-                        serialize_index(item_id, out);
+                        serializers::serialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
                     }
                 }
 
@@ -168,29 +168,30 @@ namespace zen
                     for (ItemId item_id : items_modified)
                     {
                         const Item* item_latest = get_item(item_id);
-                        const Item* item_reference = reference.get_item(item_id);
-
+                        
                         bool prev_changed  = (item_latest->m_prev != item_reference->m_prev);
                         bool next_changed  = (item_latest->m_next != item_reference->m_next);
                         bool value_changed = (item_latest->m_value != item_reference->m_value);
 
-                        serialize_index(item_id, out);
+                        serializers::serialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
                         serializers::serialize_boolean(value_changed, out); // high-frequency.
                         serializers::serialize_boolean(prev_changed, delta_bits); // low-frequency
                         serializers::serialize_boolean(next_changed, delta_bits); // low-frequency
 
                         if (prev_changed)
                         {
-                            serialize_index(item_latest->m_prev, out);
+                            serializers::serialize_integer_ranged(item_latest->m_prev, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
                         }
 
                         if (next_changed)
                         {
-                            serialize_index(item_latest->m_next, out);
+                            serializers::serialize_integer_ranged(item_latest->m_next, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
                         }
 
                         if(value_changed)
                         {
+                            const Item* item_reference = reference.get_item(item_id);
+
                             item_latest->m_value.serialize_delta(item_reference->m_value, out);
                         }
                     }
@@ -204,42 +205,49 @@ namespace zen
         bool Vector<TYPE>::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
             const Vector<TYPE>& reference = (const Vector<TYPE>&) element_reference;
-
+            
             bool value_changed;
-            if (!serializers::deserialize_boolean(value_changed, delta_bits))
-                return false;
+            serializers::deserialize_boolean(value_changed, delta_bits);
 
             if (value_changed)
             {
                 ItemId head_id = m_array.empty() ? INVALID_ITEM_ID : m_array[0];
 
-                bool values_added;
-                if (!serializers::deserialize_boolean(values_added, in))
-                    return false;
+                bool index_value_max_changed;
+                serializers::deserialize_boolean(index_value_max_changed, delta_bits);
 
+                if (index_value_max_changed)
+                {
+                    // pool was resized. All indices ranges will change.
+                    serializers::deserialize_size(m_index_value_max, in);
+                    m_index_value_bits = zen::serializers::num_bits_required(INVALID_ITEM_ID, m_index_value_max);
+                    reserve(m_index_value_max);
+                }
+
+                bool values_added;
+                serializers::deserialize_boolean(values_added, in);
                 if (values_added)
                 {
                     size_t items_added;
-                    if (!serializers::deserialize_size(items_added, in))
-                        return false;
-
+                    serializers::deserialize_size(items_added, in);
+                    if (!in.ok()) return false;
+                    
                     for (size_t i = 0; i < items_added; ++i)
                     {
                         ItemId item_id;
                         ItemId prev;
                         ItemId next;
-                        serializers::deserialize_raw(item_id, in);
-                        serializers::deserialize_raw(prev, in);
-                        serializers::deserialize_raw(next, in);
-
-                        reserve(item_id + 1);
+                        serializers::deserialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
+                        serializers::deserialize_integer_ranged(prev, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
+                        serializers::deserialize_integer_ranged(next, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
 
                         Item* item = get_item(item_id);
                         item->m_prev = prev;
                         item->m_next = next;
 
-                        if (!item->m_value.deserialize_full(in))
-                            return false;
+                        TYPE reference;
+                        item->m_value.deserialize_delta(reference, in, delta_bits);
+                        if (!in.ok()) return false;
 
                         if (item->m_prev == INVALID_ITEM_ID)
                         {
@@ -254,22 +262,18 @@ namespace zen
                     }
                 }
 
-
                 bool values_removed;
-                if (!serializers::deserialize_boolean(values_removed, in))
-                    return false;
-
+                serializers::deserialize_boolean(values_removed, in);
                 if (values_removed)
                 {
                     size_t items_removed;
-                    if (!serializers::deserialize_raw(items_removed, in))
-                        return false;
+                    serializers::deserialize_size(items_removed, in);
+                    if (!in.ok()) return false;
 
                     for (size_t i = 0; i < items_removed; ++i)
                     {
                         ItemId item_id;
-                        if (!serializers::deserialize_raw(item_id, in))
-                            return false;
+                        serializers::deserialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, in);
 
                         Item* item = get_item(item_id);
 
@@ -289,31 +293,30 @@ namespace zen
                 }
 
                 bool values_modified;
-                if (!serializers::deserialize_boolean(values_modified, in))
-                    return false;
-
+                serializers::deserialize_boolean(values_modified, in);
                 if (values_modified)
                 {
                     size_t items_modified;
-                    if (!serializers::deserialize_raw(items_modified, in))
-                        return false;
+                    serializers::deserialize_size(items_modified, in);
+                    if (!in.ok()) return false;
 
                     for (size_t i = 0; i < items_modified; ++i)
                     {
                         ItemId item_id;
-                        if (!serializers::deserialize_raw(item_id, in))
-                            return false;
+                        bool prev_changed;
+                        bool next_changed;
+                        bool value_changed;
+
+                        serializers::deserialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, in);
+                        serializers::deserialize_boolean(value_changed, in); // high-frequency.
+                        serializers::deserialize_boolean(prev_changed, delta_bits); // low-frequency
+                        serializers::deserialize_boolean(next_changed, delta_bits); // low-frequency
 
                         Item* item = get_item(item_id);
-                        const Item* item_reference = reference.get_item(item_id);
 
-                        uint8_t item_flags;
-                        serializers::deserialize_raw(item_flags, in);
-
-                        if (item_flags & 1)
+                        if (prev_changed)
                         {
-                            if (!serializers::deserialize_raw(item->m_prev, in))
-                                return false;
+                            serializers::deserialize_integer_ranged(item->m_prev, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, in);
 
                             if (item->m_prev == INVALID_ITEM_ID)
                             {
@@ -321,16 +324,21 @@ namespace zen
                                 head_id = item_id;
                             }
                         }
-                        if (item_flags & 2)
+
+                        if (next_changed)
                         {
-                            if (!serializers::deserialize_raw(item->m_next, in))
-                                return false;
+                            serializers::deserialize_integer_ranged(item->m_next, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, in);
                         }
-                        if (item_flags & 4)
+
+                        if (value_changed)
                         {
-                            if (!item->m_value.deserialize_delta(item_reference->m_value, in))
-                                return false;
+                            const Item* item_reference = reference.get_item(item_id);
+
+                            item_latest->m_value.serialize_delta(item_reference->m_value, out);
                         }
+
+                        if (!in.ok()) 
+                            return false;
                     }
                 }
 
@@ -434,18 +442,6 @@ namespace zen
         void Vector<TYPE>::on_vector_touched()
         {
             set_touched(true);
-        }
-
-        template<typename TYPE>
-        bool Vector<TYPE>::serialize_index(const ItemId& item_id, bitstream::Writer& out) const
-        {
-            return zen::serializers::serialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, out);
-        }
-
-        template<typename TYPE>
-        bool Vector<TYPE>::deserialize_index(ItemId& item_id, bitstream::Reader& in)
-        {
-            return zen::serializers::deserialize_integer_ranged(item_id, INVALID_ITEM_ID, m_index_value_max, m_index_value_bits, in);
         }
     }
 }

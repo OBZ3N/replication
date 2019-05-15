@@ -9,6 +9,9 @@ namespace zen
 {
     namespace serializers
     {
+        constexpr uint64_t serialize_size_bitcount = uint64_t(7);
+        constexpr uint64_t serialize_size_bitmask = uint64_t((1 << serialize_size_bitcount)-1);
+
         template<typename TYPE>
         bool serialize_size(const TYPE& value, bitstream::Writer& out)
         {
@@ -16,15 +19,15 @@ namespace zen
 
             do
             {
-                uint8_t chunk = uint8_t(value & 255);
+                uint64_t chunk = core::convert_to_little_endian(uint64_t(value) & serialize_size_bitmask);
 
-                value >>= 8;
+                value >>= serialize_size_bitcount;
 
-                bool remaining = (value != 0);
+                uint8_t remaining = (value != 0) ? 1 : 0;
 
-                serialize_raw(chunk, out);
+                out.write(&chunk, serialize_size_bitcount);
 
-                serialize_boolean(remaining, out);
+                out.write(&remaining, 1);
             }
             while (value != 0);
 
@@ -36,26 +39,26 @@ namespace zen
         {
             value = 0;
 
-            size_t shift = 0;
+            uint64_t shift = 0;
 
-            uint8_t chunk;
+            uint64_t chunk;
 
-            bool remaining;
+            uint8_t remaining;
 
             do
             {
-                deserialize_raw(chunk, in);
+                in.read(&chunk, serialize_size_bitcount);
 
-                deserialize_boolean(remaining, in);
+                in.read(&remaining, 1);
 
                 if (!in.ok())
                     return false;
 
-                value |= ((TYPE)chunk << (TYPE)shift);
+                value |= TYPE(core::convert_from_little_endian(chunk) << shift);
 
-                shift += 8;
+                shift += serialize_size_bitcount;
             }
-            while (remaining);
+            while (remaining != 0);
 
             return in.ok();
         }
