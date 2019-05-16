@@ -265,8 +265,6 @@ namespace zen
             {
                 m_free.push_back(i);
             }
-
-            on_pool_resized();
         }
 
         template<typename TYPE>
@@ -318,7 +316,6 @@ namespace zen
             m_pool = rhs.m_pool;
             
             on_vector_touched();
-            on_pool_resized();
             
             return *this;
         }
@@ -343,7 +340,6 @@ namespace zen
             m_pool.clear();
 
             on_vector_touched();
-            on_pool_resized();
         }
 
         template<typename TYPE>

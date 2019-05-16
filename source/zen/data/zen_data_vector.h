@@ -27,10 +27,11 @@ namespace zen
             Element& operator = (const Element& rhs) override;
 
         protected:
-            void on_pool_resized() override;
             void on_vector_touched() override;
 
         private:
+            // calculate the difference in two vectors,
+            // and building lists of items to add, items to remove, and items that have been modified.
             static void calculate_delta(
                 const Vector& value,
                 const Vector& reference,
@@ -38,8 +39,28 @@ namespace zen
                 std::vector<ItemId>& items_removed,
                 std::vector<ItemId>& items_modified);
 
-            ItemId m_index_value_max;
-            size_t m_index_value_bits;
+            //-----------------------------------------------------------------------------
+            // compressing item id's to number of bits required to serialize them.
+            // this will optimize the delta compression of items that are being added, removed, or modified.
+            //-----------------------------------------------------------------------------
+        private:
+            // i.e. item ids cannot be greater than the actual item pool size, 
+            // or lower than INVALID_ITEM_ID, which is (-1).
+            // And item ids cannot require more than 31 bits (cannot have vectors of size > 2^31 elements).
+            static constexpr sc_item_id_max_bits = 31;
+
+            // number of bits required to serialize item ids (the number of bits required to serialize the range if ids [INVALID_ITEM_ID, m_pool.size()[).
+            void calculate_item_id_num_bits();
+
+            // maximum value an item id can have ((1 << m_item_id_num_bits) - 1), which is the power of two higher than m_pool.size().
+            TYPE calculate_item_id_max() const;
+
+            // helpers that will serialize / deserialize item ids.
+            bool serialize_item_id(const ItemId& item_id, bitstream::Writer& out);
+            bool deserialize_item_id(ItemId& item_id, bitstream::Writer& out) const;
+
+            // number of bits required to serialize item ids (roughly speaking, we round up to the power of two higher than the pool size, not forgetting the value INVALID_ITEM_ID).
+            uint8_t m_item_id_num_bits;
         };
     }
 }

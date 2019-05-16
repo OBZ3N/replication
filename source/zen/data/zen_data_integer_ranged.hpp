@@ -32,14 +32,9 @@ namespace zen
         template<typename TYPE>
         bool IntegerRanged<TYPE>::serialize_full(bitstream::Writer& out) const
         {
-            if (!zen::serializers::serialize_raw(m_value, out))
-                return false;
-
-            if (!zen::serializers::serialize_raw(m_value_min, out))
-                return false;
-
-            if (!zen::serializers::serialize_raw(m_value_max, out))
-                return false;
+            zen::serializers::serialize_raw(m_value, out);
+            zen::serializers::serialize_raw(m_value_min, out);
+            zen::serializers::serialize_raw(m_value_max, out);
 
             return out.ok();
         }
@@ -48,21 +43,18 @@ namespace zen
         bool IntegerRanged<TYPE>::deserialize_full(bitstream::Reader& in)
         {
             TYPE value;
-            if (!zen::serializers::deserialize_raw(value, in))
-                return false;
-
             TYPE value_min;
-            if (!zen::serializers::deserialize_raw(value_min, in))
-                return false;
-
             TYPE value_max;
-            if (!zen::serializers::deserialize_raw(value_max, in))
-                return false;
+            zen::serializers::deserialize_raw(value, in);
+            zen::serializers::deserialize_raw(value_min, in);
+            zen::serializers::deserialize_raw(value_max, in);
 
-            set_value(value);
-            set_value_min(value_min);
-            set_value_max(value_max);
-
+            if (in.ok())
+            {
+                set_value(value);
+                set_value_min(value_min);
+                set_value_max(value_max);
+            }
             return in.ok();
         }
 
@@ -71,43 +63,35 @@ namespace zen
         {
             const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&)element_reference;
 
-            bool attributes_changed =   (m_value_min != reference.m_value_min) ||
-                                        (m_value_max != reference.m_value_max);
-            if (!zen::serializers::serialize_boolean(attributes_changed, delta_bits))
-                return false;
+            bool value_changed      = (m_value != reference.m_value);
+            bool attributes_changed = (m_value_min != reference.m_value_min) ||
+                                      (m_value_max != reference.m_value_max);
+
+            zen::serializers::serialize_boolean(value_changed, delta_bits);
+            zen::serializers::serialize_boolean(attributes_changed, delta_bits);
 
             if (attributes_changed)
             {
                 bool value_min_changed = (m_value_min != reference.m_value_min);
                 bool value_max_changed = (m_value_max != reference.m_value_max);
 
-                if (!zen::serializers::serialize_boolean(value_min_changed, out))
-                    return false;
-
-                if (!zen::serializers::serialize_boolean(value_max_changed, out))
-                    return false;
-
+                zen::serializers::serialize_boolean(value_min_changed, out);
+                zen::serializers::serialize_boolean(value_max_changed, out);
+                
                 if (value_min_changed)
                 {
-                    if (!zen::serializers::serialize_raw(m_value_min, out))
-                        return false;
+                    zen::serializers::serialize_raw(m_value_min, out);
                 }
 
                 if (value_max_changed)
                 {
-                    if (!zen::serializers::serialize_raw(m_value_max, out))
-                        return false;
+                    zen::serializers::serialize_raw(m_value_max, out);
                 }
             }
 
-            bool value_changed = (m_value != reference.m_value);
-            if (!zen::serializers::serialize_boolean(value_changed, delta_bits))
-                return false;
-
             if (value_changed)
             {
-                if (!zen::serializers::serialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, out))
-                    return false;
+                zen::serializers::serialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, out);
             }
 
             return out.ok();
@@ -119,42 +103,43 @@ namespace zen
             const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&)element_reference;
 
             bool attributes_changed;
-            if (!zen::serializers::deserialize_boolean(attributes_changed, delta_bits))
-                return false;
+            bool value_changed;
+
+            zen::serializers::deserialize_boolean(value_changed, delta_bits);
+            zen::serializers::deserialize_boolean(attributes_changed, delta_bits);
 
             if (attributes_changed)
             {
                 bool value_min_changed;
-                if (!zen::serializers::deserialize_boolean(value_min_changed, in))
-                    return false;
-                
+                bool value_max_changed;
+                zen::serializers::deserialize_boolean(value_min_changed, in);
+                zen::serializers::deserialize_boolean(value_max_changed, in);
+
                 if (value_min_changed)
                 {
-                    if (!zen::serializers::deserialize_raw(m_value_min, in))
-                        return false;
+                    TYPE value_min;
+                    zen::serializers::deserialize_raw(value_min, in);
+                    if (in.ok())
+                        set_value_min(value_min);
                 }
-
-                bool value_max_changed;
-                if (!zen::serializers::deserialize_boolean(value_max_changed, in))
-                    return false;
 
                 if (value_max_changed)
                 {
-                    if (!zen::serializers::deserialize_raw(m_value_max, in))
-                        return false;
+                    TYPE value_max;
+                    zen::serializers::deserialize_raw(value_max, in);
+                    if (in.ok())
+                        set_value_max(value_max);
                 }
 
                 m_num_bits = zen::serializers::num_bits_required(m_value_min, m_value_max);
             }
 
-            bool value_changed;
-            if (!zen::serializers::deserialize_boolean(value_changed, delta_bits))
-                return false;
-
             if (value_changed)
             {
-                if (!zen::serializers::deserialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, in))
-                    return false;
+                TYPE value;
+                zen::serializers::deserialize_float_ranged(value, m_value_min, m_value_max, m_num_bits, in);
+                if (in.ok())
+                    set_value(value);
             }
 
             ZEN_ASSERT(m_value_max > m_value_min, "value_max(", m_value_max, ") <= value_min(", m_value_min, ").");

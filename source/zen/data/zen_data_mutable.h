@@ -12,7 +12,7 @@ namespace zen
         class Mutable : public Element
         {
         public:
-            Mutable(Factory* factory, uint32_t type_id, Element& element);
+            Mutable(Factory* factory, TypeId type_id, Element& element);
             Mutable(Factory* factory);
             Mutable();
             ~Mutable();
@@ -31,7 +31,7 @@ namespace zen
             bool is_null() const { return m_element == nullptr; }
 
             Factory* m_factory;
-            uint32_t m_element_type_id;
+            TypeId   m_element_type_id;
             Element* m_element;
             bool     m_is_reference;
         };

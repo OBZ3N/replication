@@ -12,25 +12,29 @@ namespace zen
 {
     namespace data
     {
+        typedef int32_t TypeId;
+
         class Factory
         {
         public:
+            static constexpr INVALID_TYPE_ID = (TypeId)(-1);
+
             Factory();
 
             template<typename Type>
-            uint32_t register_element_type(const char* type_name);
+            TypeId register_element_type(const char* type_name);
 
             template<typename Type>
-            uint32_t  get_element_type_id() const;
+            TypeId get_element_type_id() const;
 
-            const char* get_type_name(uint32_t type_id) const;
-            uint32_t    get_type_id(const char* type_name) const;
+            const char* get_type_name(TypeId type_id) const;
+            TypeId get_type_id(const char* type_name) const;
 
-            uint32_t  get_num_types() const;
-            Element* construct_element(uint32_t type_id) const;
+            size_t get_num_types() const;
+            Element* construct_element(TypeId type_id) const;
 
-            bool serialize_type_id(uint32_t type_id, zen::bitstream::Writer& out);
-            bool deserialize_type_id(uint32_t& type_id, zen::bitstream::Reader& in);
+            bool serialize_type_id(TypeId type_id, zen::bitstream::Writer& out);
+            bool deserialize_type_id(TypeId& type_id, zen::bitstream::Reader& in);
 
         private:
             template<typename DerivedType> 
@@ -39,15 +43,15 @@ namespace zen
             struct Item
             {
                 const char*                 m_type_name;
-                uint32_t                    m_type_id;
+                TypeId                      m_type_id;
                 std::function<Element*()>   m_constructor_func;
             };
 
             std::unordered_map<std::string, Item>   m_type_table;
             std::vector<Item>                       m_type_registry;
 
-            uint32_t m_num_type_ids;
-            uint32_t m_num_bits;
+            size_t m_type_id_max;
+            size_t m_type_id_num_bits;
         };
     }
 }
@@ -59,7 +63,7 @@ namespace zen
         template<typename Type>
         struct TypeRegistrar
         {
-            static uint32_t s_type_id;
+            static TypeId s_type_id;
         };
     }
 }

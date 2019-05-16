@@ -50,7 +50,6 @@ namespace zen
 
         protected:
             virtual void on_vector_touched() {}
-            virtual void on_pool_resized() {}
 
 #undef max
             typedef int32_t ItemId;

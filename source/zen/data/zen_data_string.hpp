@@ -36,10 +36,10 @@ namespace zen
         inline bool String::deserialize_full(bitstream::Reader& in)
         {
             std::string value;
-            if (!zen::serializers::deserialize_string(value, in))
-                return false;
+            zen::serializers::deserialize_string(value, in);
 
-            set_value(value);
+            if(in.ok())
+                set_value(value);
 
             return in.ok();
         }
@@ -49,13 +49,11 @@ namespace zen
             const String& reference = (const String&)element_reference;
 
             bool value_changed = (m_value != reference.m_value);
-            if (!serializers::serialize_boolean(value_changed, delta_bits))
-                return false;
+            serializers::serialize_boolean(value_changed, delta_bits);
 
             if (value_changed)
             {
-                if (!zen::serializers::serialize_string(m_value, out))
-                    return false;
+                zen::serializers::serialize_string(m_value, out);
             }
 
             return out.ok();
@@ -66,14 +64,16 @@ namespace zen
             const String& reference = (const String&) element_reference;
             
             bool value_changed;
-            if (!serializers::deserialize_boolean(value_changed, delta_bits))
-                return false;
+            serializers::deserialize_boolean(value_changed, delta_bits);
 
             if (value_changed)
             {
-                if (!zen::serializers::deserialize_string(m_value, in))
-                    return false;
+                std::string value;
+                zen::serializers::deserialize_string(value, in);
+                if (in.ok())
+                    set_value(value);
             }
+
             return in.ok();
         }
 

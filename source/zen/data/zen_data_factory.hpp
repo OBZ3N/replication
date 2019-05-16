@@ -8,31 +8,31 @@ namespace zen
     namespace data
     {
         template<typename Type>
-        uint32_t Factory::register_element_type(const char* type_name)
+        TypeId Factory::register_element_type(const char* type_name)
         {
             Item item;
 
-            item.m_type_name = class_name;
+            item.m_type_name = type_name;
 
-            item.m_type_id = (uint32_t)m_type_registry.size();
+            item.m_type_id = (TypeId)m_type_registry.size();
 
             item.m_constructor_func = element_constructor<Type>;
 
-            m_registry.push_back(item);
+            m_type_registry.push_back(item);
 
-            m_num_type_ids = (uint32_t)m_registry.size();
+            m_type_table[type_name] = item;
 
-            m_num_bits = zen::serializers::num_bits_required(m_num_type_ids - 1);
+            m_type_id_max = item.m_type_id;
 
-            m_table[class_name] = m_registry.back();
+            m_num_bits = zen::serializers::num_bits_required(INVALID_TYPE_ID, m_type_id_max);
 
-            return item.m_factory_id;
+            return item.m_type_id;
         }
 
         template<typename Type>
-        uint32_t Factory::get_element_type_id() const
+        TypeId Factory::get_element_type_id() const
         {
-            return TypeRegistrar<Type>::s_factory_type_id;
+            return TypeRegistrar<Type>::s_type_id;
         }
 
         template<typename DerivedType>

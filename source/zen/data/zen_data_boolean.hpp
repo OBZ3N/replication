@@ -79,13 +79,11 @@ namespace zen
             const Boolean& element = (const Boolean&)element_reference;
 
             bool value_changed = ((*this) != reference);            
-            if (!serializers::serialize_boolean(value_changed, delta_bits))
-                return false;
+            serializers::serialize_boolean(value_changed, delta_bits);
 
             if (value_changed)
             {
-                if (!zen::serializers::serialize_boolean(m_value, out))
-                    return false;
+                zen::serializers::serialize_boolean(m_value, out);
             }
 
             return out.ok();
@@ -96,13 +94,14 @@ namespace zen
             const Boolean& element = (const Boolean&)element_reference;
 
             bool value_changed;
-            if(!zen::serializers::deserialize_boolean(value_changed, delta_bits))
-                return false;
+            zen::serializers::deserialize_boolean(value_changed, delta_bits);
 
             if (value_changed)
             {
                 bool value;
-                if (!zen::serializers::deserialize_boolean(value, in))
+                zen::serializers::deserialize_boolean(value, in);
+
+                if (!in.ok())
                     return false;
 
                 set_value(value);
