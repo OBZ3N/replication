@@ -28,11 +28,11 @@ namespace zen
             void erase(size_t index);
             void insert(size_t index, const TYPE& value);
 
-            TYPE& get(uint32_t index);
-            const TYPE& get(uint32_t index) const;
+            TYPE& get(size_t index);
+            const TYPE& get(size_t index) const;
 
-            TYPE& operator[](uint32_t i);
-            const TYPE& operator[](uint32_t i) const;
+            TYPE& operator[](size_t i);
+            const TYPE& operator[](size_t i) const;
 
             TYPE& front();
             TYPE& back();
@@ -71,7 +71,7 @@ namespace zen
             };
 
             void allocate(size_t num_items);
-            uint32_t create(const TYPE& value);
+            ItemId create(const TYPE& value);
             void free(ItemId item_id);
 
             const Item* get_item(ItemId item_id) const;

@@ -131,7 +131,7 @@ namespace zen
         }
 
         template<typename TYPE>
-        TYPE& Vector<TYPE>::get(uint32_t index)
+        TYPE& Vector<TYPE>::get(size_t index)
         {
             ItemId item_id = m_array[index];
 
@@ -141,14 +141,14 @@ namespace zen
         }
 
         template<typename TYPE>
-        const TYPE& Vector<TYPE>::get(uint32_t index) const
+        const TYPE& Vector<TYPE>::get(size_t index) const
         {
             ItemId item_id = m_array[index];
             return get_item(item_id)->m_value;
         }
 
         template<typename TYPE>
-        TYPE& Vector<TYPE>::operator[](uint32_t index)
+        TYPE& Vector<TYPE>::operator[](size_t index)
         {
             ItemId item_id = m_array[index];
 
@@ -158,7 +158,7 @@ namespace zen
         }
 
         template<typename TYPE>
-        const TYPE& Vector<TYPE>::operator[](uint32_t index) const
+        const TYPE& Vector<TYPE>::operator[](size_t index) const
         {
             ItemId item_id = m_array[index];
             return get_item(item_id)->m_value;

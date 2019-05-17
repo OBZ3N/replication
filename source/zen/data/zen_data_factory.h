@@ -17,7 +17,7 @@ namespace zen
         class Factory
         {
         public:
-            static constexpr INVALID_TYPE_ID = (TypeId)(-1);
+            static constexpr TypeId INVALID_TYPE_ID = (TypeId)(-1);
 
             Factory();
 
@@ -50,7 +50,7 @@ namespace zen
             std::unordered_map<std::string, Item>   m_type_table;
             std::vector<Item>                       m_type_registry;
 
-            size_t m_type_id_max;
+            TypeId m_type_id_max;
             size_t m_type_id_num_bits;
         };
     }

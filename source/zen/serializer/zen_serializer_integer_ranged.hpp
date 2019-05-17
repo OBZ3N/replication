@@ -1,5 +1,6 @@
 #pragma once
 
+#include "zen/core/zen_core_endian.h"
 #include "zen/serializer/zen_serializer_integer_ranged.h"
 #include "zen/serializer/zen_serializer_log2.h"
 

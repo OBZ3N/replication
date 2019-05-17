@@ -36,7 +36,7 @@ void verify_delta_compression()
 {
     zen::bitstream::Writer writer(serialisation_buffer, sizeof(serialisation_buffer) << 3);
 
-    array_zen[0].serialize_delta( array_zen[1], writer );
+    array_zen[0].serialize_delta( array_zen[1], writer, writer );
 
     ZEN_ASSERT(writer.ok(), "    ", test_number, "/", num_tests, " stream writer error : ", (uint32_t)writer.get_last_result(), ".");
 
@@ -46,7 +46,7 @@ void verify_delta_compression()
  
         zen::bitstream::Reader reader(serialisation_buffer, writer.bitcount());
 
-        array_copy.deserialize_delta( array_zen[1], reader );
+        array_copy.deserialize_delta( array_zen[1], reader, reader );
 
         array_copy.sanity_check();
 

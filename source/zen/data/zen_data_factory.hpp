@@ -24,7 +24,7 @@ namespace zen
 
             m_type_id_max = item.m_type_id;
 
-            m_num_bits = zen::serializers::num_bits_required(INVALID_TYPE_ID, m_type_id_max);
+            m_num_bits = zen::serializers::number_of_bits_required(INVALID_TYPE_ID, m_type_id_max);
 
             return item.m_type_id;
         }

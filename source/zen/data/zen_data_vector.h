@@ -47,20 +47,21 @@ namespace zen
             // i.e. item ids cannot be greater than the actual item pool size, 
             // or lower than INVALID_ITEM_ID, which is (-1).
             // And item ids cannot require more than 31 bits (cannot have vectors of size > 2^31 elements).
-            static constexpr sc_item_id_max_bits = 31;
+            static constexpr size_t sc_item_id_max_bitcount = 5;
+            static constexpr size_t sc_item_id_max_bits = ((1 << sc_item_id_max_bitcount)-1);
 
             // number of bits required to serialize item ids (the number of bits required to serialize the range if ids [INVALID_ITEM_ID, m_pool.size()[).
             void calculate_item_id_num_bits();
 
             // maximum value an item id can have ((1 << m_item_id_num_bits) - 1), which is the power of two higher than m_pool.size().
-            TYPE calculate_item_id_max() const;
+            ItemId calculate_item_id_max() const;
 
             // helpers that will serialize / deserialize item ids.
-            bool serialize_item_id(const ItemId& item_id, bitstream::Writer& out);
-            bool deserialize_item_id(ItemId& item_id, bitstream::Writer& out) const;
+            bool serialize_item_id(const ItemId& item_id, bitstream::Writer& out) const;
+            bool deserialize_item_id(ItemId& item_id, bitstream::Reader& in) const;
 
             // number of bits required to serialize item ids (roughly speaking, we round up to the power of two higher than the pool size, not forgetting the value INVALID_ITEM_ID).
-            uint8_t m_item_id_num_bits;
+            size_t m_item_id_num_bits;
         };
     }
 }

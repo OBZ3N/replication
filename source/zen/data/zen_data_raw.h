@@ -27,7 +27,8 @@ namespace zen
             bool operator == (const Element& rhs) const override;
             bool operator != (const Element& rhs) const override;
 
-            Element& operator = (const Raw& rhs) override;
+
+            Element& operator = (const Element& rhs) override;
 
         private:
             TYPE m_value;
