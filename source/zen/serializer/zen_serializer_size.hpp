@@ -13,7 +13,7 @@ namespace zen
         constexpr uint64_t serialize_size_bitmask = uint64_t((1 << serialize_size_bitcount)-1);
 
         template<typename TYPE>
-        bool serialize_size(const TYPE& value, bitstream::Writer& out)
+        bool serialize_size(TYPE value, bitstream::Writer& out)
         {
             ZEN_ASSERT(value >= 0, "value (", value, ") < 0.");
 

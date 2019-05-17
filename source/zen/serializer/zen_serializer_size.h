@@ -10,7 +10,7 @@ namespace zen
     {
         // decompose values into non-zero bytes.
         template<typename TYPE>
-        bool serialize_size(const TYPE& value, bitstream::Writer& out);
+        bool serialize_size(TYPE value, bitstream::Writer& out);
 
         template<typename TYPE>
         bool deserialize_size(TYPE& value, bitstream::Reader& in);

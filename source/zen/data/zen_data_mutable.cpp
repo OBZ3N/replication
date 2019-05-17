@@ -8,7 +8,7 @@ namespace zen
 {
     namespace data
     {
-        Mutable::Mutable(Factory* factory, TypeId type_id, Element& element)
+        Mutable::Mutable(Factory* factory, Factory::TypeId type_id, Element& element)
             : m_factory(factory)
             , m_element_type_id(type_id)
             , m_element(&element)
@@ -47,7 +47,7 @@ namespace zen
 
         bool Mutable::deserialize_full(bitstream::Reader& in)
         {
-            TypeId element_type_id;
+            Factory::TypeId element_type_id;
             if (!zen::serializers::deserialize_raw(element_type_id, in))
                 return false;
             
@@ -114,7 +114,7 @@ namespace zen
             }
             else
             {
-                TypeId element_type_id;
+                Factory::TypeId element_type_id;
                 if (!m_factory->deserialize_type_id(element_type_id, in))
                     return false;
 

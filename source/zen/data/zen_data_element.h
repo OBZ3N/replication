@@ -1,5 +1,8 @@
 #pragma once
 
+#include "zen/bitstream/zen_bitstream_reader.h"
+#include "zen/bitstream/zen_bitstream_writer.h"
+
 namespace zen
 {
     namespace data

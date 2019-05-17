@@ -12,12 +12,12 @@ namespace zen
 {
     namespace data
     {
-        typedef int32_t TypeId;
-
         class Factory
         {
         public:
-            static constexpr INVALID_TYPE_ID = (TypeId)(-1);
+            typedef int32_t TypeId;
+
+            static constexpr TypeId INVALID_TYPE_ID = (TypeId)(-1);
 
             Factory();
 
@@ -50,7 +50,7 @@ namespace zen
             std::unordered_map<std::string, Item>   m_type_table;
             std::vector<Item>                       m_type_registry;
 
-            size_t m_type_id_max;
+            Factory::TypeId m_type_id_max;
             size_t m_type_id_num_bits;
         };
     }
@@ -63,7 +63,7 @@ namespace zen
         template<typename Type>
         struct TypeRegistrar
         {
-            static TypeId s_type_id;
+            static Factory::TypeId s_type_id;
         };
     }
 }

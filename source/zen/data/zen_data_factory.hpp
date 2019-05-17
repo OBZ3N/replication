@@ -8,7 +8,7 @@ namespace zen
     namespace data
     {
         template<typename Type>
-        TypeId Factory::register_element_type(const char* type_name)
+        Factory::TypeId Factory::register_element_type(const char* type_name)
         {
             Item item;
 
@@ -24,13 +24,13 @@ namespace zen
 
             m_type_id_max = item.m_type_id;
 
-            m_num_bits = zen::serializers::num_bits_required(INVALID_TYPE_ID, m_type_id_max);
+            m_num_bits = zen::serializers::number_of_bits_required(INVALID_TYPE_ID, m_type_id_max);
 
             return item.m_type_id;
         }
 
         template<typename Type>
-        TypeId Factory::get_element_type_id() const
+        Factory::TypeId Factory::get_element_type_id() const
         {
             return TypeRegistrar<Type>::s_type_id;
         }

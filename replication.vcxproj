@@ -67,6 +67,8 @@
     <ClInclude Include="source\zen\serializer\zen_serializer_log2.h" />
     <ClInclude Include="source\zen\serializer\zen_serializer_raw.h" />
     <ClInclude Include="source\zen\serializer\zen_serializer_raw.hpp" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_size.h" />
+    <ClInclude Include="source\zen\serializer\zen_serializer_size.hpp" />
     <ClInclude Include="source\zen\serializer\zen_serializer_string.h" />
     <ClInclude Include="source\zen\serializer\zen_serializer_string.hpp" />
   </ItemGroup>

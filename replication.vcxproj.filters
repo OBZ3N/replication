@@ -170,5 +170,11 @@
     <ClInclude Include="source\zen\data\zen_data_mutable.h">
       <Filter>source\zen\data</Filter>
     </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_size.h">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\serializer\zen_serializer_size.hpp">
+      <Filter>source\zen\serializer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

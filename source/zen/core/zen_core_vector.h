@@ -12,6 +12,9 @@ namespace zen
         class Vector
         {
         public:
+            typedef int32_t ItemId;
+            static const ItemId INVALID_ITEM_ID = (int32_t)(-1);
+
             Vector(size_t capcity = 0);
             virtual ~Vector();
 
@@ -28,11 +31,11 @@ namespace zen
             void erase(size_t index);
             void insert(size_t index, const TYPE& value);
 
-            TYPE& get(uint32_t index);
-            const TYPE& get(uint32_t index) const;
+            TYPE& get(ItemId index);
+            const TYPE& get(ItemId index) const;
 
-            TYPE& operator[](uint32_t i);
-            const TYPE& operator[](uint32_t i) const;
+            TYPE& operator[](ItemId i);
+            const TYPE& operator[](ItemId i) const;
 
             TYPE& front();
             TYPE& back();
@@ -51,10 +54,6 @@ namespace zen
         protected:
             virtual void on_vector_touched() {}
 
-#undef max
-            typedef int32_t ItemId;
-            static const ItemId INVALID_ITEM_ID = (int32_t)(-1);
-
             struct Item
             {
                 Item()
@@ -71,7 +70,7 @@ namespace zen
             };
 
             void allocate(size_t num_items);
-            uint32_t create(const TYPE& value);
+            ItemId create(const TYPE& value);
             void free(ItemId item_id);
 
             const Item* get_item(ItemId item_id) const;

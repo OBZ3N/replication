@@ -13,25 +13,25 @@ namespace zen
         template<typename TYPE>
         void Vector<TYPE>::calculate_item_id_num_bits()
         {
-            m_item_id_num_bits = serializers::num_bits_required(INVALID_ITEM_ID, (ItemId)m_pool.size() - 1);
+            m_item_id_num_bits = serializers::number_of_bits_required(INVALID_ITEM_ID, (ItemId)m_pool.size() - 1);
 
             ZEN_ASSERT(m_item_id_num_bits <= sc_item_id_max_bits, "m_serialize_item_id_num_bits(", m_item_id_num_bits, ") > sc_item_id_max_bits(", sc_item_id_max_bits, ").");
         }
 
         template<typename TYPE>
-        TYPE Vector<TYPE>::calculate_item_id_max() const
+        typename Vector<TYPE>::ItemId Vector<TYPE>::calculate_item_id_max() const
         {
-            return (TYPE)((1 << m_serialize_item_id_num_bits) - 1);
+            return (ItemId)((1 << m_item_id_num_bits) - 1);
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::serialize_item_id(const ItemId& item_id, bitstream::Writer& out)
+        bool Vector<TYPE>::serialize_item_id(const ItemId& item_id, bitstream::Writer& out) const
         {
             return serializers::serialize_integer_ranged(item_id, INVALID_ITEM_ID, calculate_item_id_max(), m_item_id_num_bits, out);
         }
 
         template<typename TYPE>
-        bool Vector<TYPE>::deserialize_item_id(ItemId& item_id, bitstream::Writer& out) const
+        bool Vector<TYPE>::deserialize_item_id(ItemId& item_id, bitstream::Reader& in) const
         {
             return serializers::deserialize_integer_ranged(item_id, INVALID_ITEM_ID, calculate_item_id_max(), m_item_id_num_bits, in);
         }
@@ -46,7 +46,7 @@ namespace zen
         {}
 
         template<typename TYPE>
-        Element& Vector<TYPE>::operator = (const Element& rhs)
+        Element& Vector<TYPE>::operator = (const Element& element_rhs)
         {
             const Vector<TYPE>& rhs = (const Vector<TYPE>&) element_rhs;
 
@@ -154,7 +154,7 @@ namespace zen
 
                 if (item_id_num_bits_changed)
                 {
-                    serializers::serialize_integer_ranged(m_item_id_num_bits, 0, sc_item_id_max_bits, out);
+                    serializers::serialize_integer_ranged(m_item_id_num_bits, (size_t)0, sc_item_id_max_bits, sc_item_id_bitcount, out);
                 }
 
                 serializers::serialize_boolean(values_added, out);
@@ -192,7 +192,8 @@ namespace zen
                     for (ItemId item_id : items_modified)
                     {
                         const Item* item_latest = get_item(item_id);
-                        
+                        const Item* item_reference = reference.get_item(item_id);
+
                         bool prev_changed  = (item_latest->m_prev != item_reference->m_prev);
                         bool next_changed  = (item_latest->m_next != item_reference->m_next);
                         bool value_changed = (item_latest->m_value != item_reference->m_value);
@@ -214,9 +215,7 @@ namespace zen
 
                         if(value_changed)
                         {
-                            const Item* item_reference = reference.get_item(item_id);
-
-                            item_latest->m_value.serialize_delta(item_reference->m_value, out);
+                            item_latest->m_value.serialize_delta(item_reference->m_value, out, delta_bits);
                         }
                     }
                 }
@@ -242,7 +241,7 @@ namespace zen
 
                 if (item_id_num_bits_changed)
                 {
-                    serializers::deserialize_integer_ranged(m_item_id_num_bits, 0, sc_item_id_max_bits, in);
+                    serializers::deserialize_integer_ranged(m_item_id_num_bits, (size_t)0, sc_item_id_max_bits, sc_item_id_bitcount, in);
                 }
 
                 bool values_added;
@@ -355,7 +354,7 @@ namespace zen
                         {
                             const Item* item_reference = reference.get_item(item_id);
 
-                            item_latest->m_value.serialize_delta(item_reference->m_value, out);
+                             item->m_value.deserialize_delta(item_reference->m_value, in, delta_bits);
                         }
 
                         if (!in.ok()) 

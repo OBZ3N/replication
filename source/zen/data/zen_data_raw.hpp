@@ -20,8 +20,12 @@ namespace zen
         template<typename TYPE>
         Element& Raw<TYPE>::operator = (const Element& element_rhs)
         {
-            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
+            return operator=((const Raw<TYPE>&) element_rhs);
+        }
 
+        template<typename TYPE>
+        Raw<TYPE>& Raw<TYPE>::operator = (const Raw<TYPE>& rhs)
+        {
             set_value(rhs.m_value);
 
             return *this;
@@ -46,9 +50,9 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::serialize_delta(const Raw<TYPE>& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
+        bool Raw<TYPE>::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
-            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_rhs;
+            const Raw<TYPE>& reference = (const Raw<TYPE>&) element_reference;
 
             bool value_changed = (m_value != reference.m_value);
             serializers::serialize_boolean(value_changed, delta_bits);
@@ -62,9 +66,9 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool Raw<TYPE>::deserialize_delta(const Raw& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
+        bool Raw<TYPE>::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            const Raw<TYPE>& rhs = (const Raw<TYPE>&) element_reference;
+            const Raw<TYPE>& reference = (const Raw<TYPE>&) element_reference;
 
             bool value_changed;
             serializers::deserialize_boolean(value_changed, delta_bits);

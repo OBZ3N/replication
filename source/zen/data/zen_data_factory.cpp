@@ -16,7 +16,7 @@ namespace zen
             return m_type_registry[type_id].m_type_name;
         }
 
-        TypeId Factory::get_type_id(const char* type_name) const
+        Factory::TypeId Factory::get_type_id(const char* type_name) const
         {
             auto it = m_type_table.find(type_name);
 
@@ -40,12 +40,12 @@ namespace zen
 
         bool Factory::serialize_type_id(TypeId type_id, zen::bitstream::Writer& out)
         {
-            return zen::serializers::serialize_integer_ranged(type_id, INVALID_TYPE_ID, m_type_id_max, m_type_id_num_bits, out);
+            return zen::serializers::serialize_integer_ranged(type_id, Factory::INVALID_TYPE_ID, m_type_id_max, m_type_id_num_bits, out);
         }
 
         bool Factory::deserialize_type_id(TypeId& type_id, zen::bitstream::Reader& in)
         {
-            return zen::serializers::deserialize_integer_ranged(type_id, INVALID_TYPE_ID, m_type_id_max, m_type_id_num_bits, in);
+            return zen::serializers::deserialize_integer_ranged(type_id, Factory::INVALID_TYPE_ID, m_type_id_max, m_type_id_num_bits, in);
         }
     }
 }
