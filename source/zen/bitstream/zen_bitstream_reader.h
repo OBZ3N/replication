@@ -19,7 +19,7 @@ namespace zen
             };
 
             Reader();
-            Reader(const uint32_t* bitfields, size_t bitcount);
+            Reader(const uint32_t* bitfields, size_t bitcount, size_t position=0);
             virtual ~Reader() {}
 
             template<typename TYPE>  bool peek( TYPE& value, size_t position );

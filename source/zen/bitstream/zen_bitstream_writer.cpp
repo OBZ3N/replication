@@ -56,9 +56,14 @@ namespace zen
 
         bool Writer::write( const void* bits, size_t num_bits )
         {
+            if (m_last_result != Result::Ok)
+            {
+                return false;
+            }
+
         #if defined(STREAMING_ALIGN_TO_BYTES)
             num_bits = align_to_bytes(num_bits);
-    #endif
+        #endif
 
             if ( !write_internal( bits, num_bits, m_bitcount ) )
                 return false;
@@ -69,6 +74,11 @@ namespace zen
 
         bool Writer::poke( const void* bits, size_t num_bits, size_t position )
         {
+            if (m_last_result != Result::Ok)
+            {
+                return false;
+            }
+
         #if defined(STREAMING_ALIGN_TO_BYTES)
             num_bits = align_to_bytes(num_bits);
         #endif
@@ -88,6 +98,11 @@ namespace zen
 
         bool Writer::set_bitcount(size_t bitcount)
         {
+            if (m_last_result != Result::Ok)
+            {
+                return false;
+            }
+
             if (bitcount > m_bitcount)
                 return false;
 

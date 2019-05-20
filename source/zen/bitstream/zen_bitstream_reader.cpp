@@ -19,12 +19,17 @@ namespace zen
             , m_last_result(Result::Ok)
         {}
 
-        Reader::Reader(const uint32_t* bitfields, size_t bitcount)
+        Reader::Reader(const uint32_t* bitfields, size_t bitcount, size_t position)
             : m_bitfields(bitfields)
             , m_bitcount(bitcount)
-            , m_position(0)
+            , m_position(position)
             , m_last_result(Result::Ok)
-        {}
+        {
+            if (m_position > m_bitcount)
+            {
+                m_last_result = Result::PositionInvalid;
+            }
+        }
 
         Reader::Result Reader::get_last_result() const
         {
@@ -52,6 +57,11 @@ namespace zen
 
         bool Reader::peek( void* bits, size_t num_bits, size_t position )
         {
+            if (m_last_result != Result::Ok)
+            {
+                return false;
+            }
+
         #if defined(STREAMING_ALIGN_TO_BYTES)
             num_bits = align_to_bytes(num_bits);
         #endif
@@ -61,6 +71,11 @@ namespace zen
 
         bool Reader::read(void* bits, size_t num_bits)
         {
+            if (m_last_result != Result::Ok)
+            {
+                return false;
+            }
+
         #if defined(STREAMING_ALIGN_TO_BYTES)
             num_bits = align_to_bytes(num_bits);
         #endif
@@ -119,6 +134,11 @@ namespace zen
 
         bool Reader::set_position(size_t position)
         {
+            if (m_last_result != Result::Ok)
+            {
+                return false;
+            }
+
             if (position > m_bitcount)
             {
                 set_last_result(Result::PositionInvalid);

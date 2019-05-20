@@ -7,6 +7,7 @@
 
 //#define ZEN_ASSERT(test, ...) { if( !(test) ) { zen::debug::log("ZEN_ASSERT(", #test, ", ", __FILE__, "@", __LINE__,") : ", __VA_ARGS__); zen::debug::out.flush(); __debugbreak(); } }
 #define ZEN_ASSERT(test, ...) zen::debug::log_assert(test, #test, __FILE__, __LINE__, __VA_ARGS__);
+#define ZEN_ASSERT_RETURN(test, ret, ...) { if(!zen::debug::log_assert(test, #test, __FILE__, __LINE__, __VA_ARGS__)) return ret; }
 #define ZEN_LOG(...) { zen::debug::log(__VA_ARGS__); zen::debug::out.flush(); }
 
 namespace zen
@@ -27,7 +28,7 @@ namespace zen
         }
 
         template<typename... Args>
-        void log_assert(bool condition, const char* condition_desc, const char* file, uint32_t line, const Args&... args )
+        bool log_assert(bool condition, const char* condition_desc, const char* file, uint32_t line, const Args&... args )
         {
             if( !condition ) 
             { 
@@ -36,7 +37,9 @@ namespace zen
                 zen::debug::log("             message   : ", args...);
                 zen::debug::out.flush(); 
                 __debugbreak(); 
+                return false;
             } 
+            return true;
         }
     }
 }

@@ -22,6 +22,9 @@
     <Filter Include="source\zen\serializer">
       <UniqueIdentifier>{2ed8d80e-bf7f-472f-a1a8-a69cb9cc58bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\test">
+      <UniqueIdentifier>{4b03e4e2-bf99-4855-a3ea-457a730d0e60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\functional_tests_main.cpp">
@@ -50,6 +53,12 @@
     </ClCompile>
     <ClCompile Include="source\zen\data\zen_data_mutable.cpp">
       <Filter>source\zen\data</Filter>
+    </ClCompile>
+    <ClCompile Include="source\test\test_bitstream.cpp">
+      <Filter>source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="source\test\test_base.cpp">
+      <Filter>source\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="source\zen\serializer\zen_serializer_size.hpp">
       <Filter>source\zen\serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_bitstream.h">
+      <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_base.h">
+      <Filter>source\test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
