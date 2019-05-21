@@ -60,9 +60,6 @@
     <ClCompile Include="source\test\test_base.cpp">
       <Filter>source\test</Filter>
     </ClCompile>
-    <ClCompile Include="source\test\test_vector.cpp">
-      <Filter>source\test</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\zen\core\zen_core_ostream.h">
@@ -205,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="source\test\test_vector.hpp">
       <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\debug\zen_debug_random.hpp">
+      <Filter>source\zen\debug</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

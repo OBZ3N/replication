@@ -1,8 +1,6 @@
 #pragma once
 
 #include "zen/data/zen_data_element.h"
-#include "zen/bitstream/zen_bitstream_reader.h"
-#include "zen/bitstream/zen_bitstream_writer.h"
 
 namespace zen
 {
@@ -27,6 +25,8 @@ namespace zen
             inline bool operator != (const Element& rhs) const override;
 
             inline Element& operator = (const Element& rhs) override;
+
+            void debug_randomize(debug::Randomizer& randomizer) override;
 
         private:
             bool m_value;

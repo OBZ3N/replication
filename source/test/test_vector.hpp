@@ -20,7 +20,7 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::update_internal()
     {
-        size_t test_to_run = m_randomizer.get_ranged(6);
+        size_t test_to_run = m_randomizer.get_integer_ranged(6);
         switch (test_to_run)
         {
         default:    return false;
@@ -125,7 +125,7 @@ namespace test
                 return false;
         }
 
-        uint32_t index = randomizer.get_ranged(m_zen_array.size());
+        uint32_t index = randomizer.get_integer_ranged(m_zen_array.size());
         ZEN_LOG("    - erase(", index, ")");
 
         std::list<GENERIC_TYPE>::iterator it = m_generic_array.begin();
@@ -141,7 +141,7 @@ namespace test
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::insert()
     {
         m_value_iterator++;
-        uint32_t index = randomizer.get_ranged(m_zen_array.size());
+        uint32_t index = randomizer.get_integer_ranged(m_zen_array.size());
         ZEN_LOG("    - insert(", m_value_iterator, " @ ", index, ")");
 
         std::list<GENERIC_TYPE>::iterator it = m_generic_array.begin();

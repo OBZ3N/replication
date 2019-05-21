@@ -1,5 +1,6 @@
 #pragma once
 
+#include "zen/debug/zen_debug_random.h"
 #include "zen/bitstream/zen_bitstream_reader.h"
 #include "zen/bitstream/zen_bitstream_writer.h"
 
@@ -26,6 +27,8 @@ namespace zen
             virtual bool operator != (const Element& rhs) const = 0;
 
             virtual Element& operator = (const Element& rhs) = 0;
+
+            virtual void debug_randomize(debug::Randomizer& randomizer) = 0;
 
         private:
             bool m_touched;

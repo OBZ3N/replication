@@ -15,7 +15,7 @@ namespace test
 
     bool Bitstream::update_internal()
     {
-        size_t test_to_run = m_randomizer.get_ranged(4);
+        size_t test_to_run = m_randomizer.get_integer_ranged(4);
         switch (test_to_run)
         {
         default:    return false;
@@ -76,7 +76,7 @@ namespace test
             // set up a buffer to poke.
             size_t poke_size;
             m_randomizer.get_bits(m_temp, poke_size, (sizeof(m_temp) << 3));
-            size_t poke_position = m_randomizer.get_ranged(writer.bitcount());
+            size_t poke_position = m_randomizer.get_integer_ranged(writer.bitcount());
 
             ZEN_LOG("    - poke(", poke_size, " bits @ ", poke_position, ")");
 
@@ -108,11 +108,11 @@ namespace test
             // sets up a reference buffer.
             size_t written_bitcount;
             m_randomizer.get_bits(m_data, written_bitcount, (sizeof(m_data) << 3));
-            size_t read_position = m_randomizer.get_ranged(written_bitcount);
+            size_t read_position = m_randomizer.get_integer_ranged(written_bitcount);
             zen::bitstream::Reader reader(m_data, written_bitcount, read_position);
 
             // try to read a chunk from the data buffer.
-            size_t num_bits_to_read = m_randomizer.get_ranged(reader.bitcount());
+            size_t num_bits_to_read = m_randomizer.get_integer_ranged(reader.bitcount());
 
             ZEN_LOG("    - read(", num_bits_to_read, " bits @ ", read_position, ")");
 
@@ -143,11 +143,11 @@ namespace test
             // sets up a reference buffer.
             size_t written_bitcount;
             m_randomizer.get_bits(m_data, written_bitcount, (sizeof(m_data) << 3));
-            size_t read_position = m_randomizer.get_ranged(written_bitcount);
+            size_t read_position = m_randomizer.get_integer_ranged(written_bitcount);
             zen::bitstream::Reader reader(m_data, written_bitcount, read_position);
 
             // try to read a chunk from the data buffer.
-            size_t num_bits_to_read = m_randomizer.get_ranged(reader.bitcount());
+            size_t num_bits_to_read = m_randomizer.get_integer_ranged(reader.bitcount());
 
             ZEN_LOG("    - peek(", num_bits_to_read, " bits @ ", read_position, ")");
 

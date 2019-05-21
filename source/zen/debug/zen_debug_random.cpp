@@ -17,21 +17,9 @@ namespace zen
             m_mersenne_generator.seed(seed_value);
         }
 
-        uint32_t Randomizer::get_ranged( uint32_t range )
-        {
-            if(range == 0) 
-                return 0;
-
-            uint32_t random_value = (uint32_t)m_uniform_distribution(m_mersenne_generator);
-
-            uint32_t value = random_value % range;
-
-            return value;
-        }
-
         void Randomizer::get_bits( uint32_t* bitfield, size_t& num_bits, size_t max_bits )
         {
-            num_bits = get_ranged(max_bits);
+            num_bits = get_integer_ranged(max_bits);
             
             uint32_t num_words = std::min((num_bits >> 5), (max_bits >> 5));
 

@@ -38,6 +38,8 @@ namespace zen
             bool set_num_bits(size_t num_bits);
             size_t get_num_bits() const;
 
+            void debug_randomize(debug::Randomizer& randomizer) override;
+
         private:
             TYPE m_value;
             TYPE m_value_min;

@@ -91,7 +91,7 @@ void test_bitstream_read()
     ZEN_LOG("    ", test_number, "/", num_tests, " test_bitstream_read(", bitfield_reader.position(), ")");
 
     uint32_t bits[1000];
-    size_t num_bits = randomizer.get_ranged(sizeof(bits) << 3);
+    size_t num_bits = randomizer.get_integer_ranged(sizeof(bits) << 3);
     size_t position = bitfield_reader.position();
     size_t read_offset = bitfield_reader.position();
 
@@ -107,8 +107,8 @@ void test_bitstream_read()
 void test_bitstream_peek()
 {
     uint32_t bits[1000];
-    size_t position = randomizer.get_ranged(bitfield_reader.bitcount());
-    size_t num_bits = randomizer.get_ranged(sizeof(bits) << 3);
+    size_t position = randomizer.get_integer_ranged(bitfield_reader.bitcount());
+    size_t num_bits = randomizer.get_integer_ranged(sizeof(bits) << 3);
     
     ZEN_LOG("    ", test_number, "/", num_tests, " test_bitstream_peek(", num_bits, " bits @ ", position,")");
 
@@ -125,7 +125,7 @@ void test_bitstream_poke()
 {
     memcpy(bitfield_writer_checker, bitfield_writer_data, sizeof(bitfield_writer_checker));
 
-    size_t position = randomizer.get_ranged(bitfield_writer.bitcount());
+    size_t position = randomizer.get_integer_ranged(bitfield_writer.bitcount());
 
     uint32_t bits[100];
     size_t num_bits;
@@ -226,7 +226,7 @@ void test_erase()
     {
         if( !array_ref[t].empty() || ! array_zen[t].empty() )
         {
-            uint32_t index = randomizer.get_ranged(array_zen[t].size());
+            uint32_t index = randomizer.get_integer_ranged(array_zen[t].size());
 
             ZEN_LOG("    ", test_number, "/", num_tests, " test_erase(", index, ")");
     
@@ -247,7 +247,7 @@ void test_insert()
         if( !array_ref[t].empty() || ! array_zen[t].empty() )
         {
             array_value[t]++;
-            uint32_t index = randomizer.get_ranged(array_zen[t].size());
+            uint32_t index = randomizer.get_integer_ranged(array_zen[t].size());
             ZEN_LOG("    ", test_number, "/", num_tests, " test_insert(", index, ", ", array_value[t],")");
     
             std::list<uint32_t>::iterator it = array_ref[t].begin();
@@ -270,11 +270,11 @@ void test_container()
         array_zen[t].clear();
     }
 
-    num_tests = 1 + randomizer.get_ranged(2000);
+    num_tests = 1 + randomizer.get_integer_ranged(2000);
 
     for ( test_number = 0; test_number < num_tests; ++test_number )
     {
-        uint32_t test_function = randomizer.get_ranged(2);
+        uint32_t test_function = randomizer.get_integer_ranged(2);
         switch ( test_function )
         {
         default:
@@ -318,7 +318,7 @@ void test_container()
 void reset_test()
 {
     // bitfield writer reset.
-    uint32_t bitfield_capacity = randomizer.get_ranged(sizeof(bitfield_writer_data) << 3);
+    uint32_t bitfield_capacity = randomizer.get_integer_ranged(sizeof(bitfield_writer_data) << 3);
     bitfield_capacity = (bitfield_capacity / 32) * 32;
     bitfield_writer = zen::bitstream::Writer(bitfield_writer_data, bitfield_capacity);
 

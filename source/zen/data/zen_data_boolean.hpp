@@ -78,7 +78,7 @@ namespace zen
         {
             const Boolean& element = (const Boolean&)element_reference;
 
-            bool value_changed = ((*this) != reference);            
+            bool value_changed = ((*this) != reference);
             serializers::serialize_boolean(value_changed, delta_bits);
 
             if (value_changed)
@@ -108,6 +108,13 @@ namespace zen
             }
 
             return in.ok();
+        }
+
+        void Boolean::debug_randomize(zen::debug::Randomizer& randomizer)
+        {
+            uint32_t i = randomizer.get_integer_ranged(i, 1);
+            set_value((i == 1));
+
         }
     }
 }

@@ -280,5 +280,19 @@ namespace zen
 
             return *this;
         }
+
+        template<typename TYPE>
+        void FloatRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        {
+            TYPE min = randomizer.get_float_ranged((TYPE)-10000.0f, (TYPE)1000.0f);
+            TYPE max = randomizer.get_float_ranged(min, (TYPE)10000.0f);
+            TYPE value = randomizer.get_float_ranged(min, max);
+            size_t num_bits = randomizer.get_ranged(8, 24);
+            
+            set_value(value);
+            set_value_min(min);
+            set_value_max(max);
+            set_num_bits(num_bits);
+        }
     }
 }

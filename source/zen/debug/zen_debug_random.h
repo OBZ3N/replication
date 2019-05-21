@@ -15,8 +15,18 @@ namespace zen
 
             void seed(uint32_t seed_value);
 
-            uint32_t get_ranged(uint32_t range);
+            template<typename TYPE>
+            TYPE get_integer_ranged(TYPE range);
+
+            template<typename TYPE>
+            TYPE get_integer_ranged(TYPE min, TYPE max);
+
+            template<typename TYPE>
+            TYPE get_float_ranged(TYPE range);
             
+            template<typename TYPE>
+            TYPE get_float_ranged(TYPE min, TYPE max);
+
             void get_bits(uint32_t* bits, size_t& num_bits, size_t max_bits);
 
         private:
@@ -26,3 +36,7 @@ namespace zen
         };
     }
 }
+
+#include "zen/debug/zen_debug_random.hpp"
+
+
