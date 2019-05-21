@@ -60,6 +60,9 @@
     <ClCompile Include="source\test\test_base.cpp">
       <Filter>source\test</Filter>
     </ClCompile>
+    <ClCompile Include="source\test\test_vector.cpp">
+      <Filter>source\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\zen\core\zen_core_ostream.h">
@@ -189,6 +192,18 @@
       <Filter>source\test</Filter>
     </ClInclude>
     <ClInclude Include="source\test\test_base.h">
+      <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_vector.h">
+      <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_vector_serialization.h">
+      <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_vector_serialization.hpp">
+      <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_vector.hpp">
       <Filter>source\test</Filter>
     </ClInclude>
   </ItemGroup>

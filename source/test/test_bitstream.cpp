@@ -41,7 +41,7 @@ namespace test
             size_t write_size;
             m_randomizer.get_bits(m_temp, write_size, (sizeof(m_temp) << 3));
 
-            ZEN_LOG("    -  write(", write_size, " bits @ ", written_position, ")");
+            ZEN_LOG("    - write(", write_size, " bits @ ", written_position, ")");
 
             if (writer.write(m_temp, write_size))
             {
