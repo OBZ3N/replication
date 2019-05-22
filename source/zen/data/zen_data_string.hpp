@@ -107,5 +107,10 @@ namespace zen
 
             return m_value != rhs.m_value;
         }
+
+        void String::debug_randomize(debug::Randomizer& randomizer)
+        {
+            std::string value = randomizer.get_string();
+        }
     }
 }

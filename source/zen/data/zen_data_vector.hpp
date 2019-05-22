@@ -456,5 +456,19 @@ namespace zen
         {
             set_touched(true);
         }
+
+        template<typename TYPE>
+        void Vector<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        {
+            clear();
+
+            size_t num_elements = randomizer.get_integer_ranged(100);
+            for (size_t i = 0; i < num_elements; ++i)
+            {
+                TYPE value;
+                value.debug_randomize(randomizer);
+                push_back(value);
+            }
+        }
     }
 }

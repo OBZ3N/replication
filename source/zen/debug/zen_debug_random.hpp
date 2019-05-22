@@ -9,49 +9,33 @@ namespace zen
         template<typename TYPE>
         TYPE Randomizer::get_integer_ranged(TYPE range)
         {
-            if (range == 0)
-                return 0;
-
-            uint32_t random_value = (uint32_t)m_uniform_distribution(m_mersenne_generator);
-
-            uint32_t value = random_value % range;
-
-            return value;
+            std::uniform_int_distribution<TYPE> ranged_uniform_distribution(0, range-1);
+            TYPE random_value = ranged_uniform_distribution(m_mersenne_generator);
+            return random_value;
         }
 
         template<typename TYPE>
         TYPE Randomizer::get_integer_ranged(TYPE min, TYPE max)
         {
-            if (max < min)
-            {
-                return get_integer_ranged(min - max + 1);
-            }
-            else
-            {
-                return get_integer_ranged(max - min + 1);
-            }
+            std::uniform_int_distribution<TYPE> ranged_uniform_distribution(min, max);
+            TYPE random_value = ranged_uniform_distribution(m_mersenne_generator);
+            return random_value;
         }
 
         template<typename TYPE>
         TYPE Randomizer::get_float_ranged(TYPE range)
         {
-            uint32_t random_value = (uint32_t)m_uniform_distribution(m_mersenne_generator);
-            uint32_t random_range = std::numeric_limits<uint32_t>::max();
-            TYPE ratio = TYPE(random_value) / TYPE(random_range);
-            return range * ratio;
+            std::uniform_real_distribution<TYPE> uniform_distribution(0, range-1);
+            TYPE random_value = uniform_distribution(m_mersenne_generator);
+            return random_value;
         }
 
         template<typename TYPE>
         TYPE Randomizer::get_float_ranged(TYPE min, TYPE max)
         {
-            if (max < min)
-            {
-                return get_float_ranged(min - max);
-            }
-            else
-            {
-                return get_float_ranged(max - min);
-            }
+            std::uniform_real_distribution<TYPE> uniform_distribution(min, max);
+            TYPE random_value = uniform_distribution(m_mersenne_generator);
+            return random_value;
         }
     }
 }

@@ -29,6 +29,8 @@ namespace zen
 
             Element& operator = (const Element& rhs) override;
 
+            void debug_randomize(debug::Randomizer& randomizer) override;
+
         private:
             std::string m_value;
         };

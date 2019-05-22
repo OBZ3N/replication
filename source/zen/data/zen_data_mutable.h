@@ -28,6 +28,8 @@ namespace zen
 
             Element& operator = (const Element& rhs) override;
 
+            void debug_randomize(debug::Randomizer& randomizer) override;
+
             bool is_null() const { return m_element == nullptr; }
 
             Factory*            m_factory;

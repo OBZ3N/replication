@@ -35,6 +35,8 @@ namespace zen
             bool set_value_max(TYPE value_max);
             TYPE get_value_max() const;
 
+            void debug_randomize(debug::Randomizer& randomizer) override;
+
         private:
             TYPE    m_value;
             TYPE    m_value_min;

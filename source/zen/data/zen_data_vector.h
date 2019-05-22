@@ -26,6 +26,8 @@ namespace zen
 
             Element& operator = (const Element& rhs) override;
 
+            void debug_randomize(debug::Randomizer& randomizer) override;
+
         protected:
             void on_vector_touched() override;
 
