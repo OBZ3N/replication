@@ -41,10 +41,10 @@ namespace test
             size_t write_size;
             m_randomizer.get_bits(m_temp, write_size, (sizeof(m_temp) << 3));
 
-            ZEN_LOG("    - write(", write_size, " bits @ ", written_position, ")");
-
             if (writer.write(m_temp, write_size))
             {
+                ZEN_LOG("    - write(", write_size, " bits @ ", written_position, ")");
+
                 retry = false;
         
                 // validate.
@@ -76,12 +76,12 @@ namespace test
             // set up a buffer to poke.
             size_t poke_size;
             m_randomizer.get_bits(m_temp, poke_size, (sizeof(m_temp) << 3));
-            size_t poke_position = m_randomizer.get_integer_ranged(writer.bitcount());
-
-            ZEN_LOG("    - poke(", poke_size, " bits @ ", poke_position, ")");
+            size_t poke_position = m_randomizer.get_integer_ranged(written_bitcount);
 
             if (writer.poke(m_temp, poke_size, poke_position))
             {
+                ZEN_LOG("    - poke(", poke_size, " bits @ ", poke_position, ")");
+
                 retry = false;
 
                 // validate.
@@ -114,10 +114,10 @@ namespace test
             // try to read a chunk from the data buffer.
             size_t num_bits_to_read = m_randomizer.get_integer_ranged(reader.bitcount());
 
-            ZEN_LOG("    - read(", num_bits_to_read, " bits @ ", read_position, ")");
-
             if (reader.read(m_temp, num_bits_to_read))
             {
+                ZEN_LOG("    - read(", num_bits_to_read, " bits @ ", read_position, ")");
+
                 retry = false;
 
                 for (uint32_t i = 0; i < num_bits_to_read; ++i)
@@ -149,10 +149,10 @@ namespace test
             // try to read a chunk from the data buffer.
             size_t num_bits_to_read = m_randomizer.get_integer_ranged(reader.bitcount());
 
-            ZEN_LOG("    - peek(", num_bits_to_read, " bits @ ", read_position, ")");
-
             if (reader.peek(m_temp, num_bits_to_read, read_position))
             {
+                ZEN_LOG("    - peek(", num_bits_to_read, " bits @ ", read_position, ")");
+
                 retry = false;
 
                 for (uint32_t i = 0; i < num_bits_to_read; ++i)

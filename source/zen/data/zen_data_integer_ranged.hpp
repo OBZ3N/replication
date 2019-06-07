@@ -251,5 +251,17 @@ namespace zen
             set_value_max(rhs.m_value_max);
             return *this;
         }
+
+        template<typename TYPE>
+        void IntegerRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        {
+            TYPE min = randomizer.get_integer_ranged((TYPE)-10000, (TYPE)1000);
+            TYPE max = randomizer.get_integer_ranged(min, min + (TYPE)1000);
+            TYPE value = randomizer.get_integer_ranged(min, max);
+
+            set_value(value);
+            set_value_min(min);
+            set_value_max(max);
+        }
     }
 }

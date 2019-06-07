@@ -3,6 +3,7 @@
 #include <random>
 #include <cinttypes>
 #include <utility>
+#include <string>
 
 namespace zen
 {
@@ -23,11 +24,13 @@ namespace zen
 
             template<typename TYPE>
             TYPE get_float_ranged(TYPE range);
-            
+
             template<typename TYPE>
             TYPE get_float_ranged(TYPE min, TYPE max);
 
             void get_bits(uint32_t* bits, size_t& num_bits, size_t max_bits);
+
+            void get_bits(uint32_t* bitfield, size_t num_bits);
 
         private:
             std::mt19937 m_mersenne_generator;

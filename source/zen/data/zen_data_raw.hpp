@@ -118,5 +118,15 @@ namespace zen
 
             return m_value != rhs.m_value;
         }
+
+        template<typename TYPE>
+        void Raw<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        {
+            TYPE value;
+
+            randomizer.get_bits(&value, sizeof(value) << 3);
+
+            set_value(value);
+        }
     }
 }

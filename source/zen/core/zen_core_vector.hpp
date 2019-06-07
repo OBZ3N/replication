@@ -114,7 +114,7 @@ namespace zen
                 prev->m_next = item_id;
             }
 
-            ItemId next_id = m_array[index];
+            ItemId next_id = m_array.empty() ? INVALID_ITEM_ID : m_array[index];
             Item* next = get_item(next_id);
             if (next)
             {

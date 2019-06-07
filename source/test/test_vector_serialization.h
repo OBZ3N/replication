@@ -8,10 +8,10 @@
 namespace test
 {
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
-    class Vector : public Base
+    class VectorSerialization : public Base
     {
     public:
-        Vector(zen::debug::Randomizer& randomizer);
+        VectorSerialization(zen::debug::Randomizer& randomizer);
 
         void start_internal() override;
         bool update_internal() override;

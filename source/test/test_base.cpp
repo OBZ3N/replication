@@ -34,7 +34,7 @@ namespace test
 
         ZEN_LOG("[TEST ", m_test_name, "] UPDATE (", m_iteration, " / ", m_iteration_limit, ").");
 
-        if (m_iteration > m_iteration_limit)
+        if (m_iteration >= m_iteration_limit)
         {
             m_state = State::Success;
             ZEN_LOG("[TEST] SUCCESS.");

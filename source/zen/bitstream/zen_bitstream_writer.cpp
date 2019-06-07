@@ -24,7 +24,6 @@ namespace zen
             , m_bitcapacity(bitfield_capacity)
             , m_last_result(Result::Ok)
         {
-            ZEN_ASSERT((bitfield_capacity & 31) == 0, "bitfield_capacity(", bitfield_capacity, ") should be a multiple of 64 bits.");
         }
 
         Writer::~Writer()

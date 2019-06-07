@@ -107,5 +107,19 @@ namespace zen
 
             return m_value != rhs.m_value;
         }
+
+        inline void String::debug_randomize(debug::Randomizer& randomizer)
+        {
+            std::string value;
+
+            size_t num_characters = randomizer.get_integer_ranged<size_t>(8, 100);
+
+            for (size_t i = 0; i < num_characters; ++i)
+            {
+                uint8_t character = randomizer.get_integer_ranged<uint8_t>('0', 'z');
+
+                value.push_back(character);
+            }
+        }
     }
 }

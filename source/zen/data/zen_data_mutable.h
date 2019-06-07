@@ -30,6 +30,9 @@ namespace zen
 
             bool is_null() const { return m_element == nullptr; }
 
+            void debug_randomize(debug::Randomizer& randomizer) override;
+
+        private:
             Factory*            m_factory;
             Factory::TypeId     m_element_type_id;
             Element*            m_element;

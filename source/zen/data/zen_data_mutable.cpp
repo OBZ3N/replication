@@ -177,5 +177,26 @@ namespace zen
 
             return *this;
         }
+
+        void Mutable::debug_randomize(debug::Randomizer& randomizer)
+        {
+            if (!m_is_reference)
+            {
+                delete m_element;
+            }
+            m_element_type_id = Factory::INVALID_TYPE_ID;
+
+            m_element = nullptr;
+
+            m_is_reference = false;
+
+            m_element_type_id = randomizer.get_integer_ranged(m_factory->get_num_types());
+
+            m_element = m_factory->construct_element(m_element_type_id);
+
+            m_is_reference = false;
+
+            m_element->debug_randomize(randomizer);
+        }
     }
 }

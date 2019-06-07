@@ -285,7 +285,7 @@ namespace zen
         void FloatRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer)
         {
             TYPE min = randomizer.get_float_ranged((TYPE)-10000.0f, (TYPE)1000.0f);
-            TYPE max = randomizer.get_float_ranged(min, (TYPE)10000.0f);
+            TYPE max = randomizer.get_float_ranged(min, min + (TYPE)1000.0f);
             TYPE value = randomizer.get_float_ranged(min, max);
             size_t num_bits = randomizer.get_ranged(8, 24);
             

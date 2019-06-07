@@ -22,7 +22,7 @@ namespace test
         bool poke();
 
         uint32_t m_data[1000];
-        uint32_t m_temp[1000];
+        uint32_t m_temp[100];
     };
 
 }

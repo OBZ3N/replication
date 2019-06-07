@@ -40,7 +40,7 @@ namespace test
 
         for (size_t t = 0; t < m_zen_array.size(); ++t)
         {
-            ZEN_ASSERT_RETURN(m_zen_array[t].get_value() == m_generic_array[i], false, "m_zen_array[", t, "] (", m_zen_array[t].get_value(), ") != m_generic_array[", t, "] (", m_generic_array[t], ")");
+            ZEN_ASSERT_RETURN(m_zen_array[t].get_value() == m_generic_array[t], false, "m_zen_array[", t, "] (", m_zen_array[t].get_value(), ") != m_generic_array[", t, "] (", m_generic_array[t], ")");
         }
         return true;
     }
@@ -53,7 +53,7 @@ namespace test
         ZEN_LOG("    - push_front(", m_value_iterator, ")");
 
         GENERIC_TYPE generic_value = m_value_iterator;
-        m_generic_array.push_front(generic_value);
+        m_generic_array.insert(m_generic_array.begin(), generic_value);
 
         ZEN_TYPE zen_value;
         zen_value.set_value(m_value_iterator);
@@ -89,8 +89,11 @@ namespace test
 
         ZEN_LOG("    - pop_front()");
 
-        GENERIC_TYPE generic_value = m_generic_array.pop_front();
-        ZEN_TYPE zen_value = m_zen_array.pop_front();
+        GENERIC_TYPE generic_value = m_generic_array.front();
+        m_generic_array.erase(m_generic_array.begin());
+
+        ZEN_TYPE zen_value = m_zen_array.front();
+        m_zen_array.pop_front();
 
         ZEN_ASSERT_RETURN(generic_value == zen_value.get_value(), false, "generic_value (", generic_value, ") != zen_value (", zen_value.get_value(), ")");
 
@@ -108,8 +111,11 @@ namespace test
 
         ZEN_LOG("    - pop_back()");
 
-        GENERIC_TYPE generic_value = m_generic_array.pop_back();
-        ZEN_TYPE zen_value = m_zen_array.pop_back();
+        GENERIC_TYPE generic_value = m_generic_array.back();
+        m_generic_array.pop_back();
+
+        ZEN_TYPE zen_value = m_zen_array.back();
+        m_zen_array.pop_back();
 
         ZEN_ASSERT_RETURN(generic_value == zen_value.get_value(), false, "generic_value (", generic_value, ") != zen_value (", zen_value.get_value(), ")");
 
@@ -125,10 +131,10 @@ namespace test
                 return false;
         }
 
-        uint32_t index = randomizer.get_integer_ranged(m_zen_array.size());
+        uint32_t index = m_randomizer.get_integer_ranged(m_zen_array.size());
         ZEN_LOG("    - erase(", index, ")");
 
-        std::list<GENERIC_TYPE>::iterator it = m_generic_array.begin();
+        std::vector<GENERIC_TYPE>::iterator it = m_generic_array.begin();
         std::advance(it, index);
 
         m_generic_array.erase(it);
@@ -141,10 +147,10 @@ namespace test
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::insert()
     {
         m_value_iterator++;
-        uint32_t index = randomizer.get_integer_ranged(m_zen_array.size());
+        uint32_t index = m_randomizer.get_integer_ranged(m_zen_array.size());
         ZEN_LOG("    - insert(", m_value_iterator, " @ ", index, ")");
 
-        std::list<GENERIC_TYPE>::iterator it = m_generic_array.begin();
+        std::vector<GENERIC_TYPE>::iterator it = m_generic_array.begin();
         std::advance(it, index);
         m_generic_array.insert(it, m_value_iterator);
 

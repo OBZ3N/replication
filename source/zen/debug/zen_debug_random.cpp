@@ -33,5 +33,20 @@ namespace zen
             bitfield[num_words] = (uint32_t)m_uniform_distribution(m_mersenne_generator);
             bitfield[num_words] &= (( 1 << tail_bits ) - 1);
         }
+
+        void Randomizer::get_bits(uint32_t* bitfield, size_t num_bits)
+        {
+            uint32_t num_words = num_bits >> 3;
+
+            for (size_t i = 0; i < num_words; ++i)
+            {
+                bitfield[i] = (uint32_t)m_uniform_distribution(m_mersenne_generator);
+            }
+
+            uint32_t tail_bits = (num_bits & 31);
+
+            bitfield[num_words] = (uint32_t)m_uniform_distribution(m_mersenne_generator);
+            bitfield[num_words] &= ((1 << tail_bits) - 1);
+        }
     }
 }

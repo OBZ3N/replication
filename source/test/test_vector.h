@@ -26,7 +26,7 @@ namespace test
         bool validate();
 
         GENERIC_TYPE m_value_iterator;
-        std::list<GENERIC_TYPE> m_generic_array;
+        std::vector<GENERIC_TYPE> m_generic_array;
         zen::data::Vector<ZEN_TYPE> m_zen_array;
     };
 }

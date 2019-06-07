@@ -35,6 +35,7 @@ namespace zen
         template<typename TYPE>
         TYPE Randomizer::get_float_ranged(TYPE range)
         {
+            #undef max
             uint32_t random_value = (uint32_t)m_uniform_distribution(m_mersenne_generator);
             uint32_t random_range = std::numeric_limits<uint32_t>::max();
             TYPE ratio = TYPE(random_value) / TYPE(random_range);

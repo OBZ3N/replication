@@ -5,23 +5,24 @@
 namespace test
 {
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
-    Vector<GENERIC_TYPE, ZEN_TYPE>::Vector(zen::debug::Randomizer& randomizer)
+    VectorSerialization<GENERIC_TYPE, ZEN_TYPE>::VectorSerialization(zen::debug::Randomizer& randomizer)
         : Base("VectorSerialization", randomizer)
     {
     }
 
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
-    void Vector<GENERIC_TYPE, ZEN_TYPE>::start_internal()
+    void VectorSerialization<GENERIC_TYPE, ZEN_TYPE>::start_internal()
     {
     }
 
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
-    bool Vector<GENERIC_TYPE, ZEN_TYPE>::update_internal()
+    bool VectorSerialization<GENERIC_TYPE, ZEN_TYPE>::update_internal()
     {
+        return false;
     }
     
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
-    bool Vector<GENERIC_TYPE, ZEN_TYPE>::validate()
+    bool VectorSerialization<GENERIC_TYPE, ZEN_TYPE>::validate()
     {
         ZEN_ASSERT_RETURN(m_zen_array.size() == m_generic_array.size(), false, "m_zen_array.size (", m_zen_array.size(), ") != m_generic_array_size (", m_generic_array.size(), ")");
 
