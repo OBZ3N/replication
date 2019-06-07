@@ -180,22 +180,18 @@ namespace zen
 
         void Mutable::debug_randomize(debug::Randomizer& randomizer)
         {
+            // cleanup.
             if (!m_is_reference)
-            {
                 delete m_element;
-            }
-            m_element_type_id = Factory::INVALID_TYPE_ID;
 
+            m_element_type_id = Factory::INVALID_TYPE_ID;
             m_element = nullptr;
 
-            m_is_reference = false;
-
-            m_element_type_id = randomizer.get_integer_ranged(m_factory->get_num_types());
-
+            // randomize type.
+            m_element_type_id = randomizer.get_integer_ranged(0, m_factory->get_num_types() - 1);
+            
+            // randomize object.
             m_element = m_factory->construct_element(m_element_type_id);
-
-            m_is_reference = false;
-
             m_element->debug_randomize(randomizer);
         }
     }

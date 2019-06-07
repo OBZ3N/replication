@@ -124,7 +124,7 @@ namespace zen
         {
             TYPE value;
 
-            randomizer.get_bits(&value, sizeof(value) << 3);
+            m_randomizer.get_bits(&value, sizeof(value) << 3);
 
             set_value(value);
         }

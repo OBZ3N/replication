@@ -28,14 +28,14 @@ namespace zen
             template<typename TYPE>
             TYPE get_float_ranged(TYPE min, TYPE max);
 
+            void get_bits(uint32_t* bits, size_t num_bits);
             void get_bits(uint32_t* bits, size_t& num_bits, size_t max_bits);
+            void get_string(std::string& string);
 
             void get_bits(uint32_t* bitfield, size_t num_bits);
 
         private:
             std::mt19937 m_mersenne_generator;
-            std::uniform_int_distribution<uint32_t> m_uniform_distribution;
-
         };
     }
 }

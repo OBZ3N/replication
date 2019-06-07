@@ -112,7 +112,7 @@ namespace zen
 
         void Boolean::debug_randomize(zen::debug::Randomizer& randomizer)
         {
-            uint32_t i = randomizer.get_integer_ranged(i, 1);
+            uint32_t i = randomizer.get_integer_ranged(0, 1);
             set_value((i == 1));
 
         }
