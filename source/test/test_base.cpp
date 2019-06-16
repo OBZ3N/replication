@@ -7,6 +7,7 @@ namespace test
         , m_randomizer(randomizer)
         , m_state(State::Idle)
         , m_iteration(0)
+        , m_test_id(0)
     {}
 
     Base::~Base()
@@ -18,13 +19,14 @@ namespace test
         return m_state;
     }
 
-    void Base::start(uint32_t num_iterations)
+    void Base::start(uint32_t test_id, uint32_t num_iterations)
     {
+        m_test_id = test_id;
         m_iteration = 0;
         m_iteration_limit = num_iterations;
         m_state = State::Running;
         
-        ZEN_LOG("[TEST ", m_test_name, "] STARTING (", m_iteration_limit, " iterations).");
+        ZEN_LOG("[#", m_test_id, ".", m_test_name, "] ", m_iteration_limit, " iterations.");
         start_internal();
     }
 
@@ -32,7 +34,7 @@ namespace test
     {
         m_iteration++;
 
-        ZEN_LOG("[TEST ", m_test_name, "] UPDATE (", m_iteration, " / ", m_iteration_limit, ").");
+        ZEN_LOG("[#", m_test_id, ".", m_test_name, "] UPDATE (", m_iteration, " / ", m_iteration_limit, ").");
 
         if (m_iteration >= m_iteration_limit)
         {

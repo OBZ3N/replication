@@ -20,7 +20,10 @@ namespace test
         bool validate();
 
         zen::data::Vector<ZEN_TYPE> m_reference;
-        zen::data::Vector<ZEN_TYPE> m_array;
+        zen::data::Vector<ZEN_TYPE> m_input;
+        zen::data::Vector<ZEN_TYPE> m_output;
+
+        uint32_t m_data[10000];
     };
 }
 

@@ -11,7 +11,7 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        void Vector<TYPE>::calculate_item_id_num_bits()
+        void Vector<TYPE>::calculate_item_id_num_bits() const
         {
             m_item_id_num_bits = serializers::number_of_bits_required(INVALID_ITEM_ID, (ItemId)m_pool.size() - 1);
 
@@ -148,6 +148,17 @@ namespace zen
 
             if (values_changed)
             {
+                // encoding the item_ids using the pool size for maximum compression.
+                // check if we need to re-calculate the number of compression bits.
+                bool size_changed = reference.m_pool.size() != m_pool.size();
+
+                // if the m_item_id_num_bits has never been calculated before, calculate it first.
+                if (size_changed || m_item_id_num_bits == 0)
+                {
+                    calculate_item_id_num_bits();
+                }
+
+                // then check if the number of compression bits actually changed.
                 bool item_id_num_bits_changed = (reference.m_item_id_num_bits != m_item_id_num_bits);
 
                 serializers::serialize_boolean(item_id_num_bits_changed, delta_bits);
@@ -464,13 +475,77 @@ namespace zen
 
             size_t num_items = randomizer.get_integer_ranged<size_t>(8, 100);
 
-            for (size_t i = 0; i < m_array.size(); ++i)
+            for (size_t i = 0; i < num_items; ++i)
             {
                 TYPE item;
 
                 item.debug_randomize(randomizer);
 
                 push_back(item);
+            }
+
+            // swap items around to randomize the linked list.
+            size_t num_swaps = randomizer.get_integer_ranged<size_t>(8, 100);
+
+            for (size_t i = 0; i < num_swaps; ++i)
+            {
+                size_t array_index_a = randomizer.get_integer_ranged(num_items);
+                size_t array_index_b = randomizer.get_integer_ranged(num_items);
+
+                if (array_index_a == array_index_b)
+                    continue;
+
+                if (array_index_a > array_index_b) 
+                    std::swap(array_index_a, array_index_b);
+
+                ItemId item_id_a = m_array[array_index_a];
+                ItemId item_id_b = m_array[array_index_b];
+
+                // swap items in the array.
+                m_array[array_index_a] = item_id_b;
+                m_array[array_index_b] = item_id_a;
+
+                Item* item_a = get_item(item_id_a);
+                Item* item_b = get_item(item_id_b);
+
+                // current prev and next items.
+                ItemId item_id_prev_a = item_a->m_prev;
+                ItemId item_id_next_a = item_a->m_next;
+                ItemId item_id_prev_b = item_b->m_prev;
+                ItemId item_id_next_b = item_b->m_next;
+
+                Item* item_prev_a = get_item(item_id_prev_a);
+                Item* item_next_a = get_item(item_id_next_a);
+                Item* item_prev_b = get_item(item_id_prev_b);
+                Item* item_next_b = get_item(item_id_next_b);
+
+                if (item_id_next_a == item_id_b)
+                {
+                    // swap links of prev and next items.
+                    if (item_prev_a) item_prev_a->m_next = item_id_b;
+                    if (item_next_b) item_next_b->m_prev = item_id_a;
+
+                    // swap links of items.
+                    item_a->m_prev = item_id_b;
+                    item_a->m_next = item_id_next_b;
+                    item_b->m_next = item_id_a;
+                    item_b->m_prev = item_id_prev_a;
+                }
+                else
+                {
+                    // swap links of prev and next items.
+                    if (item_prev_a) item_prev_a->m_next = item_id_b;
+                    if (item_next_a) item_next_a->m_prev = item_id_b;
+                    if (item_prev_b) item_prev_b->m_next = item_id_a;
+                    if (item_next_b) item_next_b->m_prev = item_id_a;
+
+                    // swap links of items.
+                    item_a->m_prev = item_id_prev_b;
+                    item_a->m_next = item_id_next_b;
+                    item_b->m_prev = item_id_prev_a;
+                    item_b->m_next = item_id_next_a;
+                }
+                core::Vector<TYPE>::sanity_check();
             }
         }
     }

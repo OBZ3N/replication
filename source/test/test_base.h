@@ -22,7 +22,7 @@ namespace test
 
         State get_state() const;
 
-        void start(uint32_t num_iterations);
+        void start(uint32_t test_id, uint32_t num_iterations);
         void update();
 
     protected:
@@ -32,6 +32,7 @@ namespace test
         const std::string m_test_name;
         zen::debug::Randomizer& m_randomizer;
         State m_state;
+        uint32_t m_test_id;
         uint32_t m_iteration;
         uint32_t m_iteration_limit;
     };

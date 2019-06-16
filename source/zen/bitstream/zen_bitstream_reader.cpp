@@ -164,6 +164,16 @@ namespace zen
             return (m_position + num_bits > m_bitcount);
         }
 
+        size_t Reader::get_bits_left(size_t position) const
+        {
+            return (position <= m_bitcount) ? (m_bitcount - position) : 0;
+        }
+
+        size_t Reader::get_bits_left() const
+        {
+            return get_bits_left(m_position);
+        }
+
         size_t Reader::position() const
         {
             return m_position;

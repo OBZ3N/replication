@@ -21,17 +21,19 @@ namespace zen
 
             if (value <= value_min)
             {
-                n_value = core::convert_to_little_endian(0);
+                n_value = 0;
             }
-            else if (value >= value_max)
+            else
             {
-                n_value = core::convert_to_little_endian(value - value_min);
+                n_value = (value - value_min);
 
                 if (n_value > n_value_max)
                 {
                     n_value = n_value_max;
                 }
             }
+
+            n_value = core::convert_to_little_endian(n_value);
 
             return out.write(&n_value, num_bits);
         }

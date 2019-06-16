@@ -38,6 +38,9 @@ namespace zen
             bool   empty() const;
             bool   overflow(size_t num_bits) const;
 
+            size_t get_bits_left(size_t position) const;
+            size_t get_bits_left() const;
+
             void   get_bitfields(void*& bitfields, size_t& bitcount);
 
         protected:

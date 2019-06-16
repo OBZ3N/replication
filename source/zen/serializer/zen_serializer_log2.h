@@ -22,11 +22,12 @@ namespace zen
             return num_bits;
         }
 
-        inline size_t number_of_bits_required(size_t value_min, size_t value_max)
+        template<typename TYPE>
+        inline size_t number_of_bits_required(TYPE value_min, TYPE value_max)
         {
             ZEN_ASSERT(value_max >= value_min, "value_max(", value_max, ") < value_min(", value_min, ").");
 
-            return number_of_bits_required(value_max - value_min);
+            return number_of_bits_required(size_t(value_max - value_min));
         }
     }
 }

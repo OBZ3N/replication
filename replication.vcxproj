@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -27,7 +27,6 @@
     <ClCompile Include="source\zen\bitstream\zen_bitstream_writer.cpp" />
     <ClCompile Include="source\zen\data\zen_data_factory.cpp" />
     <ClCompile Include="source\zen\data\zen_data_mutable.cpp" />
-    <ClCompile Include="source\zen\debug\zen_debug.cpp" />
     <ClCompile Include="source\zen\debug\zen_debug_output.cpp" />
     <ClCompile Include="source\zen\debug\zen_debug_random.cpp" />
   </ItemGroup>
@@ -62,7 +61,6 @@
     <ClInclude Include="source\zen\data\zen_data_string.hpp" />
     <ClInclude Include="source\zen\data\zen_data_vector.h" />
     <ClInclude Include="source\zen\data\zen_data_vector.hpp" />
-    <ClInclude Include="source\zen\debug\zen_debug.h" />
     <ClInclude Include="source\zen\debug\zen_debug_assert.h" />
     <ClInclude Include="source\zen\debug\zen_debug_output.h" />
     <ClInclude Include="source\zen\debug\zen_debug_random.h" />

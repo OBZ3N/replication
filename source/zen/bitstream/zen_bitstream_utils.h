@@ -2,7 +2,7 @@
 #pragma once
 
 #include <cinttypes>
-#include "zen/debug/zen_debug.h"
+#include "zen/debug/zen_debug_assert.h"
 
 //#define STREAMING_ALIGN_TO_BYTES
 

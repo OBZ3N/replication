@@ -7,7 +7,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "zen/debug/zen_debug.h"
+#include "zen/debug/zen_debug_assert.h"
 #include "zen/data/zen_data_vector.h"
 #include "zen/data/zen_data_raw.h"
 #include "zen/data/zen_data_vector.h"
@@ -26,14 +26,16 @@ void main()
 
     std::vector<test::Base*> tests;
 
-    tests.push_back(new test::Bitstream(randomizer));
-    tests.push_back(new test::Vector<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
-    //tests.push_back(new test::VectorSerialization<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
+    //tests.push_back(new test::Bitstream(randomizer));
+    //tests.push_back(new test::Vector<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
+    tests.push_back(new test::VectorSerialization<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
 
     uint32_t test_iteration = 0;
 
     while ( true )
     {
+        test_iteration++;
+
         randomizer.seed(1000 + test_iteration);
 
         ZEN_LOG("test #", test_iteration,"...");
@@ -42,7 +44,7 @@ void main()
 
         uint32_t num_iterations = randomizer.get_integer_ranged(10, 100);
 
-        tests[test]->start(num_iterations);
+        tests[test]->start(test_iteration, num_iterations);
 
         while (tests[test]->get_state() == test::Base::State::Running)
         {
@@ -50,8 +52,6 @@ void main()
 
             Sleep(1);
         }
-
-        test_iteration++;
 
         Sleep(1);
     }

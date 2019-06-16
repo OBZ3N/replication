@@ -6,167 +6,120 @@ namespace test
 {
     Bitstream::Bitstream(zen::debug::Randomizer& randomizer)
         : Base("Bitstream", randomizer)
+        , m_writer(m_data, sizeof(m_data) << 3)
     {
     }
 
     void Bitstream::start_internal()
     {
+        m_writer = zen::bitstream::Writer(m_data, sizeof(m_data) << 3);
+    }
+
+    void Bitstream::calculate_valid_tests(std::vector<Bitstream::Test>& tests)
+    {
+        tests.clear();
+        tests.push_back(Test::Write);
+        
+        if (!m_writer.empty())
+        {
+            tests.push_back(Test::Poke);
+            tests.push_back(Test::Read);
+            tests.push_back(Test::Peek);
+        }
     }
 
     bool Bitstream::update_internal()
     {
-        size_t test_to_run = m_randomizer.get_integer_ranged(4);
-        switch (test_to_run)
+        std::vector<Test> tests;
+        calculate_valid_tests(tests);
+
+        size_t test_to_run = m_randomizer.get_integer_ranged(tests.size());
+        switch (tests[test_to_run])
         {
-        default:    return false;
-        case 0:     return write();
-        case 1:     return poke();
-        case 2:     return read();
-        case 3:     return peek();
+        default:             return false;
+        case Test::Write:    return write();
+        case Test::Poke:     return poke();
+        case Test::Read:     return read();
+        case Test::Peek:     return peek();
         }
     }
 
     bool Bitstream::write()
     {
-        bool retry;
-        do
-        {
-            // set up the data buffer.
-            size_t written_bitcount;
-            m_randomizer.get_bits(m_data, written_bitcount, (sizeof(m_data) << 3));
-            zen::bitstream::Writer writer(m_data, written_bitcount);
-            size_t written_position = writer.bitcount();
-
-            // set up a buffer to append.
-            size_t write_size;
-            m_randomizer.get_bits(m_temp, write_size, (sizeof(m_temp) << 3));
-
-            if (writer.write(m_temp, write_size))
-            {
-                ZEN_LOG("    - write(", write_size, " bits @ ", written_position, ")");
-
-                retry = false;
+        size_t write_position = m_writer.bitcount();
+        size_t write_size;
+        m_randomizer.get_bits(m_temp, write_size, (sizeof(m_temp) << 3));
         
-                // validate.
-                for (uint32_t i = 0; i < write_size; ++i)
-                {
-                    ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + written_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + written_position, "] != temp[", i, "].");
-                }
-            }
-            else
-            {
-                retry = true;
-            }
-        } 
-        while (retry);
+        if (m_writer.write(m_temp, write_size))
+        {
+            ZEN_LOG("    - write(", write_size, " bits @ ", write_position, ")");
 
+            // validate.
+            for (uint32_t i = 0; i < write_size; ++i)
+            {
+                ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + write_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + write_position, "] != temp[", i, "].");
+            }
+            m_reader = zen::bitstream::Reader(m_data, m_writer.bitcount(), m_reader.position());
+        }
         return true;
     }
 
     bool Bitstream::poke()
     {
-        bool retry;
-        do
+        #undef min
+        size_t poke_position = m_randomizer.get_integer_ranged(m_writer.bitcount());
+        size_t poke_size;
+        size_t poke_capacity = std::min(size_t(m_writer.bitcount() - poke_position), size_t(sizeof(m_temp) << 3));
+        m_randomizer.get_bits(m_temp, poke_size, poke_capacity);
+        
+        if (m_writer.poke(m_temp, poke_size, poke_position))
         {
-            // set up the data buffer.
-            size_t written_bitcount;
-            m_randomizer.get_bits(m_data, written_bitcount, (sizeof(m_data) << 3));
-            zen::bitstream::Writer writer(m_data, written_bitcount);
+            ZEN_LOG("    - poke(", poke_size, " bits @ ", poke_position, ")");
 
-            // set up a buffer to poke.
-            size_t poke_size;
-            m_randomizer.get_bits(m_temp, poke_size, (sizeof(m_temp) << 3));
-            size_t poke_position = m_randomizer.get_integer_ranged(written_bitcount);
-
-            if (writer.poke(m_temp, poke_size, poke_position))
+            // validate.
+            for (uint32_t i = 0; i < poke_size; ++i)
             {
-                ZEN_LOG("    - poke(", poke_size, " bits @ ", poke_position, ")");
-
-                retry = false;
-
-                // validate.
-                for (uint32_t i = 0; i < poke_size; ++i)
-                {
-                    ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + poke_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + poke_position, "] != temp[", i, "].");
-                }
+                ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + poke_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + poke_position, "] != temp[", i, "].");
             }
-            else
-            {
-                retry = true;
-            }
+            m_reader = zen::bitstream::Reader(m_data, m_writer.bitcount(), m_reader.position());
         }
-        while(retry);
-
         return true;
     }
 
     bool Bitstream::read()
     {
-        bool retry;
-        do
+        // try to read a chunk from the data buffer.
+        size_t read_position = m_reader.position();
+        size_t num_bits_to_read = m_randomizer.get_integer_ranged(m_reader.get_bits_left(read_position));
+        num_bits_to_read = std::min(num_bits_to_read, size_t(sizeof(m_temp) << 3));
+
+        if (m_reader.read(m_temp, num_bits_to_read))
         {
-            // sets up a reference buffer.
-            size_t written_bitcount;
-            m_randomizer.get_bits(m_data, written_bitcount, (sizeof(m_data) << 3));
-            size_t read_position = m_randomizer.get_integer_ranged(written_bitcount);
-            zen::bitstream::Reader reader(m_data, written_bitcount, read_position);
+            ZEN_LOG("    - read(", num_bits_to_read, " bits @ ", read_position, ")");
 
-            // try to read a chunk from the data buffer.
-            size_t num_bits_to_read = m_randomizer.get_integer_ranged(reader.bitcount());
-
-            if (reader.read(m_temp, num_bits_to_read))
+            for (uint32_t i = 0; i < num_bits_to_read; ++i)
             {
-                ZEN_LOG("    - read(", num_bits_to_read, " bits @ ", read_position, ")");
-
-                retry = false;
-
-                for (uint32_t i = 0; i < num_bits_to_read; ++i)
-                {
-                    ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + read_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + read_position, "] != temp[", i, "].");
-                }
-            }
-            else
-            {
-                retry = true;
+                ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + read_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + read_position, "] != temp[", i, "].");
             }
         }
-        while (retry);
-
         return true;
     }
 
     bool Bitstream::peek()
     {
-        bool retry;
-        do
+        size_t read_position = m_randomizer.get_integer_ranged(m_reader.bitcount());
+        size_t num_bits_to_read = m_randomizer.get_integer_ranged(m_reader.get_bits_left());
+        num_bits_to_read = std::min(num_bits_to_read, size_t(sizeof(m_temp) << 3));
+
+        if (m_reader.peek(m_temp, num_bits_to_read, read_position))
         {
-            // sets up a reference buffer.
-            size_t written_bitcount;
-            m_randomizer.get_bits(m_data, written_bitcount, (sizeof(m_data) << 3));
-            size_t read_position = m_randomizer.get_integer_ranged(written_bitcount);
-            zen::bitstream::Reader reader(m_data, written_bitcount, read_position);
+            ZEN_LOG("    - peek(", num_bits_to_read, " bits @ ", read_position, ")");
 
-            // try to read a chunk from the data buffer.
-            size_t num_bits_to_read = m_randomizer.get_integer_ranged(reader.bitcount());
-
-            if (reader.peek(m_temp, num_bits_to_read, read_position))
+            for (uint32_t i = 0; i < num_bits_to_read; ++i)
             {
-                ZEN_LOG("    - peek(", num_bits_to_read, " bits @ ", read_position, ")");
-
-                retry = false;
-
-                for (uint32_t i = 0; i < num_bits_to_read; ++i)
-                {
-                    ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + read_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + read_position, "] != temp[", i, "].");
-                }
-            }
-            else
-            {
-                retry = true;
+                ZEN_ASSERT_RETURN(zen::bitstream::get_bit(m_data, i + read_position) == zen::bitstream::get_bit(m_temp, i), false, "data[", i + read_position, "] != temp[", i, "].");
             }
         }
-        while (retry);
-
         return true;
     }
 }

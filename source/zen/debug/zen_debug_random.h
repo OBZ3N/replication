@@ -30,9 +30,9 @@ namespace zen
 
             void get_bits(uint32_t* bits, size_t num_bits);
             void get_bits(uint32_t* bits, size_t& num_bits, size_t max_bits);
-            void get_string(std::string& string);
 
-            void get_bits(uint32_t* bitfield, size_t num_bits);
+            void get_string(std::string& string, size_t& length, size_t max_length);
+            void get_string(std::string& string, size_t max_length);
 
         private:
             std::mt19937 m_mersenne_generator;

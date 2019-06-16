@@ -31,6 +31,9 @@ namespace zen
             bool set_position(size_t position);
             size_t position() const;
             size_t bitcount() const;
+            
+            size_t get_bits_left(size_t position) const;
+            size_t get_bits_left() const;
 
             Result get_last_result() const;
             void set_last_result(Result result);

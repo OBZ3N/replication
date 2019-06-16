@@ -188,7 +188,7 @@ namespace zen
             m_element = nullptr;
 
             // randomize type.
-            m_element_type_id = randomizer.get_integer_ranged(0, m_factory->get_num_types() - 1);
+            m_element_type_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_num_types() - 1);
             
             // randomize object.
             m_element = m_factory->construct_element(m_element_type_id);

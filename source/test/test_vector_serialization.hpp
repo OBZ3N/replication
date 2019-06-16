@@ -18,7 +18,21 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool VectorSerialization<GENERIC_TYPE, ZEN_TYPE>::update_internal()
     {
-        return false;
+        m_reference.debug_randomize(m_randomizer);
+        m_input.debug_randomize(m_randomizer);
+        
+        zen::bitstream::Writer writer(m_data, sizeof(m_data) << 3);
+        bool serialize_result = m_input.serialize_delta(m_reference, writer, writer);
+
+        zen::bitstream::Reader reader(m_data, writer.bitcount());
+        bool deserialize_result = m_output.deserialize_delta(m_reference, reader, reader);
+
+        ZEN_ASSERT(serialize_result, "serialize failed.");
+        ZEN_ASSERT(deserialize_result, "deserialize failed.");
+        ZEN_ASSERT(reader.eof(), "reader has bits left to read.");
+        ZEN_ASSERT(m_input == m_output, "m_input != m_output.");
+
+        return true;
     }
     
     template<typename GENERIC_TYPE, typename ZEN_TYPE>

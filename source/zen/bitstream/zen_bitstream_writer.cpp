@@ -109,7 +109,7 @@ namespace zen
 
             return true;
         }
-                
+
         bool Writer::overflow(size_t num_bits) const
         {
             return (m_bitcount + num_bits > m_bitcapacity);
@@ -120,10 +120,19 @@ namespace zen
             return ( m_bitcount == 0 );
         }
 
-
         size_t Writer::bitcount() const
         {
             return m_bitcount;
+        }
+
+        size_t Writer::get_bits_left(size_t position) const
+        {
+            return (position < m_bitcapacity) ? (m_bitcapacity - position) : 0;
+        }
+
+        size_t Writer::get_bits_left() const
+        {
+            return get_bits_left(m_bitcount);
         }
 
         void Writer::get_bitfields(void*& bitfields, size_t& bitcount)

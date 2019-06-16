@@ -7,32 +7,53 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     Vector<GENERIC_TYPE, ZEN_TYPE>::Vector(zen::debug::Randomizer& randomizer)
         : Base("Vector", randomizer)
-        , m_value_iterator(0)
     {
     }
 
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     void Vector<GENERIC_TYPE, ZEN_TYPE>::start_internal()
     {
-        m_value_iterator = 0;
+    }
+
+    template<typename GENERIC_TYPE, typename ZEN_TYPE>
+    void Vector<GENERIC_TYPE, ZEN_TYPE>::calculate_valid_tests(std::vector<Vector<GENERIC_TYPE, ZEN_TYPE>::Test>& tests)
+    {
+        tests.clear();
+        tests.push_back(Test::PushFront);
+        tests.push_back(Test::PushBack);
+
+        if (m_generic_array.size() > 0)
+        {
+            tests.push_back(Test::Insert);
+        }
+
+        if (m_generic_array.size() > 8)
+        {
+            tests.push_back(Test::PopFront);
+            tests.push_back(Test::PopBack);
+            tests.push_back(Test::Erase);
+        }
     }
 
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::update_internal()
     {
-        size_t test_to_run = m_randomizer.get_integer_ranged(6);
-        switch (test_to_run)
+        std::vector<Test> tests;
+        calculate_valid_tests(tests);
+
+        size_t test_to_run = m_randomizer.get_integer_ranged(tests.size());
+        switch (tests[test_to_run])
         {
-        default:    return false;
-        case 0:     return push_front();
-        case 1:     return pop_front();
-        case 2:     return push_back();
-        case 3:     return pop_back();
-        case 4:     return erase();
-        case 5:     return insert();
+        default:                return false;
+        case Test::PushFront:   return push_front();
+        case Test::PopFront:    return pop_front();
+        case Test::PushBack:    return push_back();
+        case Test::PopBack:     return pop_back();
+        case Test::Erase:       return erase();
+        case Test::Insert:      return insert();
         }
     }
-    
+
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::validate()
     {
@@ -48,15 +69,12 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::push_front()
     {
-        m_value_iterator++;
-
-        ZEN_LOG("    - push_front(", m_value_iterator, ")");
-
-        GENERIC_TYPE generic_value = m_value_iterator;
-        m_generic_array.insert(m_generic_array.begin(), generic_value);
-
         ZEN_TYPE zen_value;
-        zen_value.set_value(m_value_iterator);
+        zen_value.debug_randomize(m_randomizer);
+
+        ZEN_LOG("    - push_front(", zen_value.get_value(), ")");
+
+        m_generic_array.insert(m_generic_array.begin(), zen_value.get_value());
         m_zen_array.push_front(zen_value);
 
         return validate();
@@ -65,14 +83,12 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::push_back()
     {
-        m_value_iterator++;
-        ZEN_LOG("    - push_back(", m_value_iterator, ")");
-        
-        GENERIC_TYPE generic_value = m_value_iterator;
-        m_generic_array.push_back(generic_value);
-
         ZEN_TYPE zen_value;
-        zen_value.set_value(m_value_iterator);
+        zen_value.debug_randomize(m_randomizer);
+
+        ZEN_LOG("    - push_back(", zen_value.get_value(), ")");
+
+        m_generic_array.push_back(zen_value.get_value());
         m_zen_array.push_back(zen_value);
 
         return validate();
@@ -81,12 +97,6 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::pop_front()
     {
-        if (m_zen_array.empty())
-        {
-            if (!push_front())
-                return false;
-        }
-
         ZEN_LOG("    - pop_front()");
 
         GENERIC_TYPE generic_value = m_generic_array.front();
@@ -103,12 +113,6 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::pop_back()
     {
-        if (m_zen_array.empty())
-        {
-            if (!push_back())
-                return false;
-        }
-
         ZEN_LOG("    - pop_back()");
 
         GENERIC_TYPE generic_value = m_generic_array.back();
@@ -125,12 +129,6 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::erase()
     {
-        if (m_zen_array.empty())
-        {
-            if (!push_back())
-                return false;
-        }
-
         uint32_t index = m_randomizer.get_integer_ranged(m_zen_array.size());
         ZEN_LOG("    - erase(", index, ")");
 
@@ -146,16 +144,16 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool Vector<GENERIC_TYPE, ZEN_TYPE>::insert()
     {
-        m_value_iterator++;
-        uint32_t index = m_randomizer.get_integer_ranged(m_zen_array.size());
-        ZEN_LOG("    - insert(", m_value_iterator, " @ ", index, ")");
+        ZEN_TYPE zen_value;
+        zen_value.debug_randomize(m_randomizer);
 
+        uint32_t index = m_randomizer.get_integer_ranged(m_zen_array.size());
         std::vector<GENERIC_TYPE>::iterator it = m_generic_array.begin();
         std::advance(it, index);
-        m_generic_array.insert(it, m_value_iterator);
+        
+        ZEN_LOG("    - insert(", zen_value.get_value(), " @ ", index, ")");
 
-        ZEN_TYPE zen_value;
-        zen_value.set_value(m_value_iterator);
+        m_generic_array.insert(it, zen_value.get_value());
         m_zen_array.insert(index, zen_value);
 
         return validate();

@@ -54,7 +54,7 @@ namespace zen
             static constexpr size_t sc_item_id_max_bits = ((1 << sc_item_id_bitcount)-1);
 
             // number of bits required to serialize item ids (the number of bits required to serialize the range if ids [INVALID_ITEM_ID, m_pool.size()[).
-            void calculate_item_id_num_bits();
+            void calculate_item_id_num_bits() const;
 
             // maximum value an item id can have ((1 << m_item_id_num_bits) - 1), which is the power of two higher than m_pool.size().
             ItemId calculate_item_id_max() const;
@@ -64,7 +64,7 @@ namespace zen
             bool deserialize_item_id(ItemId& item_id, bitstream::Reader& in) const;
 
             // number of bits required to serialize item ids (roughly speaking, we round up to the power of two higher than the pool size, not forgetting the value INVALID_ITEM_ID).
-            size_t m_item_id_num_bits;
+            mutable size_t m_item_id_num_bits;
         };
     }
 }

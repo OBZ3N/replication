@@ -17,6 +17,18 @@ namespace test
         bool update_internal() override;
 
     public:
+        enum class Test
+        {
+            PushFront,
+            PopFront,
+            PushBack,
+            PopBack,
+            Erase,
+            Insert,
+        };
+
+        void calculate_valid_tests(std::vector<Test>& tests);
+
         bool push_front();
         bool pop_front();
         bool push_back();
@@ -25,7 +37,6 @@ namespace test
         bool insert();
         bool validate();
 
-        GENERIC_TYPE m_value_iterator;
         std::vector<GENERIC_TYPE> m_generic_array;
         zen::data::Vector<ZEN_TYPE> m_zen_array;
     };
