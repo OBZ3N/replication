@@ -53,6 +53,11 @@ namespace zen
         {
             const Boolean& rhs = (const Boolean&)element_rhs;
 
+            return (*this).operator=(rhs);
+        }
+
+        inline Boolean& Boolean::operator = (const Boolean& rhs)
+        {
             set_value(rhs.m_value);
 
             return *this;
@@ -110,7 +115,7 @@ namespace zen
             return in.ok();
         }
 
-        void Boolean::debug_randomize(zen::debug::Randomizer& randomizer)
+        inline void Boolean::debug_randomize(zen::debug::Randomizer& randomizer)
         {
             uint32_t i = randomizer.get_integer_ranged(0, 1);
             set_value((i == 1));

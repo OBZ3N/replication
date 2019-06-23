@@ -159,6 +159,11 @@ namespace zen
         {
             const Component& rhs = (const Component&) element_rhs;
 
+            return (*this).operator=(rhs);
+        }
+
+        Component& Component::operator = (const Component& rhs)
+        {
             if (m_registry_id != rhs.m_registry_id)
             {
                 if (!m_is_reference)

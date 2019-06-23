@@ -29,6 +29,7 @@ namespace zen
             inline bool operator != (const Element& rhs) const override;
 
             Element& operator = (const Element& rhs) override;
+            Component& operator = (const Component& rhs);
 
             void debug_randomize(debug::Randomizer& randomizer) override;
 

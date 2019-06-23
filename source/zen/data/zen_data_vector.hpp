@@ -50,6 +50,12 @@ namespace zen
         {
             const Vector<TYPE>& rhs = (const Vector<TYPE>&) element_rhs;
 
+            return (*this).operator=(rhs);
+        }
+
+        template<typename TYPE>
+        Vector<TYPE>& Vector<TYPE>::operator = (const Vector<TYPE>& rhs)
+        {
             clear();
 
             reserve(rhs.size());
@@ -441,7 +447,7 @@ namespace zen
             {
                 ItemId index_lhs = m_array[i];
                 ItemId index_rhs = rhs.m_array[i];
-                
+
                 if (index_lhs != index_rhs)
                     return false;
 

@@ -27,6 +27,8 @@ namespace zen
             bool operator != (const Element& rhs) const override;
 
             Element& operator = (const Element& rhs) override;
+            IntegerRanged<TYPE>& operator = (const IntegerRanged<TYPE>& element_rhs);
+
 
             bool set_value(TYPE value);
             TYPE get_value() const;

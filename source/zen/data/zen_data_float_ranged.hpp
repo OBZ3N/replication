@@ -266,9 +266,8 @@ namespace zen
         }
 
         template<typename TYPE>
-        Element& FloatRanged<TYPE>::operator = (const Element& element_rhs)
+        FloatRanged<TYPE>& FloatRanged<TYPE>::operator = (const FloatRanged<TYPE>& rhs)
         {
-            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
 
             set_value(rhs.m_value);
 
@@ -282,11 +281,22 @@ namespace zen
         }
 
         template<typename TYPE>
+        Element& FloatRanged<TYPE>::operator = (const Element& element_rhs)
+        {
+            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+
+            return (*this).operator=(rhs);
+        }
+
+        template<typename TYPE>
         void FloatRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer)
         {
-            TYPE min = randomizer.get_float_ranged((TYPE)-10000.0f, (TYPE)1000.0f);
-            TYPE max = randomizer.get_float_ranged(min, min + (TYPE)1000.0f);
-            TYPE value = randomizer.get_float_ranged(min, max);
+            #undef min
+            #undef max
+            TYPE half_range = (std::numeric_limits<TYPE>::max() - std::numeric_limits<TYPE>::min()) / 2;
+            TYPE min        = randomizer.get_float_ranged(std::numeric_limits<TYPE>::min(), half_range);
+            TYPE max        = randomizer.get_float_ranged(min, (TYPE)(min + half_range));
+            TYPE value      = randomizer.get_float_ranged(min, max);
             size_t num_bits = randomizer.get_integer_ranged(8, 24);
 
             set_value(value);

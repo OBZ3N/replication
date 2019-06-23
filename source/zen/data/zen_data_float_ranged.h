@@ -27,6 +27,7 @@ namespace zen
             bool operator != (const Element& rhs) const override;
 
             Element& operator = (const Element& rhs) override;
+            FloatRanged<TYPE>& operator = (const FloatRanged<TYPE>& rhs);
             
             bool set_value(TYPE value);
             TYPE get_value() const;

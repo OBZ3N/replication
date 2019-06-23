@@ -242,14 +242,20 @@ namespace zen
         }
 
         template<typename TYPE>
-        Element& IntegerRanged<TYPE>::operator = (const Element& element_rhs)
+        IntegerRanged<TYPE>& IntegerRanged<TYPE>::operator = (const IntegerRanged<TYPE>& rhs)
         {
-            const IntegerRanged<TYPE>& rhs = (const IntegerRanged<TYPE>&) element_rhs;
-
             set_value(rhs.m_value);
             set_value_min(rhs.m_value_min);
             set_value_max(rhs.m_value_max);
             return *this;
+        }
+
+        template<typename TYPE>
+        Element& IntegerRanged<TYPE>::operator = (const Element& element_rhs)
+        {
+            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+
+            return (*this).operator=(rhs);
         }
 
         template<typename TYPE>

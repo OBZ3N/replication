@@ -23,6 +23,11 @@ namespace zen
         {
             const String& rhs = (const String&)element_rhs;
 
+            return (*this).operator=(rhs);
+        }
+
+        inline String& String::operator = (const String& rhs)
+        {
             set_value(rhs.m_value);
 
             return *this;

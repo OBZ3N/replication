@@ -30,6 +30,7 @@ namespace zen
             bool operator != (const Element& rhs) const override;
 
             Element& operator = (const Element& rhs) override;
+            String& operator = (const String& rhs);
 
             void debug_randomize(debug::Randomizer& randomizer) override;
 
