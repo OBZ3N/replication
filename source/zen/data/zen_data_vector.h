@@ -13,6 +13,8 @@ namespace zen
         class Vector: public Element, public core::Vector<TYPE>
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             Vector(size_t capcity = 0);
 
             bool serialize_full(bitstream::Writer& out) const override;

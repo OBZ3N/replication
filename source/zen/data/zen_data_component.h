@@ -9,13 +9,15 @@ namespace zen
 {
     namespace data
     {
-        class Mutable : public Element
+        class Component : public Element
         {
         public:
-            Mutable(Factory* factory, Factory::TypeId type_id, Element& element);
-            Mutable(Factory* factory);
-            Mutable();
-            ~Mutable();
+            DECLARE_RTTI_TYPE_ID();
+
+            Component();
+            Component(Factory* factory);
+            Component(Factory* factory, Factory::RegistryId registry_id, Element& element);
+            ~Component();
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;
@@ -34,7 +36,7 @@ namespace zen
 
         private:
             Factory*            m_factory;
-            Factory::TypeId     m_element_type_id;
+            Factory::RegistryId m_registry_id;
             Element*            m_element;
             bool                m_is_reference;
         };

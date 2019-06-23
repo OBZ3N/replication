@@ -9,6 +9,8 @@ namespace zen
         class Boolean : public Element
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             Boolean();
             Boolean(bool value);
 

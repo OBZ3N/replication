@@ -1,4 +1,4 @@
-#include "zen/data/zen_data_mutable.h"
+#include "zen/data/zen_data_component.h"
 #include "zen/debug/zen_debug_assert.h"
 #include "zen/serializer/zen_serializer_raw.h"
 #include "zen/serializer/zen_serializer_boolean.h"
@@ -8,28 +8,28 @@ namespace zen
 {
     namespace data
     {
-        Mutable::Mutable(Factory* factory, Factory::TypeId type_id, Element& element)
+        Component::Component(Factory* factory, Factory::RegistryId registry_id, Element& element)
             : m_factory(factory)
-            , m_element_type_id(type_id)
+            , m_registry_id(registry_id)
             , m_element(&element)
             , m_is_reference(true)
         {}
 
-        Mutable::Mutable(Factory* factory)
+        Component::Component(Factory* factory)
             : m_factory(factory)
-            , m_element_type_id(Factory::INVALID_TYPE_ID)
+            , m_registry_id(Factory::INVALID_REGISTRY_ID)
             , m_element(nullptr)
             , m_is_reference(true)
         {}
 
-        Mutable::Mutable()
+        Component::Component()
             : m_factory(nullptr)
-            , m_element_type_id(Factory::INVALID_TYPE_ID)
+            , m_registry_id(Factory::INVALID_REGISTRY_ID)
             , m_element(nullptr)
             , m_is_reference(true)
         {}
 
-        Mutable::~Mutable()
+        Component::~Component()
         {
             if (!m_is_reference)
             {
@@ -37,21 +37,21 @@ namespace zen
             }
         }
 
-        bool Mutable::serialize_full(bitstream::Writer& out) const
+        bool Component::serialize_full(bitstream::Writer& out) const
         {
-            zen::serializers::serialize_raw(m_element_type_id, out);
+            zen::serializers::serialize_raw(m_registry_id, out);
             m_element->serialize_full(out);
 
             return out.ok();
         }
 
-        bool Mutable::deserialize_full(bitstream::Reader& in)
+        bool Component::deserialize_full(bitstream::Reader& in)
         {
-            Factory::TypeId element_type_id;
-            if (!zen::serializers::deserialize_raw(element_type_id, in))
+            Factory::RegistryId element_registry_id;
+            if (!zen::serializers::deserialize_raw(element_registry_id, in))
                 return false;
             
-            if (element_type_id != m_element_type_id)
+            if (element_registry_id != m_registry_id)
             {
                 if (!m_is_reference)
                 {
@@ -60,9 +60,9 @@ namespace zen
 
                 m_is_reference = false;
 
-                m_element_type_id = element_type_id;
+                m_registry_id = element_registry_id;
 
-                m_element = m_factory->construct_element(element_type_id);
+                m_element = m_factory->construct_element(element_registry_id);
 
                 set_touched(true);
             }
@@ -70,11 +70,11 @@ namespace zen
             return m_element->deserialize_full(in);
         }
 
-        bool Mutable::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
+        bool Component::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
         {
-            const Mutable& reference = (const Mutable&) element_reference;
+            const Component& reference = (const Component&) element_reference;
 
-            bool type_id_changed = (m_element_type_id != reference.m_element_type_id);
+            bool type_id_changed = (m_registry_id != reference.m_registry_id);
 
             if (!serializers::serialize_boolean(type_id_changed, delta_bits))
                 return false;
@@ -85,11 +85,11 @@ namespace zen
             }
             else
             {
-                if (!m_factory->serialize_type_id(m_element_type_id, out))
+                if (!m_factory->serialize_registry_id(m_registry_id, out))
                     return false;
             
                 // create default element to delta against.
-                Element* base = m_factory->construct_element(m_element_type_id);
+                Element* base = m_factory->construct_element(m_registry_id);
 
                 m_element->serialize_delta(*base, out, delta_bits);
                 
@@ -100,9 +100,9 @@ namespace zen
             }
         }
 
-        bool Mutable::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
+        bool Component::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            const Mutable& reference = (const Mutable&) element_reference;
+            const Component& reference = (const Component&) element_reference;
 
             bool type_id_changed;
             if (!serializers::deserialize_boolean(type_id_changed, delta_bits))
@@ -114,8 +114,8 @@ namespace zen
             }
             else
             {
-                Factory::TypeId element_type_id;
-                if (!m_factory->deserialize_type_id(element_type_id, in))
+                Factory::RegistryId element_registry_id;
+                if (!m_factory->deserialize_registry_id(element_registry_id, in))
                     return false;
 
                 if (!m_is_reference)
@@ -125,11 +125,11 @@ namespace zen
 
                 m_is_reference = false;
 
-                m_element_type_id = element_type_id;
+                m_registry_id = element_registry_id;
                 
-                m_element = m_factory->construct_element(element_type_id);
+                m_element = m_factory->construct_element(element_registry_id);
 
-                Element* base = m_factory->construct_element(element_type_id);
+                Element* base = m_factory->construct_element(element_registry_id);
 
                 m_element->deserialize_delta(*base, in, delta_bits);
                 
@@ -138,28 +138,28 @@ namespace zen
             }
         }
 
-        bool Mutable::operator == (const Element& element_rhs) const
+        bool Component::operator == (const Element& element_rhs) const
         {
-            const Mutable& rhs = (const Mutable&)element_rhs;
+            const Component& rhs = (const Component&)element_rhs;
 
-            if (m_element_type_id != rhs.m_element_type_id)
+            if (m_registry_id != rhs.m_registry_id)
                 return false;
 
             return (*m_element == *rhs.m_element);
         }
 
-        bool Mutable::operator != (const Element& element_rhs) const
+        bool Component::operator != (const Element& element_rhs) const
         {
-            const Mutable& rhs = (const Mutable&) element_rhs;
+            const Component& rhs = (const Component&) element_rhs;
 
             return !((*this) == rhs);
         }
 
-        Element& Mutable::operator = (const Element& element_rhs)
+        Element& Component::operator = (const Element& element_rhs)
         {
-            const Mutable& rhs = (const Mutable&) element_rhs;
+            const Component& rhs = (const Component&) element_rhs;
 
-            if (m_element_type_id != rhs.m_element_type_id)
+            if (m_registry_id != rhs.m_registry_id)
             {
                 if (!m_is_reference)
                 {
@@ -168,9 +168,9 @@ namespace zen
 
                 m_is_reference = false;
 
-                m_element_type_id = rhs.m_element_type_id;
+                m_registry_id = rhs.m_registry_id;
 
-                m_element = m_factory->construct_element(m_element_type_id);
+                m_element = m_factory->construct_element(m_registry_id);
             }
 
             *m_element = *rhs.m_element;
@@ -178,20 +178,20 @@ namespace zen
             return *this;
         }
 
-        void Mutable::debug_randomize(debug::Randomizer& randomizer)
+        void Component::debug_randomize(debug::Randomizer& randomizer)
         {
             // cleanup.
             if (!m_is_reference)
                 delete m_element;
 
-            m_element_type_id = Factory::INVALID_TYPE_ID;
+            m_registry_id = Factory::INVALID_REGISTRY_ID;
             m_element = nullptr;
 
             // randomize type.
-            m_element_type_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_num_types() - 1);
+            m_registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
             
             // randomize object.
-            m_element = m_factory->construct_element(m_element_type_id);
+            m_element = m_factory->construct_element(m_registry_id);
             m_element->debug_randomize(randomizer);
         }
     }

@@ -20,13 +20,12 @@ namespace zen
         {
             string.clear();
 
-            std::uniform_int_distribution<int32_t> uniform_distribution('0', 'z');
-
             uint32_t num_chars = get_integer_ranged(max_length-1);
 
             for (size_t i = 0; i < num_chars; ++i)
             {
-                int8_t character = (int8_t)uniform_distribution(m_mersenne_generator);
+                int8_t character = get_integer_ranged('0', 'z');
+
                 string.push_back(character);
             }
             string.push_back('\0');
@@ -39,28 +38,35 @@ namespace zen
             get_string(string, length);
         }
 
-        void Randomizer::get_bits(uint32_t* bits, size_t num_bits)
+        void Randomizer::get_bits(void* bits, size_t num_bits)
         {
+            uint32_t* bitfield = (uint32_t*)bits;
+
             std::uniform_int_distribution<uint32_t> uniform_distribution;
 
             uint32_t num_words = (num_bits >> 5);
 
             for (size_t i = 0; i < num_words; ++i)
             {
-                bits[i] = uniform_distribution(m_mersenne_generator);
+                bitfield[i] = uniform_distribution(m_mersenne_generator);
             }
 
             if (num_bits & 31)
             {
                 uint32_t tail_bits = (num_bits & 31);
+
                 uint32_t mask = ((1 << tail_bits) - 1);
+
                 uint32_t r = uniform_distribution(m_mersenne_generator);
-                bits[num_words] = (r & mask) | (bits[num_words] & !mask);
+
+                bitfield[num_words] = (r & mask) | (bitfield[num_words] & !mask);
             }
         }
  
-        void Randomizer::get_bits(uint32_t* bitfield, size_t& num_bits, size_t max_bits)
+        void Randomizer::get_bits(void* bits, size_t& num_bits, size_t max_bits)
         {
+            uint32_t* bitfield = (uint32_t*)bits;
+
             num_bits = get_integer_ranged(max_bits);
 
             get_bits(bitfield, num_bits);

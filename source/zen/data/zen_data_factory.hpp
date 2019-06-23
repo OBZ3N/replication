@@ -7,38 +7,32 @@ namespace zen
 {
     namespace data
     {
-        template<typename Type>
-        Factory::TypeId Factory::register_element_type(const char* type_name)
+
+        template<typename Class> bool Factory::is_class_registered() const
         {
-            Item item;
+            auto it = m_type_lookup.find(Class::get_type_id_instance().get_instance_id());
 
-            item.m_type_name = type_name;
-
-            item.m_type_id = (TypeId)m_type_registry.size();
-
-            item.m_constructor_func = element_constructor<Type>;
-
-            m_type_registry.push_back(item);
-
-            m_type_table[type_name] = item;
-
-            m_type_id_max = item.m_type_id;
-
-            m_num_bits = zen::serializers::number_of_bits_required(INVALID_TYPE_ID, m_type_id_max);
-
-            return item.m_type_id;
+            return it != m_type_lookup.end();
         }
 
-        template<typename Type>
-        Factory::TypeId Factory::get_element_type_id() const
+        template<typename Class> Factory::RegistryId Factory::register_class()
         {
-            return TypeRegistrar<Type>::s_type_id;
+            return register_internal(Class::get_type_id_instance(), construct_type<Class>, destruct_type<Class>);
         }
 
-        template<typename DerivedType>
-        DerivedType* Factory::element_constructor()
+        template<typename Type> 
+        Type* Factory::construct_type()
         {
             return new Type;
+        }
+
+        template<typename Type> 
+        void Factory::destruct_type(Element*& element)
+        {
+            if (element)
+                delete element;
+
+            element = nullptr;
         }
     }
 }

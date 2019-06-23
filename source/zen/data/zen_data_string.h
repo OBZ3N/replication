@@ -11,6 +11,8 @@ namespace zen
         class String : public Element
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             String();
             String(const std::string& value);
             String(const char* value);

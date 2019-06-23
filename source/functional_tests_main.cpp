@@ -16,6 +16,7 @@
 #include "zen/bitstream/zen_bitstream_writer.h"
 
 #include "test/test_bitstream.h"
+#include "test/test_data.h"
 #include "test/test_vector.h"
 #include "test/test_vector_serialization.h"
 
@@ -26,8 +27,12 @@ void main()
 
     std::vector<test::Base*> tests;
 
+    zen::data::Factory factory;
+    factory.register_zen_data_types();
+
     //tests.push_back(new test::Bitstream(randomizer));
     //tests.push_back(new test::Vector<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
+    tests.push_back(new test::Data(factory, randomizer));
     tests.push_back(new test::VectorSerialization<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
 
     uint32_t test_iteration = 0;

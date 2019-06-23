@@ -25,6 +25,9 @@
     <Filter Include="source\test">
       <UniqueIdentifier>{4b03e4e2-bf99-4855-a3ea-457a730d0e60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\zen\rtti">
+      <UniqueIdentifier>{a8b61c62-e20a-4df5-9808-eb396f071907}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\functional_tests_main.cpp">
@@ -39,9 +42,6 @@
     <ClCompile Include="source\zen\bitstream\zen_bitstream_writer.cpp">
       <Filter>source\zen\bitstream</Filter>
     </ClCompile>
-    <ClCompile Include="source\zen\debug\zen_debug.cpp">
-      <Filter>source\zen\debug</Filter>
-    </ClCompile>
     <ClCompile Include="source\zen\debug\zen_debug_output.cpp">
       <Filter>source\zen\debug</Filter>
     </ClCompile>
@@ -51,14 +51,26 @@
     <ClCompile Include="source\zen\data\zen_data_factory.cpp">
       <Filter>source\zen\data</Filter>
     </ClCompile>
-    <ClCompile Include="source\zen\data\zen_data_mutable.cpp">
-      <Filter>source\zen\data</Filter>
-    </ClCompile>
     <ClCompile Include="source\test\test_bitstream.cpp">
       <Filter>source\test</Filter>
     </ClCompile>
     <ClCompile Include="source\test\test_base.cpp">
       <Filter>source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="source\test\test_data.cpp">
+      <Filter>source\test</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\rtti\zen_rtti_type_id.cpp">
+      <Filter>source\zen\rtti</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\rtti\zen_rtti_base.cpp">
+      <Filter>source\zen\rtti</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\data\zen_data_types.cpp">
+      <Filter>source\zen\data</Filter>
+    </ClCompile>
+    <ClCompile Include="source\zen\data\zen_data_component.cpp">
+      <Filter>source\zen\data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -79,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="source\zen\bitstream\zen_bitstream_writer.h">
       <Filter>source\zen\bitstream</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zen\debug\zen_debug.h">
-      <Filter>source\zen\debug</Filter>
     </ClInclude>
     <ClInclude Include="source\zen\debug\zen_debug_assert.h">
       <Filter>source\zen\debug</Filter>
@@ -176,9 +185,6 @@
     <ClInclude Include="source\zen\data\zen_data_factory.hpp">
       <Filter>source\zen\data</Filter>
     </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_mutable.h">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
     <ClInclude Include="source\zen\serializer\zen_serializer_size.h">
       <Filter>source\zen\serializer</Filter>
     </ClInclude>
@@ -205,6 +211,27 @@
     </ClInclude>
     <ClInclude Include="source\zen\debug\zen_debug_random.hpp">
       <Filter>source\zen\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="source\test\test_data.h">
+      <Filter>source\test</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\rtti\zen_rtti_base.h">
+      <Filter>source\zen\rtti</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\rtti\zen_rtti_base.hpp">
+      <Filter>source\zen\rtti</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\rtti\zen_rtti_type_id.h">
+      <Filter>source\zen\rtti</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\rtti\zen_rtti_type_id.hpp">
+      <Filter>source\zen\rtti</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_types.h">
+      <Filter>source\zen\data</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zen\data\zen_data_component.h">
+      <Filter>source\zen\data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -116,7 +116,7 @@ namespace zen
 
             for (size_t i = 0; i < num_characters; ++i)
             {
-                uint8_t character = randomizer.get_integer_ranged<uint8_t>('0', 'z');
+                uint8_t character = (uint8_t)randomizer.get_integer_ranged<uint32_t>('0', 'z');
 
                 value.push_back(character);
             }

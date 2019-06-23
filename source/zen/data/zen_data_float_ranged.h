@@ -12,6 +12,8 @@ namespace zen
         class FloatRanged : public Element
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             FloatRanged();
             FloatRanged(TYPE value, TYPE value_min, TYPE value_max, size_t num_bits);
 

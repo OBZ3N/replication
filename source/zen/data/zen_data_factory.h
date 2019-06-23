@@ -15,61 +15,48 @@ namespace zen
         class Factory
         {
         public:
-            typedef int32_t TypeId;
+            typedef int32_t RegistryId;
 
-            static constexpr TypeId INVALID_TYPE_ID = (TypeId)(-1);
+            static constexpr RegistryId INVALID_REGISTRY_ID = (RegistryId)(-1);
 
             Factory();
 
-            template<typename Type>
-            TypeId register_element_type(const char* type_name);
+            void register_zen_data_types();
 
-            template<typename Type>
-            TypeId get_element_type_id() const;
+            template<typename Class> bool is_class_registered() const;
+            template<typename Class> RegistryId register_class();
 
-            const char* get_type_name(TypeId type_id) const;
-            TypeId get_type_id(const char* type_name) const;
+            const zen::rtti::TypeId* get_type_id(RegistryId registry_id) const;
+            RegistryId get_registry_id(const zen::rtti::TypeId& type_id) const;
+            
+            Element* construct_element(RegistryId type_id) const;
+            void destruct_element(RegistryId type_id, Element*& element) const;
 
-            size_t get_num_types() const;
-            Element* construct_element(TypeId type_id) const;
+            size_t get_registry_size() const;
 
-            bool serialize_type_id(TypeId type_id, zen::bitstream::Writer& out);
-            bool deserialize_type_id(TypeId& type_id, zen::bitstream::Reader& in);
+            bool serialize_registry_id(RegistryId type_id, zen::bitstream::Writer& out) const;
+            bool deserialize_registry_id(RegistryId& type_id, zen::bitstream::Reader& in) const;
 
         private:
-            template<typename DerivedType> 
-            DerivedType* element_constructor();
+            template<typename Type> static Type* construct_type();
+            template<typename Type> static void destruct_type(Element*& element);
+            RegistryId register_internal(const zen::rtti::TypeId& type_id, std::function<Element*()> constructor, std::function<void(Element*&)> destructor);
 
-            struct Item
+            struct RegistryItem
             {
-                const char*                 m_type_name;
-                TypeId                      m_type_id;
-                std::function<Element*()>   m_constructor_func;
+                const zen::rtti::TypeId*        m_type_id;
+                RegistryId                      m_registry_id;
+                std::function<Element*()>       m_constructor_func;
+                std::function<void(Element*&)>  m_destructor_func;
             };
 
-            std::unordered_map<std::string, Item>   m_type_table;
-            std::vector<Item>                       m_type_registry;
+            std::unordered_map<int32_t, RegistryId> m_type_lookup;
+            std::vector<RegistryItem>               m_type_registry;
 
-            Factory::TypeId m_type_id_max;
-            size_t m_type_id_num_bits;
+            RegistryId m_registry_id_last;
+            size_t m_registry_id_num_bits;
         };
     }
 }
-
-namespace zen
-{
-    namespace data
-    {
-        template<typename Type>
-        struct TypeRegistrar
-        {
-            static Factory::TypeId s_type_id;
-        };
-    }
-}
-
-#define ZEN_REGISTER_ELEMENT_TYPE(Type, factory) { static TypeRegistrar<Type> s_##Type_instance; s_##Type_instance::s_type_id = factory.register_element_type<Type>(#Type); }
-
-#define ZEN_REGISTER_CUSTOM_ELEMENT_TYPE(Type, factory) factory.register_element_type<Type>(#Type)
 
 #include "zen/data/zen_data_factory.hpp"

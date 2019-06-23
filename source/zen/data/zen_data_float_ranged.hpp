@@ -232,13 +232,13 @@ namespace zen
         }
 
         template<typename TYPE>
-        TYPE FloatRanged<TYPE>::get_num_bits() const
+        size_t FloatRanged<TYPE>::get_num_bits() const
         {
             return m_num_bits;
         }
 
         template<typename TYPE>
-        bool FloatRanged<TYPE>::operator == (const Element& element_rhs_rhs) const
+        bool FloatRanged<TYPE>::operator == (const Element& element_rhs) const
         {
             const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
 

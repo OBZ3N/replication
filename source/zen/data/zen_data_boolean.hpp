@@ -78,7 +78,7 @@ namespace zen
         {
             const Boolean& element = (const Boolean&)element_reference;
 
-            bool value_changed = ((*this) != reference);
+            bool value_changed = ((*this) != element_reference);
             serializers::serialize_boolean(value_changed, delta_bits);
 
             if (value_changed)

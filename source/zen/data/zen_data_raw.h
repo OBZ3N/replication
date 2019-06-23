@@ -12,6 +12,8 @@ namespace zen
         class Raw : public Element
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             Raw();
             Raw(TYPE value);
 

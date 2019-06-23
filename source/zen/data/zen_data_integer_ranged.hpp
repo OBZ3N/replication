@@ -204,7 +204,7 @@ namespace zen
 
             if (m_value_max > m_value_min)
             {
-                m_num_bits = zen::serializers::num_bits_required(m_value_min, m_value_max);
+                m_num_bits = zen::serializers::number_of_bits_required(m_value_min, m_value_max);
             }
 
             return true;
@@ -234,7 +234,7 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool IntegerRanged<TYPE>::operator != (const Element& rhs) const
+        bool IntegerRanged<TYPE>::operator != (const Element& element_rhs) const
         {
             const IntegerRanged<TYPE>& rhs = (const IntegerRanged<TYPE>&)element_rhs;
 
@@ -255,9 +255,12 @@ namespace zen
         template<typename TYPE>
         void IntegerRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer)
         {
-            TYPE min = randomizer.get_integer_ranged((TYPE)-10000, (TYPE)1000);
-            TYPE max = randomizer.get_integer_ranged(min, min + (TYPE)1000);
-            TYPE value = randomizer.get_integer_ranged(min, max);
+            #undef min
+            #undef max
+            TYPE half_range = (std::numeric_limits<TYPE>::max() - std::numeric_limits<TYPE>::min()) / 2;
+            TYPE min        = randomizer.get_integer_ranged(std::numeric_limits<TYPE>::min(), half_range);
+            TYPE max        = randomizer.get_integer_ranged(min, (TYPE)(min + half_range-1));
+            TYPE value      = randomizer.get_integer_ranged(min, max);
 
             set_value(value);
             set_value_min(min);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "zen/debug/zen_debug_random.h"
+#include "zen/rtti/zen_rtti_base.h"
 #include "zen/bitstream/zen_bitstream_reader.h"
 #include "zen/bitstream/zen_bitstream_writer.h"
 
@@ -8,9 +9,11 @@ namespace zen
 {
     namespace data
     {
-        class Element
+        class Element : public zen::rtti::Base
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             Element();
             virtual ~Element();
 

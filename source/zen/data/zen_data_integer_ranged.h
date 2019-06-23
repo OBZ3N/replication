@@ -12,13 +12,15 @@ namespace zen
         class IntegerRanged : public Element
         {
         public:
+            DECLARE_RTTI_TYPE_ID();
+
             IntegerRanged();
             IntegerRanged(TYPE value, TYPE value_min, TYPE value_max);
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;
 
-            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Reader& delta_bits) const override;
+            bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
             bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
 
             bool operator == (const Element& rhs) const override;
