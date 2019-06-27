@@ -41,6 +41,10 @@ namespace zen
         template<typename TYPE>
         bool deserialize_integer_ranged(TYPE& value, const TYPE& value_min, const TYPE& value_max, size_t num_bits, bitstream::Reader& in)
         {
+            ZEN_ASSERT((value_max >= value_min), "max(", value_max, ") < min(", value_min, ")");
+            ZEN_ASSERT((num_bits > (TYPE)0), "num_bits(", num_bits, ") <= 0");
+            ZEN_ASSERT((num_bits < 64), "num_bits(", num_bits, ") >= 64");
+
             TYPE n_value = 0;
             if (!in.read(&n_value, num_bits))
                 return false;

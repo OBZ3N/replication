@@ -13,12 +13,11 @@ namespace zen
         inline size_t number_of_bits_required(size_t value)
         {
             size_t num_bits = 0;
-            if (value >= 0x7FFFFFFF) { value >>= 32; num_bits += 32; }
-            if (value >= 0x7FFF) { value >>= 16; num_bits += 16; }
-            if (value >= 0x7F) { value >>= 8; num_bits += 8; }
-            if (value >= 0x7) { value >>= 4; num_bits += 4; }
-            if (value >= 0x3) { value >>= 2; num_bits += 2; }
-            if (value >= 0x1) { value >>= 1; num_bits += 1; }
+            while (value > 0)
+            {
+                num_bits++;
+                value >>= 1;
+            }
             return num_bits;
         }
 

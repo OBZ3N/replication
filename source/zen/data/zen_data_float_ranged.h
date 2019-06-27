@@ -23,6 +23,7 @@ namespace zen
             bool serialize_delta(const Element& reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const override;
             bool deserialize_delta(const Element& reference, bitstream::Reader& in, bitstream::Reader& delta_bits) override;
 
+            bool operator == (const FloatRanged<TYPE>& rhs) const;
             bool operator == (const Element& rhs) const override;
             bool operator != (const Element& rhs) const override;
 
@@ -44,9 +45,11 @@ namespace zen
             void debug_randomize(debug::Randomizer& randomizer) override;
 
         private:
+            TYPE calculate_precision() const;
             TYPE m_value;
             TYPE m_value_min;
             TYPE m_value_max;
+            TYPE m_precision;
             size_t m_num_bits;
         };
     }

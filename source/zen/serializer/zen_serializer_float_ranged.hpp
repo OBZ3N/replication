@@ -26,7 +26,7 @@ namespace zen
             }
             else
             {
-                TYPE ratio = (value - value_min) / (value_max - value_min);
+                double ratio = double(value - value_min) / double(value_max - value_min);
 
                 n_value = uint64_t(ratio * TYPE(n_value_max));
 
@@ -47,9 +47,7 @@ namespace zen
             ZEN_ASSERT((value_max >= value_min), "max(", value_max, ") < min(", value_min, ")");
             ZEN_ASSERT((num_bits > (TYPE)0), "num_bits(", num_bits, ") <= 0");
             ZEN_ASSERT((num_bits < 64), "num_bits(", num_bits, ") >= 64");
-            ZEN_ASSERT((value >= value_min), "value(", value, ") < min(", value_min, ")");
-            ZEN_ASSERT((value <= value_max), "value(", value, ") > max(", value_max, ")");
-
+            
             uint64_t n_value_max = (uint64_t(1) << uint64_t(num_bits)) - uint64_t(1);
 
             uint64_t n_value = 0;
@@ -59,7 +57,9 @@ namespace zen
 
             n_value = core::convert_from_little_endian(n_value);
 
-            value = value_min + (TYPE(n_value) / TYPE(n_value_max));
+            double ratio = double(n_value) / double(n_value_max);
+
+            value = value_min + TYPE(ratio * double(value_max - value_min));
 
             return in.ok();
         }

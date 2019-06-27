@@ -91,7 +91,7 @@ namespace zen
 
             if (value_changed)
             {
-                zen::serializers::serialize_float_ranged(m_value, m_value_min, m_value_max, m_num_bits, out);
+                zen::serializers::serialize_integer_ranged(m_value, m_value_min, m_value_max, m_num_bits, out);
             }
 
             return out.ok();
@@ -137,7 +137,7 @@ namespace zen
             if (value_changed)
             {
                 TYPE value;
-                zen::serializers::deserialize_float_ranged(value, m_value_min, m_value_max, m_num_bits, in);
+                zen::serializers::deserialize_integer_ranged(value, m_value_min, m_value_max, m_num_bits, in);
                 if (in.ok())
                     set_value(value);
             }
@@ -263,8 +263,10 @@ namespace zen
         {
             #undef min
             #undef max
-            TYPE half_range = (std::numeric_limits<TYPE>::max() - std::numeric_limits<TYPE>::min()) / 2;
-            TYPE min        = randomizer.get_integer_ranged(std::numeric_limits<TYPE>::min(), half_range);
+            TYPE type_min   = std::numeric_limits<TYPE>::min();
+            TYPE type_max   = std::numeric_limits<TYPE>::max();
+            TYPE half_range = type_max / 2 - type_min / 2;
+            TYPE min        = randomizer.get_integer_ranged(type_min, (TYPE)(type_min + half_range));
             TYPE max        = randomizer.get_integer_ranged(min, (TYPE)(min + half_range-1));
             TYPE value      = randomizer.get_integer_ranged(min, max);
 

@@ -59,7 +59,7 @@ namespace zen
 
                 uint32_t r = uniform_distribution(m_mersenne_generator);
 
-                bitfield[num_words] = (r & mask) | (bitfield[num_words] & !mask);
+                bitfield[num_words] = (r & mask) | (bitfield[num_words] & ~mask);
             }
         }
  

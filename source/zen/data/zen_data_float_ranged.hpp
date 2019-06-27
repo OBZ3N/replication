@@ -23,7 +23,9 @@ namespace zen
             , m_value_min(value_min)
             , m_value_max(value_max)
             , m_num_bits(num_bits)
-        {}
+        {
+            m_precision = calculate_precision();
+        }
 
         template<typename TYPE>
         bool FloatRanged<TYPE>::serialize_full(bitstream::Writer& out) const
@@ -63,7 +65,7 @@ namespace zen
         {
             const FloatRanged<TYPE>& reference = (const FloatRanged<TYPE>&) element_reference;
 
-            bool value_changed      =   (m_value != reference.m_value);
+            bool value_changed      =   (m_value > reference.m_value);
             bool attributes_changed =   (m_value_min != reference.m_value_min) || 
                                         (m_value_max != reference.m_value_max) ||
                                         (m_num_bits != reference.m_num_bits);
@@ -188,6 +190,8 @@ namespace zen
 
             m_value_min = value_min;
 
+            m_precision = calculate_precision();
+
             set_touched(true);
 
             return true;
@@ -206,6 +210,8 @@ namespace zen
                 return false;
 
             m_value_max = value_max;
+
+            m_precision = calculate_precision();
 
             set_touched(true);
 
@@ -226,6 +232,8 @@ namespace zen
 
             m_num_bits = num_bits;
 
+            m_precision = calculate_precision();
+
             set_touched(true);
 
             return true;
@@ -238,11 +246,27 @@ namespace zen
         }
 
         template<typename TYPE>
-        bool FloatRanged<TYPE>::operator == (const Element& element_rhs) const
+        TYPE FloatRanged<TYPE>::calculate_precision() const
         {
-            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+            if (m_value_max <= m_value_min)
+                return TYPE(0.0);
 
-            if (m_value != rhs.m_value)
+            if(m_num_bits == 0)
+                return TYPE(0.0);
+
+            TYPE precision = TYPE(m_value_max - m_value_min) / TYPE(1 << m_num_bits);
+
+            return precision;
+        }
+
+
+        template<typename TYPE>
+        bool FloatRanged<TYPE>::operator == (const FloatRanged<TYPE>& rhs) const
+        {
+            if (m_value < rhs.m_value - m_precision)
+                return false;
+
+            if (m_value > rhs.m_value + m_precision)
                 return false;
 
             if (m_value_min != rhs.m_value_min)
@@ -257,18 +281,24 @@ namespace zen
             return true;
         }
 
+
         template<typename TYPE>
-        bool FloatRanged<TYPE>::operator != (const Element& element_rhs) const
+        bool FloatRanged<TYPE>::operator == (const Element& element_rhs) const
         {
             const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
 
-            return !((*this) == rhs);
+            return (*this).operator==(rhs);
+        }
+
+        template<typename TYPE>
+        bool FloatRanged<TYPE>::operator != (const Element& element_rhs) const
+        {
+            return !((*this) == element_rhs);
         }
 
         template<typename TYPE>
         FloatRanged<TYPE>& FloatRanged<TYPE>::operator = (const FloatRanged<TYPE>& rhs)
         {
-
             set_value(rhs.m_value);
 
             set_value_min(rhs.m_value_min);
@@ -293,8 +323,10 @@ namespace zen
         {
             #undef min
             #undef max
-            TYPE half_range = (std::numeric_limits<TYPE>::max() - std::numeric_limits<TYPE>::min()) / 2;
-            TYPE min        = randomizer.get_float_ranged(std::numeric_limits<TYPE>::min(), half_range);
+            TYPE type_min   = -1.0E6;
+            TYPE type_max   =  1.0E6;
+            TYPE half_range = type_max / 2 - type_min / 2;
+            TYPE min        = randomizer.get_float_ranged(type_min, half_range);
             TYPE max        = randomizer.get_float_ranged(min, (TYPE)(min + half_range));
             TYPE value      = randomizer.get_float_ranged(min, max);
             size_t num_bits = randomizer.get_integer_ranged(8, 24);
