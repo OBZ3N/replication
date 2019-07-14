@@ -31,9 +31,10 @@ namespace zen
             Element& operator = (const Element& rhs) override;
             Component& operator = (const Component& rhs);
 
-            void debug_randomize(debug::Randomizer& randomizer) override;
-
             bool is_null() const { return m_element == nullptr; }
+
+            void debug_randomize_full(debug::Randomizer& randomizer) override;
+            void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
 
         private:
             Factory*            m_factory;

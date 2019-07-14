@@ -56,11 +56,9 @@ namespace zen
 
             bool value_changed = (m_value != reference.m_value);
             serializers::serialize_boolean(value_changed, delta_bits);
-
+            
             if (value_changed)
-            {
                 zen::serializers::serialize_raw(m_value, out);
-            }
 
             return out.ok();
         }
@@ -72,15 +70,18 @@ namespace zen
 
             bool value_changed;
             serializers::deserialize_boolean(value_changed, delta_bits);
+            if (!value_changed)
+                return false;
 
+            TYPE value = reference.m_value;
             if (value_changed)
             {
-                TYPE value;
-                zen::serializers::deserialize_raw(value, in);
-
-                if (in.ok())
-                    set_value(value);
+                if (!zen::serializers::deserialize_raw(value, in))
+                    return false;
             }
+
+            set_value(value);
+
             return in.ok();
         }
 
@@ -120,13 +121,19 @@ namespace zen
         }
 
         template<typename TYPE>
-        void Raw<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        void Raw<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
         {
             TYPE value;
 
             randomizer.get_bits(&value, sizeof(value) << 3);
 
             set_value(value);
+        }
+
+        template<typename TYPE>
+        void Raw<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        {
+            debug_randomize_full(randomizer);
         }
     }
 }

@@ -71,8 +71,8 @@ namespace zen
         inline bool Boolean::deserialize_full(bitstream::Reader& in)
         {
             bool value;
-            zen::serializers::deserialize_boolean(value, in);
-            if (!in.ok()) return false;
+            if(!zen::serializers::deserialize_boolean(value, in))
+                return false;
 
             set_value(value);
 
@@ -84,42 +84,42 @@ namespace zen
             const Boolean& element = (const Boolean&)element_reference;
 
             bool value_changed = ((*this) != element_reference);
-            serializers::serialize_boolean(value_changed, delta_bits);
+            if (!serializers::serialize_boolean(value_changed, delta_bits))
+                return false;
 
-            if (value_changed)
-            {
-                zen::serializers::serialize_boolean(m_value, out);
-            }
+            if (!value_changed)
+                return false;
 
-            return out.ok();
+            return zen::serializers::serialize_boolean(m_value, out);
         }
 
         inline bool Boolean::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            const Boolean& element = (const Boolean&)element_reference;
-
-            bool value_changed;
+            bool value_changed = false;
             zen::serializers::deserialize_boolean(value_changed, delta_bits);
+            
+            const Boolean& reference = (const Boolean&)element_reference;
 
+            bool value = reference.m_value;
             if (value_changed)
             {
-                bool value;
                 zen::serializers::deserialize_boolean(value, in);
-
-                if (!in.ok())
-                    return false;
-
-                set_value(value);
             }
 
+            set_value(value);
             return in.ok();
         }
 
-        inline void Boolean::debug_randomize(zen::debug::Randomizer& randomizer)
+        inline void Boolean::debug_randomize_full(zen::debug::Randomizer& randomizer)
         {
             uint32_t i = randomizer.get_integer_ranged(0, 1);
             set_value((i == 1));
-
         }
+
+        inline void Boolean::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        {
+            debug_randomize_full(randomizer);
+        }
+
     }
 }

@@ -23,7 +23,6 @@
     <ClCompile Include="source\test\test_base.cpp" />
     <ClCompile Include="source\test\test_bitstream.cpp" />
     <ClCompile Include="source\test\test_data.cpp" />
-    <ClCompile Include="source\test\test_randomizers.cpp" />
     <ClCompile Include="source\zen\bitstream\zen_bitstream_reader.cpp" />
     <ClCompile Include="source\zen\bitstream\zen_bitstream_utils.cpp" />
     <ClCompile Include="source\zen\bitstream\zen_bitstream_writer.cpp" />
@@ -39,8 +38,6 @@
     <ClInclude Include="source\test\test_base.h" />
     <ClInclude Include="source\test\test_bitstream.h" />
     <ClInclude Include="source\test\test_data.h" />
-    <ClInclude Include="source\test\test_randomizers.h" />
-    <ClInclude Include="source\test\test_randomizers.hpp" />
     <ClInclude Include="source\test\test_vector.h" />
     <ClInclude Include="source\test\test_vector.hpp" />
     <ClInclude Include="source\test\test_vector_serialization.h" />
@@ -50,6 +47,8 @@
     <ClInclude Include="source\zen\bitstream\zen_bitstream_writer.h" />
     <ClInclude Include="source\zen\core\zen_core_endian.h" />
     <ClInclude Include="source\zen\core\zen_core_ostream.h" />
+    <ClInclude Include="source\zen\core\zen_core_rtti.h" />
+    <ClInclude Include="source\zen\core\zen_core_rtti.hpp" />
     <ClInclude Include="source\zen\core\zen_core_vector.h" />
     <ClInclude Include="source\zen\core\zen_core_vector.hpp" />
     <ClInclude Include="source\zen\data\zen_data_boolean.h" />
@@ -67,7 +66,6 @@
     <ClInclude Include="source\zen\data\zen_data_raw.hpp" />
     <ClInclude Include="source\zen\data\zen_data_string.h" />
     <ClInclude Include="source\zen\data\zen_data_string.hpp" />
-    <ClInclude Include="source\zen\data\zen_data_types.h" />
     <ClInclude Include="source\zen\data\zen_data_vector.h" />
     <ClInclude Include="source\zen\data\zen_data_vector.hpp" />
     <ClInclude Include="source\zen\debug\zen_debug_assert.h" />

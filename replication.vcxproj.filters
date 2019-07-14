@@ -66,14 +66,11 @@
     <ClCompile Include="source\zen\rtti\zen_rtti_base.cpp">
       <Filter>source\zen\rtti</Filter>
     </ClCompile>
-    <ClCompile Include="source\zen\data\zen_data_types.cpp">
-      <Filter>source\zen\data</Filter>
-    </ClCompile>
     <ClCompile Include="source\zen\data\zen_data_component.cpp">
       <Filter>source\zen\data</Filter>
     </ClCompile>
-    <ClCompile Include="source\test\test_randomizers.cpp">
-      <Filter>source\test</Filter>
+    <ClCompile Include="source\zen\data\zen_data_types.cpp">
+      <Filter>source\zen\data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,17 +227,14 @@
     <ClInclude Include="source\zen\rtti\zen_rtti_type_id.hpp">
       <Filter>source\zen\rtti</Filter>
     </ClInclude>
-    <ClInclude Include="source\zen\data\zen_data_types.h">
-      <Filter>source\zen\data</Filter>
-    </ClInclude>
     <ClInclude Include="source\zen\data\zen_data_component.h">
       <Filter>source\zen\data</Filter>
     </ClInclude>
-    <ClInclude Include="source\test\test_randomizers.h">
-      <Filter>source\test</Filter>
+    <ClInclude Include="source\zen\core\zen_core_rtti.hpp">
+      <Filter>source\zen\core</Filter>
     </ClInclude>
-    <ClInclude Include="source\test\test_randomizers.hpp">
-      <Filter>source\test</Filter>
+    <ClInclude Include="source\zen\core\zen_core_rtti.h">
+      <Filter>source\zen\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -18,8 +18,8 @@ namespace test
     template<typename GENERIC_TYPE, typename ZEN_TYPE>
     bool VectorSerialization<GENERIC_TYPE, ZEN_TYPE>::update_internal()
     {
-        m_reference.debug_randomize(m_randomizer);
-        m_input.debug_randomize(m_randomizer);
+        m_reference.debug_randomize_full(m_randomizer);
+        m_input.debug_randomize_full(m_randomizer);
         
         zen::bitstream::Writer writer(m_data, sizeof(m_data) << 3);
         bool serialize_result = m_input.serialize_delta(m_reference, writer, writer);

@@ -48,6 +48,7 @@ namespace zen
             zen::serializers::deserialize_raw(value, in);
             zen::serializers::deserialize_raw(value_min, in);
             zen::serializers::deserialize_raw(value_max, in);
+            set_touched(true);
 
             if (in.ok())
             {
@@ -100,13 +101,18 @@ namespace zen
         template<typename TYPE>
         bool IntegerRanged<TYPE>::deserialize_delta(const Element& element_reference, bitstream::Reader& in, bitstream::Reader& delta_bits)
         {
-            const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&)element_reference;
-
-            bool attributes_changed;
-            bool value_changed;
-
+            bool attributes_changed = false;
+            bool value_changed = false;
             zen::serializers::deserialize_boolean(value_changed, delta_bits);
             zen::serializers::deserialize_boolean(attributes_changed, delta_bits);
+            if (!value_changed && !attributes_changed)
+                return false;
+
+            const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&) element_reference;
+            TYPE value       = reference.m_value;
+            TYPE value_min   = reference.m_value_min;
+            TYPE value_max   = reference.m_value_max;
+            size_t num_bits  = reference.m_num_bits;
 
             if (attributes_changed)
             {
@@ -117,31 +123,29 @@ namespace zen
 
                 if (value_min_changed)
                 {
-                    TYPE value_min;
-                    zen::serializers::deserialize_raw(value_min, in);
-                    if (in.ok())
-                        set_value_min(value_min);
+                    if (!zen::serializers::deserialize_raw(value_min, in))
+                        return false;
                 }
 
                 if (value_max_changed)
                 {
-                    TYPE value_max;
-                    zen::serializers::deserialize_raw(value_max, in);
-                    if (in.ok())
-                        set_value_max(value_max);
+                    if (!zen::serializers::deserialize_raw(value_max, in))
+                        return false;
                 }
 
-                m_num_bits = zen::serializers::number_of_bits_required(m_value_min, m_value_max);
+                num_bits = zen::serializers::number_of_bits_required(value_min, value_max);
             }
 
             if (value_changed)
             {
-                TYPE value;
-                zen::serializers::deserialize_integer_ranged(value, m_value_min, m_value_max, m_num_bits, in);
-                if (in.ok())
-                    set_value(value);
+                if (!zen::serializers::deserialize_integer_ranged(value, value_min, value_max, num_bits, in))
+                    return false;
             }
 
+            set_value(value);
+            set_value_min(value_min);
+            set_value_max(value_max);
+            
             ZEN_ASSERT(m_value_max > m_value_min, "value_max(", m_value_max, ") <= value_min(", m_value_min, ").");
             ZEN_ASSERT(m_value >= m_value_min, "value(", m_value, ") < value_min(", m_value_min, ").");
             ZEN_ASSERT(m_value <= m_value_max, "value(", m_value, ") > value_max(", m_value_max, ").");
@@ -259,7 +263,7 @@ namespace zen
         }
 
         template<typename TYPE>
-        void IntegerRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        void IntegerRanged<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
         {
             #undef min
             #undef max
@@ -273,6 +277,12 @@ namespace zen
             set_value(value);
             set_value_min(min);
             set_value_max(max);
+        }
+
+        template<typename TYPE>
+        void IntegerRanged<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        {
+            debug_randomize_full(randomizer);
         }
     }
 }

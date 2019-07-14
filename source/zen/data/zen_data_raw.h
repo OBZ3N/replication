@@ -32,7 +32,8 @@ namespace zen
             Element& operator = (const Element& rhs) override;
             Raw& operator = (const Raw& rhs);
 
-            void debug_randomize(debug::Randomizer& randomizer) override;
+            void debug_randomize_full(debug::Randomizer& randomizer) override;
+            void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
 
         private:
             TYPE m_value;

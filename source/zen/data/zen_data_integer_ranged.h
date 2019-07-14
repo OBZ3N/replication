@@ -29,7 +29,6 @@ namespace zen
             Element& operator = (const Element& rhs) override;
             IntegerRanged<TYPE>& operator = (const IntegerRanged<TYPE>& element_rhs);
 
-
             bool set_value(TYPE value);
             TYPE get_value() const;
 
@@ -39,7 +38,8 @@ namespace zen
             bool set_value_max(TYPE value_max);
             TYPE get_value_max() const;
 
-            void debug_randomize(debug::Randomizer& randomizer) override;
+            void debug_randomize_full(debug::Randomizer& randomizer) override;
+            void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
 
         private:
             TYPE    m_value;

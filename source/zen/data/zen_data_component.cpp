@@ -32,17 +32,15 @@ namespace zen
         Component::~Component()
         {
             if (!m_is_reference)
-            {
-                delete m_element;
-            }
-        }
+               m_factory->destruct_element(m_registry_id, m_element);
+       }
 
         bool Component::serialize_full(bitstream::Writer& out) const
         {
-            zen::serializers::serialize_raw(m_registry_id, out);
-            m_element->serialize_full(out);
+            if (!zen::serializers::serialize_raw(m_registry_id, out))
+                return false;
 
-            return out.ok();
+            return m_element->serialize_full(out);
         }
 
         bool Component::deserialize_full(bitstream::Reader& in)
@@ -54,20 +52,21 @@ namespace zen
             if (element_registry_id != m_registry_id)
             {
                 if (!m_is_reference)
-                {
-                    delete m_element;
-                }
-
+                    m_factory->destruct_element(m_registry_id, m_element);
+                
                 m_is_reference = false;
 
                 m_registry_id = element_registry_id;
 
-                m_element = m_factory->construct_element(element_registry_id);
+                m_element = m_factory->construct_element(m_registry_id);
 
                 set_touched(true);
             }
 
-            return m_element->deserialize_full(in);
+            if (!m_element->deserialize_full(in))
+                return false;
+
+            return in.ok();
         }
 
         bool Component::serialize_delta(const Element& element_reference, bitstream::Writer& out, bitstream::Writer& delta_bits) const
@@ -89,14 +88,9 @@ namespace zen
                     return false;
             
                 // create default element to delta against.
-                Element* base = m_factory->construct_element(m_registry_id);
+                const Element* base = m_factory->get_base_element(m_registry_id);
 
-                m_element->serialize_delta(*base, out, delta_bits);
-                
-                // free base element.
-                delete base;
-
-                return out.ok();
+                return m_element->serialize_delta(*base, out, delta_bits);
             }
         }
 
@@ -108,33 +102,36 @@ namespace zen
             if (!serializers::deserialize_boolean(type_id_changed, delta_bits))
                 return false;
 
-            if (!type_id_changed)
+            if (type_id_changed)
             {
-                return m_element->deserialize_delta(reference, in, delta_bits);
+                if (!m_is_reference) m_factory->destruct_element(m_registry_id, m_element);
+                m_registry_id = Factory::INVALID_REGISTRY_ID;
+                m_is_reference = false;
+                m_element = nullptr;
+                
+                if (!m_factory->deserialize_registry_id(m_registry_id, in))
+                    return false;
+
+                m_element = m_factory->construct_element(m_registry_id);
+                m_is_reference = false;
+                set_touched(true);
+
+                const Element* base = m_factory->get_base_element(m_registry_id);
+
+                return m_element->deserialize_delta(*base, in, delta_bits);
             }
             else
             {
-                Factory::RegistryId element_registry_id;
-                if (!m_factory->deserialize_registry_id(element_registry_id, in))
-                    return false;
-
-                if (!m_is_reference)
+                if (m_element->deserialize_delta(reference, in, delta_bits))
                 {
-                    delete m_element;
+                    set_touched(true);
+                    return true;
                 }
-
-                m_is_reference = false;
-
-                m_registry_id = element_registry_id;
-                
-                m_element = m_factory->construct_element(element_registry_id);
-
-                Element* base = m_factory->construct_element(element_registry_id);
-
-                m_element->deserialize_delta(*base, in, delta_bits);
-                
-                delete base;
-                return in.ok();
+                else
+                {
+                    *m_element = *reference.m_element;
+                    return false;
+                }
             }
         }
 
@@ -183,7 +180,7 @@ namespace zen
             return *this;
         }
 
-        void Component::debug_randomize(debug::Randomizer& randomizer)
+        void Component::debug_randomize_full(debug::Randomizer& randomizer)
         {
             // cleanup.
             if (!m_is_reference)
@@ -194,10 +191,16 @@ namespace zen
 
             // randomize type.
             m_registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
-            
+            set_touched(true);
+
             // randomize object.
             m_element = m_factory->construct_element(m_registry_id);
-            m_element->debug_randomize(randomizer);
+            m_element->debug_randomize_full(randomizer);
+        }
+
+        void Component::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        {
+            debug_randomize_full(randomizer);
         }
     }
 }

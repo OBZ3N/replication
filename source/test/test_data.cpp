@@ -1,7 +1,6 @@
 
 #include "zen/debug/zen_debug_assert.h"
 #include "test/test_data.h"
-#include "test/test_randomizers.h"
 
 namespace test
 {
@@ -25,9 +24,9 @@ namespace test
 
         zen::data::Element* element_client = m_factory.construct_element(registry_id);
 
-        randomize_full(*element_base, m_randomizer);
+        element_base->debug_randomize_full(m_randomizer);
 
-        randomize_full(*element_server, m_randomizer);
+        element_server->debug_randomize_full(m_randomizer);
 
         uint32_t m_data[1000];
 

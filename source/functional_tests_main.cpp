@@ -33,7 +33,7 @@ void main()
     //tests.push_back(new test::Bitstream(randomizer));
     //tests.push_back(new test::Vector<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
     tests.push_back(new test::Data(factory, randomizer));
-    tests.push_back(new test::VectorSerialization<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
+    //tests.push_back(new test::VectorSerialization<uint32_t, zen::data::Raw<uint32_t>>(randomizer));
 
     uint32_t test_iteration = 0;
 

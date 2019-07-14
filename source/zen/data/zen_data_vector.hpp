@@ -246,153 +246,158 @@ namespace zen
         {
             const Vector<TYPE>& reference = (const Vector<TYPE>&) element_reference;
             
-            bool value_changed;
+            bool value_changed = false;
             serializers::deserialize_boolean(value_changed, delta_bits);
 
-            if (value_changed)
+            *this = reference;
+
+            if (!value_changed)
+                return in.ok();
+
+            set_touched(true);
+
+            ItemId head_id = m_array.empty() ? INVALID_ITEM_ID : m_array[0];
+
+            bool item_id_num_bits_changed;
+            serializers::deserialize_boolean(item_id_num_bits_changed, delta_bits);
+
+            if (item_id_num_bits_changed)
             {
-                ItemId head_id = m_array.empty() ? INVALID_ITEM_ID : m_array[0];
+                serializers::deserialize_integer_ranged(m_item_id_num_bits, (size_t)0, sc_item_id_max_bits, sc_item_id_bitcount, in);
+            }
 
-                bool item_id_num_bits_changed;
-                serializers::deserialize_boolean(item_id_num_bits_changed, delta_bits);
-
-                if (item_id_num_bits_changed)
-                {
-                    serializers::deserialize_integer_ranged(m_item_id_num_bits, (size_t)0, sc_item_id_max_bits, sc_item_id_bitcount, in);
-                }
-
-                bool values_added;
-                serializers::deserialize_boolean(values_added, in);
-                if (values_added)
-                {
-                    size_t items_added;
-                    serializers::deserialize_size(items_added, in);
-                    if (!in.ok()) return false;
+            bool values_added;
+            serializers::deserialize_boolean(values_added, in);
+            if (values_added)
+            {
+                size_t items_added;
+                serializers::deserialize_size(items_added, in);
+                if (!in.ok()) return false;
                     
-                    for (size_t i = 0; i < items_added; ++i)
-                    {
-                        ItemId item_id;
-                        ItemId prev;
-                        ItemId next;
-                        deserialize_item_id(item_id, in);
-                        deserialize_item_id(prev, in);
-                        deserialize_item_id(next, in);
-
-                        Item* item = get_item(item_id);
-                        item->m_prev = prev;
-                        item->m_next = next;
-
-                        TYPE reference;
-                        item->m_value.deserialize_delta(reference, in, delta_bits);
-                        if (!in.ok()) return false;
-
-                        if (item->m_prev == INVALID_ITEM_ID)
-                        {
-                            head_id = item_id;
-                        }
-
-                        std::list<ItemId>::iterator it = std::find(m_free.begin(), m_free.end(), item_id);
-
-                        ZEN_ASSERT(it != m_free.end(), "item ", item_id, " was added, but couldn't be found in free list");
-
-                        m_free.erase(it);
-                    }
-                }
-
-                bool values_removed;
-                serializers::deserialize_boolean(values_removed, in);
-                if (values_removed)
+                for (size_t i = 0; i < items_added; ++i)
                 {
-                    size_t items_removed;
-                    serializers::deserialize_size(items_removed, in);
+                    ItemId item_id;
+                    ItemId prev;
+                    ItemId next;
+                    deserialize_item_id(item_id, in);
+                    deserialize_item_id(prev, in);
+                    deserialize_item_id(next, in);
+
+                    Item* item = get_item(item_id);
+                    item->m_prev = prev;
+                    item->m_next = next;
+
+                    TYPE reference;
+                    item->m_value.deserialize_delta(reference, in, delta_bits);
                     if (!in.ok()) return false;
 
-                    for (size_t i = 0; i < items_removed; ++i)
+                    if (item->m_prev == INVALID_ITEM_ID)
                     {
-                        ItemId item_id;
-                        deserialize_item_id(item_id, in);
-
-                        Item* item = get_item(item_id);
-
-                        if (item_id == head_id)
-                        {
-                            head_id = INVALID_ITEM_ID;
-                        }
-
-                        item->m_prev = INVALID_ITEM_ID;
-                        item->m_next = INVALID_ITEM_ID;
-                        item->m_value = TYPE();
-
-                        ZEN_ASSERT(std::find(m_free.begin(), m_free.end(), item_id) == m_free.end(), "item ", item_id, " already found in free list");
-
-                        m_free.push_back(item_id);
+                        head_id = item_id;
                     }
+
+                    std::list<ItemId>::iterator it = std::find(m_free.begin(), m_free.end(), item_id);
+
+                    ZEN_ASSERT(it != m_free.end(), "item ", item_id, " was added, but couldn't be found in free list");
+
+                    m_free.erase(it);
                 }
+            }
 
-                bool values_modified;
-                serializers::deserialize_boolean(values_modified, in);
-                if (values_modified)
+            bool values_removed;
+            serializers::deserialize_boolean(values_removed, in);
+            if (values_removed)
+            {
+                size_t items_removed;
+                serializers::deserialize_size(items_removed, in);
+                if (!in.ok()) return false;
+
+                for (size_t i = 0; i < items_removed; ++i)
                 {
-                    size_t items_modified;
-                    serializers::deserialize_size(items_modified, in);
-                    if (!in.ok()) return false;
-
-                    for (size_t i = 0; i < items_modified; ++i)
-                    {
-                        ItemId item_id;
-                        bool prev_changed;
-                        bool next_changed;
-                        bool value_changed;
-
-                        deserialize_item_id(item_id, in);
-                        serializers::deserialize_boolean(value_changed, in); // high-frequency.
-                        serializers::deserialize_boolean(prev_changed, delta_bits); // low-frequency
-                        serializers::deserialize_boolean(next_changed, delta_bits); // low-frequency
-
-                        Item* item = get_item(item_id);
-
-                        if (prev_changed)
-                        {
-                            deserialize_item_id(item->m_prev, in);
-
-                            if (item->m_prev == INVALID_ITEM_ID)
-                            {
-                                ZEN_ASSERT( head_id  == INVALID_ITEM_ID, "item ", item_id, " set as head, but head ", head_id, "already found set" );
-                                head_id = item_id;
-                            }
-                        }
-
-                        if (next_changed)
-                        {
-                            deserialize_item_id(item->m_next, in);
-                        }
-
-                        if (value_changed)
-                        {
-                            const Item* item_reference = reference.get_item(item_id);
-
-                             item->m_value.deserialize_delta(item_reference->m_value, in, delta_bits);
-                        }
-
-                        if (!in.ok()) 
-                            return false;
-                    }
-                }
-
-                // rebuild array.
-                m_array.clear();
-
-                ItemId item_id = head_id;
-
-                while (item_id != INVALID_ITEM_ID)
-                {
-                    m_array.push_back(item_id);
+                    ItemId item_id;
+                    deserialize_item_id(item_id, in);
 
                     Item* item = get_item(item_id);
 
-                    item_id = item->m_next;
+                    if (item_id == head_id)
+                    {
+                        head_id = INVALID_ITEM_ID;
+                    }
+
+                    item->m_prev = INVALID_ITEM_ID;
+                    item->m_next = INVALID_ITEM_ID;
+                    item->m_value = TYPE();
+
+                    ZEN_ASSERT(std::find(m_free.begin(), m_free.end(), item_id) == m_free.end(), "item ", item_id, " already found in free list");
+
+                    m_free.push_back(item_id);
                 }
             }
+
+            bool values_modified;
+            serializers::deserialize_boolean(values_modified, in);
+            if (values_modified)
+            {
+                size_t items_modified;
+                serializers::deserialize_size(items_modified, in);
+                if (!in.ok()) return false;
+
+                for (size_t i = 0; i < items_modified; ++i)
+                {
+                    ItemId item_id;
+                    bool prev_changed;
+                    bool next_changed;
+                    bool value_changed;
+
+                    deserialize_item_id(item_id, in);
+                    serializers::deserialize_boolean(value_changed, in); // high-frequency.
+                    serializers::deserialize_boolean(prev_changed, delta_bits); // low-frequency
+                    serializers::deserialize_boolean(next_changed, delta_bits); // low-frequency
+
+                    Item* item = get_item(item_id);
+
+                    if (prev_changed)
+                    {
+                        deserialize_item_id(item->m_prev, in);
+
+                        if (item->m_prev == INVALID_ITEM_ID)
+                        {
+                            ZEN_ASSERT( head_id  == INVALID_ITEM_ID, "item ", item_id, " set as head, but head ", head_id, "already found set" );
+                            head_id = item_id;
+                        }
+                    }
+
+                    if (next_changed)
+                    {
+                        deserialize_item_id(item->m_next, in);
+                    }
+
+                    if (value_changed)
+                    {
+                        const Item* item_reference = reference.get_item(item_id);
+
+                            item->m_value.deserialize_delta(item_reference->m_value, in, delta_bits);
+                    }
+
+                    if (!in.ok()) 
+                        return false;
+                }
+            }
+
+            // rebuild array.
+            m_array.clear();
+
+            ItemId item_id = head_id;
+
+            while (item_id != INVALID_ITEM_ID)
+            {
+                m_array.push_back(item_id);
+
+                Item* item = get_item(item_id);
+
+                item_id = item->m_next;
+            }
+            
             return in.ok();
         }
 
@@ -475,84 +480,66 @@ namespace zen
         }
 
         template<typename TYPE>
-        void Vector<TYPE>::debug_randomize(debug::Randomizer& randomizer)
+        void Vector<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
         {
             clear();
 
-            size_t num_items = randomizer.get_integer_ranged<size_t>(8, 100);
+            // add some items.
+            size_t num_items = randomizer.get_integer_ranged<size_t>(0, 100);
 
             for (size_t i = 0; i < num_items; ++i)
             {
                 TYPE item;
 
-                item.debug_randomize(randomizer);
+                item.debug_randomize_full(randomizer);
 
-                push_back(item);
-            }
+                int32_t diceroll = randomizer.get_integer_ranged(0, 100);
 
-            // swap items around to randomize the linked list.
-            size_t num_swaps = randomizer.get_integer_ranged<size_t>(8, 100);
-
-            for (size_t i = 0; i < num_swaps; ++i)
-            {
-                size_t array_index_a = randomizer.get_integer_ranged(num_items);
-                size_t array_index_b = randomizer.get_integer_ranged(num_items);
-
-                if (array_index_a == array_index_b)
-                    continue;
-
-                if (array_index_a > array_index_b) 
-                    std::swap(array_index_a, array_index_b);
-
-                ItemId item_id_a = m_array[array_index_a];
-                ItemId item_id_b = m_array[array_index_b];
-
-                // swap items in the array.
-                m_array[array_index_a] = item_id_b;
-                m_array[array_index_b] = item_id_a;
-
-                Item* item_a = get_item(item_id_a);
-                Item* item_b = get_item(item_id_b);
-
-                // current prev and next items.
-                ItemId item_id_prev_a = item_a->m_prev;
-                ItemId item_id_next_a = item_a->m_next;
-                ItemId item_id_prev_b = item_b->m_prev;
-                ItemId item_id_next_b = item_b->m_next;
-
-                Item* item_prev_a = get_item(item_id_prev_a);
-                Item* item_next_a = get_item(item_id_next_a);
-                Item* item_prev_b = get_item(item_id_prev_b);
-                Item* item_next_b = get_item(item_id_next_b);
-
-                if (item_id_next_a == item_id_b)
+                if (diceroll < 30)
                 {
-                    // swap links of prev and next items.
-                    if (item_prev_a) item_prev_a->m_next = item_id_b;
-                    if (item_next_b) item_next_b->m_prev = item_id_a;
-
-                    // swap links of items.
-                    item_a->m_prev = item_id_b;
-                    item_a->m_next = item_id_next_b;
-                    item_b->m_next = item_id_a;
-                    item_b->m_prev = item_id_prev_a;
+                    push_front(item);
+                }
+                if (diceroll < 60)
+                {
+                    push_front(item);
                 }
                 else
                 {
-                    // swap links of prev and next items.
-                    if (item_prev_a) item_prev_a->m_next = item_id_b;
-                    if (item_next_a) item_next_a->m_prev = item_id_b;
-                    if (item_prev_b) item_prev_b->m_next = item_id_a;
-                    if (item_next_b) item_next_b->m_prev = item_id_a;
+                    size_t item_index = randomizer.get_integer_ranged(size());
 
-                    // swap links of items.
-                    item_a->m_prev = item_id_prev_b;
-                    item_a->m_next = item_id_next_b;
-                    item_b->m_prev = item_id_prev_a;
-                    item_b->m_next = item_id_next_a;
+                    insert(item_index, item);
                 }
-                core::Vector<TYPE>::sanity_check();
             }
+
+            // remove some items
+            size_t num_removes = randomizer.get_integer_ranged<size_t>(0, num_items);
+
+            for (size_t i = 0; i < num_removes; ++i)
+            {
+                int32_t diceroll = randomizer.get_integer_ranged(0, 100);
+
+                if (diceroll < 30)
+                {
+                    pop_front();
+                }
+                if (diceroll < 60)
+                {
+                    pop_front();
+                }
+                else
+                {
+                    size_t item_index = randomizer.get_integer_ranged(size());
+
+                    erase(item_index);
+                }
+            }
+            core::Vector<TYPE>::sanity_check();
+        }
+
+        template<typename TYPE>
+        void Vector<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        {
+            debug_randomize_full(randomizer);
         }
     }
 }

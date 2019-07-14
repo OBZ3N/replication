@@ -73,10 +73,14 @@ namespace zen
 
             if (value_changed)
             {
-                std::string value;
-                zen::serializers::deserialize_string(value, in);
-                if (in.ok())
-                    set_value(value);
+                if (!zen::serializers::deserialize_string(m_value, in))
+                    return false;
+
+                set_touched(true);
+            }
+            else
+            {
+                set_value(reference.m_value);
             }
 
             return in.ok();
@@ -113,7 +117,7 @@ namespace zen
             return m_value != rhs.m_value;
         }
 
-        inline void String::debug_randomize(debug::Randomizer& randomizer)
+        inline void String::debug_randomize_full(debug::Randomizer& randomizer)
         {
             std::string value;
 
@@ -125,6 +129,11 @@ namespace zen
 
                 value.push_back(character);
             }
+        }
+
+        inline void String::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        {
+            debug_randomize_full(randomizer);
         }
     }
 }

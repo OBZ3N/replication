@@ -19,6 +19,19 @@ namespace zen
             , m_registry_id_num_bits(0)
         {}
 
+        Factory::~Factory()
+        {
+            for (auto it = m_type_registry.begin(); it != m_type_registry.end(); ++it)
+            {
+                it->m_destructor_func(it->m_base_element);
+            }
+        }
+
+        const zen::data::Element* Factory::get_base_element(Factory::RegistryId registry_id) const
+        {
+            return m_type_registry[registry_id].m_base_element;
+        }
+
         const zen::rtti::TypeId* Factory::get_type_id(Factory::RegistryId registry_id) const
         {
             return m_type_registry[registry_id].m_type_id;
@@ -38,6 +51,7 @@ namespace zen
             item.m_registry_id      = (Factory::RegistryId)m_type_registry.size();
             item.m_constructor_func = constructor;
             item.m_destructor_func  = destructor;
+            item.m_base_element     = item.m_constructor_func();
 
             m_type_registry.push_back(item);
             m_type_lookup[type_id.get_instance_id()] = item.m_registry_id;
