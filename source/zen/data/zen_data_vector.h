@@ -15,7 +15,8 @@ namespace zen
         public:
             DECLARE_RTTI_TYPE_ID();
 
-            Vector(size_t capcity = 0);
+            Vector(Element* container = nullptr);
+            Vector(size_t capcity, Element* container = nullptr);
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;

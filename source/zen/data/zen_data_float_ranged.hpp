@@ -10,16 +10,18 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        FloatRanged<TYPE>::FloatRanged()
-            : m_value(0)
+        FloatRanged<TYPE>::FloatRanged(Element* container)
+            : Element(container)
+            , m_value(0)
             , m_value_min(0)
             , m_value_max(0)
             , m_num_bits(0)
         {}
 
         template<typename TYPE>
-        FloatRanged<TYPE>::FloatRanged(TYPE value, TYPE value_min, TYPE value_max, size_t num_bits)
-            : m_value(value)
+        FloatRanged<TYPE>::FloatRanged(TYPE value, TYPE value_min, TYPE value_max, size_t num_bits, Element* container)
+            : Element(container)
+            , m_value(value)
             , m_value_min(value_min)
             , m_value_max(value_max)
             , m_num_bits(num_bits)
@@ -352,9 +354,24 @@ namespace zen
         }
 
         template<typename TYPE>
-        void FloatRanged<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        void FloatRanged<TYPE>::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
         {
-            debug_randomize_full(randomizer);
+            const FloatRanged<TYPE>& reference = (const FloatRanged<TYPE>&) reference_rhs;
+
+            #undef min
+            #undef max
+            TYPE type_min = -1.0E6;
+            TYPE type_max = 1.0E6;
+            TYPE half_range = type_max / 2 - type_min / 2;
+            TYPE min = randomizer.get_float_ranged(type_min, half_range);
+            TYPE max = randomizer.get_float_ranged(min, (TYPE)(min + half_range));
+            TYPE value = randomizer.get_float_ranged(min, max);
+            size_t num_bits = randomizer.get_integer_ranged(8, 24);
+
+            set_value_min((randomizer.get_integer_ranged(100) < 10) ? min : reference.get_value_min());
+            set_value_max((randomizer.get_integer_ranged(100) < 10) ? max : reference.get_value_max());
+            set_num_bits((randomizer.get_integer_ranged(100) < 10) ? num_bits : reference.get_num_bits());
+            set_value((randomizer.get_integer_ranged(100) < 20) ? value : reference.get_value());
         }
     }
 }

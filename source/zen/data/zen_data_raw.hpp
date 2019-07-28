@@ -8,13 +8,15 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        Raw<TYPE>::Raw()
-            : m_value(0)
+        Raw<TYPE>::Raw(Element* container)
+            : Element(container)
+            , m_value(0)
         {}
 
         template<typename TYPE>
-        Raw<TYPE>::Raw(TYPE value)
-            : m_value(value)
+        Raw<TYPE>::Raw(TYPE value, Element* container)
+            : Element(container)
+            , m_value(value)
         {}
 
         template<typename TYPE>
@@ -124,16 +126,20 @@ namespace zen
         void Raw<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
         {
             TYPE value;
-
             randomizer.get_bits(&value, sizeof(value) << 3);
 
             set_value(value);
         }
 
         template<typename TYPE>
-        void Raw<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        void Raw<TYPE>::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
         {
-            debug_randomize_full(randomizer);
+            const Raw& reference = (const Raw&) reference_rhs;
+
+            TYPE value;
+            randomizer.get_bits(&value, sizeof(value) << 3);
+
+            set_value((randomizer.get_integer_ranged(100) < 20) ? value : reference.get_value());
         }
     }
 }

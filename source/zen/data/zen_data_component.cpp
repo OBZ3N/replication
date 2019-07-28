@@ -8,31 +8,59 @@ namespace zen
 {
     namespace data
     {
-        Component::Component(Factory* factory, Factory::RegistryId registry_id, Element& element)
-            : m_factory(factory)
+        Component::Component(Factory* factory, Factory::RegistryId registry_id, Element& element, Element* container)
+            : Element(container)
+            , m_factory(factory)
             , m_registry_id(registry_id)
             , m_element(&element)
             , m_is_reference(true)
         {}
 
-        Component::Component(Factory* factory)
-            : m_factory(factory)
+        Component::Component(Factory* factory, Element* container)
+            : Element(container)
+            , m_factory(factory)
             , m_registry_id(Factory::INVALID_REGISTRY_ID)
             , m_element(nullptr)
             , m_is_reference(true)
         {}
 
-        Component::Component()
-            : m_factory(nullptr)
+        Component::Component(Element* container)
+            : Element(container)
+            , m_factory(nullptr)
             , m_registry_id(Factory::INVALID_REGISTRY_ID)
             , m_element(nullptr)
             , m_is_reference(true)
         {}
+
+        void Component::set_registry_id(Factory::RegistryId registry_id)
+        {
+            if (registry_id == m_registry_id)
+                return;
+        
+            // cleanup.
+            if (!m_is_reference)
+            {
+                m_factory->destruct_element(m_registry_id, m_element);
+            }
+
+            m_registry_id  = Factory::INVALID_REGISTRY_ID;
+            m_element      = nullptr;
+            m_is_reference = false;
+
+            if (registry_id == Factory::INVALID_REGISTRY_ID)
+                return;
+
+            // instantiate object.
+            m_element = m_factory->construct_element(registry_id, this);
+
+            m_registry_id = registry_id;
+
+            set_touched(true);
+        }
 
         Component::~Component()
         {
-            if (!m_is_reference)
-               m_factory->destruct_element(m_registry_id, m_element);
+            set_registry_id(Factory::INVALID_REGISTRY_ID);
        }
 
         bool Component::serialize_full(bitstream::Writer& out) const
@@ -48,20 +76,9 @@ namespace zen
             Factory::RegistryId element_registry_id;
             if (!zen::serializers::deserialize_raw(element_registry_id, in))
                 return false;
-            
-            if (element_registry_id != m_registry_id)
-            {
-                if (!m_is_reference)
-                    m_factory->destruct_element(m_registry_id, m_element);
-                
-                m_is_reference = false;
 
-                m_registry_id = element_registry_id;
-
-                m_element = m_factory->construct_element(m_registry_id);
-
-                set_touched(true);
-            }
+            // update element registry id.
+            set_registry_id(element_registry_id);
 
             if (!m_element->deserialize_full(in))
                 return false;
@@ -73,12 +90,12 @@ namespace zen
         {
             const Component& reference = (const Component&) element_reference;
 
-            bool type_id_changed = (m_registry_id != reference.m_registry_id);
+            bool registry_id_changed = (m_registry_id != reference.m_registry_id);
 
-            if (!serializers::serialize_boolean(type_id_changed, delta_bits))
+            if (!serializers::serialize_boolean(registry_id_changed, delta_bits))
                 return false;
 
-            if (!type_id_changed)
+            if (!registry_id_changed)
             {
                 return m_element->serialize_delta(reference, out, delta_bits);
             }
@@ -98,41 +115,23 @@ namespace zen
         {
             const Component& reference = (const Component&) element_reference;
 
-            bool type_id_changed;
-            if (!serializers::deserialize_boolean(type_id_changed, delta_bits))
+            bool registry_id_changed;
+            if (!serializers::deserialize_boolean(registry_id_changed, delta_bits))
                 return false;
 
-            if (type_id_changed)
+            Factory::RegistryId registry_id = reference.m_registry_id;
+
+            if (registry_id_changed)
             {
-                if (!m_is_reference) m_factory->destruct_element(m_registry_id, m_element);
-                m_registry_id = Factory::INVALID_REGISTRY_ID;
-                m_is_reference = false;
-                m_element = nullptr;
-                
-                if (!m_factory->deserialize_registry_id(m_registry_id, in))
+                if (!m_factory->deserialize_registry_id(registry_id, in))
                     return false;
-
-                m_element = m_factory->construct_element(m_registry_id);
-                m_is_reference = false;
-                set_touched(true);
-
-                const Element* base = m_factory->get_base_element(m_registry_id);
-
-                return m_element->deserialize_delta(*base, in, delta_bits);
             }
-            else
-            {
-                if (m_element->deserialize_delta(reference, in, delta_bits))
-                {
-                    set_touched(true);
-                    return true;
-                }
-                else
-                {
-                    *m_element = *reference.m_element;
-                    return false;
-                }
-            }
+
+            set_registry_id(registry_id);
+
+            const Element* base = m_factory->get_base_element(m_registry_id);
+
+            return m_element->deserialize_delta(*base, in, delta_bits);
         }
 
         bool Component::operator == (const Element& element_rhs) const
@@ -161,19 +160,7 @@ namespace zen
 
         Component& Component::operator = (const Component& rhs)
         {
-            if (m_registry_id != rhs.m_registry_id)
-            {
-                if (!m_is_reference)
-                {
-                    delete m_element;
-                }
-
-                m_is_reference = false;
-
-                m_registry_id = rhs.m_registry_id;
-
-                m_element = m_factory->construct_element(m_registry_id);
-            }
+            set_registry_id(rhs.m_registry_id);
 
             *m_element = *rhs.m_element;
 
@@ -182,25 +169,36 @@ namespace zen
 
         void Component::debug_randomize_full(debug::Randomizer& randomizer)
         {
-            // cleanup.
-            if (!m_is_reference)
-                delete m_element;
+            Factory::RegistryId registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
 
-            m_registry_id = Factory::INVALID_REGISTRY_ID;
-            m_element = nullptr;
-
-            // randomize type.
-            m_registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
-            set_touched(true);
+            set_registry_id(registry_id);
 
             // randomize object.
-            m_element = m_factory->construct_element(m_registry_id);
+            m_element = m_factory->construct_element(m_registry_id, this);
+
             m_element->debug_randomize_full(randomizer);
         }
 
-        void Component::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        void Component::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
         {
-            debug_randomize_full(randomizer);
+            const Component& reference = (const Component&)reference_rhs;
+
+            // randomize type.
+            Factory::RegistryId registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
+
+            set_registry_id((randomizer.get_integer_ranged(100) < 10) ? registry_id : reference.m_registry_id);
+
+            if (registry_id != reference.m_registry_id)
+            {
+                // randomize object fully.
+                m_element = m_factory->construct_element(m_registry_id, this);
+
+                m_element->debug_randomize_full(randomizer);
+            }
+            else
+            {
+                m_element->debug_randomize_delta(*reference.m_element, randomizer);
+            }
         }
     }
 }

@@ -40,8 +40,16 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        Vector<TYPE>::Vector(size_t capacity)
-            : core::Vector<TYPE>(capacity)
+        Vector<TYPE>::Vector(Element* container)
+            : Element(container)
+            , core::Vector<TYPE>(0)
+            , m_item_id_num_bits(0)
+        {}
+
+        template<typename TYPE>
+        Vector<TYPE>::Vector(size_t capacity, Element* container)
+            : Element(container)
+            , core::Vector<TYPE>(capacity)
             , m_item_id_num_bits(0)
         {}
 
@@ -493,45 +501,7 @@ namespace zen
 
                 item.debug_randomize_full(randomizer);
 
-                int32_t diceroll = randomizer.get_integer_ranged(0, 100);
-
-                if (diceroll < 30)
-                {
-                    push_front(item);
-                }
-                if (diceroll < 60)
-                {
-                    push_front(item);
-                }
-                else
-                {
-                    size_t item_index = randomizer.get_integer_ranged(size());
-
-                    insert(item_index, item);
-                }
-            }
-
-            // remove some items
-            size_t num_removes = randomizer.get_integer_ranged<size_t>(0, num_items);
-
-            for (size_t i = 0; i < num_removes; ++i)
-            {
-                int32_t diceroll = randomizer.get_integer_ranged(0, 100);
-
-                if (diceroll < 30)
-                {
-                    pop_front();
-                }
-                if (diceroll < 60)
-                {
-                    pop_front();
-                }
-                else
-                {
-                    size_t item_index = randomizer.get_integer_ranged(size());
-
-                    erase(item_index);
-                }
+                push_front(item);
             }
             core::Vector<TYPE>::sanity_check();
         }
@@ -539,7 +509,90 @@ namespace zen
         template<typename TYPE>
         void Vector<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
         {
-            debug_randomize_full(randomizer);
+            if (randomizer.get_integer_ranged(100) < 10)
+            {
+                debug_randomize_full(randomizer);
+            }
+            else
+            {
+                *this = reference;
+
+                size_t total_operations = randomizer.get_integer_ranged(size() / 2);
+
+                for (size_t i = 0; i < total_operations; ++i)
+                {
+                    size_t operation = randomizer.get_integer_ranged(7);
+
+                    switch (operation)
+                    {
+                    default:
+                    case 0:
+                        {
+                            size_t index = randomizer.get_integer_ranged(size());
+
+                            TYPE& item = get(index);
+
+                            TYPE reference = item;
+
+                            item.debug_randomize_delta(reference, randomizer);
+
+                            break;
+                        }
+                    case 1:
+                        {
+                            TYPE item;
+
+                            item.debug_randomize_full(randomizer);
+
+                            push_back(item);
+
+                            break;
+                        }
+                    case 2:
+                        {
+                            TYPE item;
+
+                            item.debug_randomize_full(randomizer);
+
+                            push_front(item);
+
+                            break;
+                        }
+                    case 3:
+                        {
+                            pop_back();
+
+                            break;
+                        }
+                    case 4:
+                        {
+                            pop_front();
+
+                            break;
+                        }
+                    case 5:
+                        {
+                            TYPE item;
+
+                            item.debug_randomize_full(randomizer);
+
+                            size_t index = randomizer.get_integer_ranged(size());
+
+                            insert(index, item);
+
+                            break;
+                        }
+                    case 6:
+                        {
+                            size_t index = randomizer.get_integer_ranged(size());
+
+                            erase(index);
+
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

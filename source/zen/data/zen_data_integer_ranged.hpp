@@ -10,16 +10,18 @@ namespace zen
     namespace data
     {
         template<typename TYPE>
-        IntegerRanged<TYPE>::IntegerRanged()
-            : m_value(0)
+        IntegerRanged<TYPE>::IntegerRanged(Element* container)
+            : Element(container)
+            , m_value(0)
             , m_value_min(0)
             , m_value_max(0)
             , m_num_bits(0)
         {}
 
         template<typename TYPE>
-        IntegerRanged<TYPE>::IntegerRanged(TYPE value, TYPE value_min, TYPE value_max)
-            : m_value(value)
+        IntegerRanged<TYPE>::IntegerRanged(TYPE value, TYPE value_min, TYPE value_max, Element* container)
+            : Element(container)
+            , m_value(value)
             , m_value_min(value_min)
             , m_value_max(value_max)
             , m_num_bits(zen::serializers::number_of_bits_required(value_max - value_min))
@@ -280,9 +282,22 @@ namespace zen
         }
 
         template<typename TYPE>
-        void IntegerRanged<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        void IntegerRanged<TYPE>::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
         {
-            debug_randomize_full(randomizer);
+            const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&) reference_rhs;
+
+            #undef min
+            #undef max
+            TYPE type_min = std::numeric_limits<TYPE>::min();
+            TYPE type_max = std::numeric_limits<TYPE>::max();
+            TYPE half_range = type_max / 2 - type_min / 2;
+            TYPE min = randomizer.get_integer_ranged(type_min, (TYPE)(type_min + half_range));
+            TYPE max = randomizer.get_integer_ranged(min, (TYPE)(min + half_range - 1));
+            TYPE value = randomizer.get_integer_ranged(min, max);
+
+            set_value_min((randomizer.get_integer_ranged(100) < 10) ? min : reference.get_value_min());
+            set_value_max((randomizer.get_integer_ranged(100) < 10) ? max : reference.get_value_max());
+            set_value((randomizer.get_integer_ranged(100) < 20) ? value : reference.get_value());
         }
     }
 }

@@ -44,14 +44,14 @@ namespace zen
             return (it == m_type_lookup.end()) ? Factory::INVALID_REGISTRY_ID : it->second;
         }
 
-        Factory::RegistryId Factory::register_internal(const zen::rtti::TypeId& type_id, std::function<Element*()> constructor, std::function<void(Element*&)> destructor)
+        Factory::RegistryId Factory::register_internal(const zen::rtti::TypeId& type_id, std::function<Element*(Element*)> constructor, std::function<void(Element*&)> destructor)
         {
             RegistryItem item;
             item.m_type_id          = &type_id;
             item.m_registry_id      = (Factory::RegistryId)m_type_registry.size();
             item.m_constructor_func = constructor;
             item.m_destructor_func  = destructor;
-            item.m_base_element     = item.m_constructor_func();
+            item.m_base_element     = item.m_constructor_func(nullptr);
 
             m_type_registry.push_back(item);
             m_type_lookup[type_id.get_instance_id()] = item.m_registry_id;
@@ -120,9 +120,9 @@ namespace zen
             return m_type_registry.size();
         }
 
-        Element* Factory::construct_element(Factory::RegistryId registry_id) const
+        Element* Factory::construct_element(Factory::RegistryId registry_id, Element* parent_container) const
         {
-            return m_type_registry[registry_id].m_constructor_func();
+            return m_type_registry[registry_id].m_constructor_func(parent_container);
         }
 
         void Factory::destruct_element(Factory::RegistryId registry_id, Element*& element) const

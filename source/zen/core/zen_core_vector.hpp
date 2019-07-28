@@ -201,7 +201,10 @@ namespace zen
         template<typename TYPE>
         void Vector<TYPE>::pop_front()
         {
-            ItemId item_id = m_array.empty() ? INVALID_ITEM_ID : m_array.front();
+            if (m_array.empty())
+                return;
+
+            ItemId item_id = m_array.front();
             Item* front = get_item(item_id);
             m_array.erase(m_array.begin());
 
@@ -223,7 +226,10 @@ namespace zen
         template<typename TYPE>
         void Vector<TYPE>::pop_back()
         {
-            ItemId item_id = m_array.empty() ? INVALID_ITEM_ID : m_array.back();
+            if (m_array.empty())
+                return;
+
+            ItemId item_id = m_array.back();
             Item* back = get_item(item_id);
             m_array.pop_back();
 

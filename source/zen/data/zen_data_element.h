@@ -14,8 +14,12 @@ namespace zen
         public:
             DECLARE_RTTI_TYPE_ID();
 
-            Element();
+            Element(Element* container);
             virtual ~Element();
+
+            void set_parent_container(Element* container);
+            Element* get_parent_container();
+            const Element* get_parent_container() const;
 
             void set_touched(bool value);
             bool is_touched() const;
@@ -36,6 +40,7 @@ namespace zen
 
         protected:
             bool m_touched;
+            Element* m_container;
         };
     }
 }

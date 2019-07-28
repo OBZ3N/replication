@@ -14,9 +14,9 @@ namespace zen
         public:
             DECLARE_RTTI_TYPE_ID();
 
-            Component();
-            Component(Factory* factory);
-            Component(Factory* factory, Factory::RegistryId registry_id, Element& element);
+            Component(Element* container=nullptr);
+            Component(Factory* factory, Element* container = nullptr);
+            Component(Factory* factory, Factory::RegistryId registry_id, Element& element, Element* container = nullptr);
             ~Component();
 
             bool serialize_full(bitstream::Writer& out) const override;
@@ -37,6 +37,8 @@ namespace zen
             void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
 
         private:
+            void set_registry_id(Factory::RegistryId registry_id);
+
             Factory*            m_factory;
             Factory::RegistryId m_registry_id;
             Element*            m_element;

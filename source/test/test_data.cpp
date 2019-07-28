@@ -18,11 +18,11 @@ namespace test
     {
         zen::data::Factory::RegistryId registry_id = (zen::data::Factory::RegistryId)m_randomizer.get_integer_ranged(m_factory.get_registry_size());
 
-        zen::data::Element* element_base = m_factory.construct_element(registry_id);
+        zen::data::Element* element_base = m_factory.construct_element(registry_id, nullptr);
 
-        zen::data::Element* element_server = m_factory.construct_element(registry_id);
+        zen::data::Element* element_server = m_factory.construct_element(registry_id, nullptr);
 
-        zen::data::Element* element_client = m_factory.construct_element(registry_id);
+        zen::data::Element* element_client = m_factory.construct_element(registry_id, nullptr);
 
         element_base->debug_randomize_full(m_randomizer);
 

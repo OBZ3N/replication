@@ -13,9 +13,9 @@ namespace zen
         public:
             DECLARE_RTTI_TYPE_ID();
 
-            String();
-            String(const std::string& value);
-            String(const char* value);
+            String(Element* container = nullptr);
+            String(const std::string& value, Element* container = nullptr);
+            String(const char* value, Element* container = nullptr);
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;

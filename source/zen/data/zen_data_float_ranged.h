@@ -14,8 +14,8 @@ namespace zen
         public:
             DECLARE_RTTI_TYPE_ID();
 
-            FloatRanged();
-            FloatRanged(TYPE value, TYPE value_min, TYPE value_max, size_t num_bits);
+            FloatRanged(Element* container = nullptr);
+            FloatRanged(TYPE value, TYPE value_min, TYPE value_max, size_t num_bits, Element* container = nullptr);
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;

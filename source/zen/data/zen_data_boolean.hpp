@@ -7,12 +7,14 @@ namespace zen
 {
     namespace data
     {
-        inline Boolean::Boolean()
-            : m_value(false)
+        inline Boolean::Boolean(Element* container)
+            : Element(container)
+            , m_value(false)
         {}
 
-        inline Boolean::Boolean(bool value)
-            : m_value(value)
+        inline Boolean::Boolean(bool value, Element* container)
+            : Element(container)
+            , m_value(value)
         {}
 
         inline bool Boolean::set_value(bool value)
@@ -113,12 +115,17 @@ namespace zen
         inline void Boolean::debug_randomize_full(zen::debug::Randomizer& randomizer)
         {
             uint32_t i = randomizer.get_integer_ranged(0, 1);
+
             set_value((i == 1));
         }
 
-        inline void Boolean::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
+        inline void Boolean::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
         {
-            debug_randomize_full(randomizer);
+            const Boolean& reference = (const Boolean&) reference_rhs;
+
+            uint32_t i = randomizer.get_integer_ranged(0, 1);
+
+            set_value((randomizer.get_integer_ranged(100) < 20) ? (i == 1) : reference.get_value());
         }
 
     }

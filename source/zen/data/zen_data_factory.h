@@ -31,7 +31,7 @@ namespace zen
             const zen::rtti::TypeId* get_type_id(RegistryId registry_id) const;
             RegistryId get_registry_id(const zen::rtti::TypeId& type_id) const;
             
-            Element* construct_element(RegistryId type_id) const;
+            Element* construct_element(RegistryId type_id, Element* parent_container) const;
             void destruct_element(RegistryId type_id, Element*& element) const;
 
             size_t get_registry_size() const;
@@ -40,17 +40,17 @@ namespace zen
             bool deserialize_registry_id(RegistryId& type_id, zen::bitstream::Reader& in) const;
 
         private:
-            template<typename Type> static Type* construct_type();
+            template<typename Type> static Type* construct_type(Element* parent_container);
             template<typename Type> static void destruct_type(Element*& element);
-            RegistryId register_internal(const zen::rtti::TypeId& type_id, std::function<Element*()> constructor, std::function<void(Element*&)> destructor);
+            RegistryId register_internal(const zen::rtti::TypeId& type_id, std::function<Element*(Element*)> constructor, std::function<void(Element*&)> destructor);
 
             struct RegistryItem
             {
-                const zen::rtti::TypeId*        m_type_id;
-                RegistryId                      m_registry_id;
-                Element*                        m_base_element;
-                std::function<Element*()>       m_constructor_func;
-                std::function<void(Element*&)>  m_destructor_func;
+                const zen::rtti::TypeId*            m_type_id;
+                RegistryId                          m_registry_id;
+                Element*                            m_base_element;
+                std::function<Element*(Element*)>   m_constructor_func;
+                std::function<void(Element*&)>      m_destructor_func;
             };
 
             std::unordered_map<int32_t, RegistryId> m_type_lookup;

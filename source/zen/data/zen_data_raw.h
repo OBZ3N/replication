@@ -14,8 +14,8 @@ namespace zen
         public:
             DECLARE_RTTI_TYPE_ID();
 
-            Raw();
-            Raw(TYPE value);
+            Raw(Element* container = nullptr);
+            Raw(TYPE value, Element* container = nullptr);
 
             bool serialize_full(bitstream::Writer& out) const override;
             bool deserialize_full(bitstream::Reader& in) override;

@@ -21,9 +21,9 @@ namespace zen
         }
 
         template<typename Type> 
-        Type* Factory::construct_type()
+        Type* Factory::construct_type(Element* parent_container)
         {
-            return new Type;
+            return new Type(parent_container);
         }
 
         template<typename Type> 
