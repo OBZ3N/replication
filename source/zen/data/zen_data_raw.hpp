@@ -123,23 +123,15 @@ namespace zen
         }
 
         template<typename TYPE>
-        void Raw<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
+        void Raw<TYPE>::debug_randomize(debug::Randomizer& randomizer, float probability)
         {
-            TYPE value;
-            randomizer.get_bits(&value, sizeof(value) << 3);
+            if (randomizer.get_float_ranged(1.0f) < probability)
+            {
+                TYPE value;
+                randomizer.get_bits(&value, sizeof(value) << 3);
 
-            set_value(value);
-        }
-
-        template<typename TYPE>
-        void Raw<TYPE>::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
-        {
-            const Raw& reference = (const Raw&) reference_rhs;
-
-            TYPE value;
-            randomizer.get_bits(&value, sizeof(value) << 3);
-
-            set_value((randomizer.get_integer_ranged(100) < 20) ? value : reference.get_value());
+                set_value(value);
+            }
         }
     }
 }

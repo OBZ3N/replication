@@ -120,36 +120,23 @@ namespace zen
             return m_value != rhs.m_value;
         }
 
-        inline void String::debug_randomize_full(debug::Randomizer& randomizer)
+        inline void String::debug_randomize(debug::Randomizer& randomizer, float probability)
         {
-            std::string value;
-
-            size_t num_characters = randomizer.get_integer_ranged<size_t>(8, 100);
-
-            for (size_t i = 0; i < num_characters; ++i)
+            if (randomizer.get_float_ranged(1.0f) < probability)
             {
-                uint8_t character = (uint8_t)randomizer.get_integer_ranged<uint32_t>('0', 'z');
+                std::string value;
 
-                value.push_back(character);
+                size_t num_characters = randomizer.get_integer_ranged<size_t>(8, 100);
+
+                for (size_t i = 0; i < num_characters; ++i)
+                {
+                    uint8_t character = (uint8_t)randomizer.get_integer_ranged<uint32_t>('0', 'z');
+
+                    value.push_back(character);
+                }
+
+                set_value(value);
             }
-        }
-
-        inline void String::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
-        {
-            const String& reference = (const String&)reference_rhs;
-
-            std::string value;
-
-            size_t num_characters = randomizer.get_integer_ranged<size_t>(8, 100);
-
-            for (size_t i = 0; i < num_characters; ++i)
-            {
-                uint8_t character = (uint8_t)randomizer.get_integer_ranged<uint32_t>('0', 'z');
-
-                value.push_back(character);
-            }
-
-            set_value((randomizer.get_integer_ranged(100) < 20) ? value : reference.get_value());
         }
     }
 }

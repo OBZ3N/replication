@@ -35,8 +35,7 @@ namespace zen
 
             virtual Element& operator = (const Element& rhs) = 0;
 
-            virtual void debug_randomize_full(debug::Randomizer& randomizer) = 0;
-            virtual void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) = 0;
+            virtual void debug_randomize(debug::Randomizer& randomizer, float probability) = 0;
 
         protected:
             bool m_touched;

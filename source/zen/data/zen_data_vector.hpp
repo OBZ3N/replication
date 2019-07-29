@@ -488,111 +488,84 @@ namespace zen
         }
 
         template<typename TYPE>
-        void Vector<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
+        void Vector<TYPE>::debug_randomize(debug::Randomizer& randomizer, float probability)
         {
-            clear();
+            size_t max_iterations = (size_t)(size() * probability);
 
-            // add some items.
-            size_t num_items = randomizer.get_integer_ranged<size_t>(0, 100);
+            size_t total_operations = randomizer.get_integer_ranged(max_iterations);
 
-            for (size_t i = 0; i < num_items; ++i)
+            for (size_t i = 0; i < total_operations; ++i)
             {
-                TYPE item;
+                size_t operation = randomizer.get_integer_ranged(7);
 
-                item.debug_randomize_full(randomizer);
-
-                push_front(item);
-            }
-            core::Vector<TYPE>::sanity_check();
-        }
-
-        template<typename TYPE>
-        void Vector<TYPE>::debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer)
-        {
-            if (randomizer.get_integer_ranged(100) < 10)
-            {
-                debug_randomize_full(randomizer);
-            }
-            else
-            {
-                *this = reference;
-
-                size_t total_operations = randomizer.get_integer_ranged(size() / 2);
-
-                for (size_t i = 0; i < total_operations; ++i)
+                switch (operation)
                 {
-                    size_t operation = randomizer.get_integer_ranged(7);
-
-                    switch (operation)
+                default:
+                case 0:
                     {
-                    default:
-                    case 0:
-                        {
-                            size_t index = randomizer.get_integer_ranged(size());
+                        size_t index = randomizer.get_integer_ranged(size());
 
-                            TYPE& item = get(index);
+                        TYPE& item = get(index);
 
-                            TYPE reference = item;
+                        item.debug_randomize(randomizer, 1.0f);
 
-                            item.debug_randomize_delta(reference, randomizer);
+                        break;
+                    }
+                case 1:
+                    {
+                        TYPE item;
 
-                            break;
-                        }
-                    case 1:
-                        {
-                            TYPE item;
+                        item.debug_randomize(randomizer, 1.0f);
 
-                            item.debug_randomize_full(randomizer);
+                        push_back(item);
 
-                            push_back(item);
+                        break;
+                    }
+                case 2:
+                    {
+                        TYPE item;
 
-                            break;
-                        }
-                    case 2:
-                        {
-                            TYPE item;
+                        item.debug_randomize(randomizer, 1.0f);
 
-                            item.debug_randomize_full(randomizer);
+                        push_front(item);
 
-                            push_front(item);
+                        break;
+                    }
+                case 3:
+                    {
+                        pop_back();
 
-                            break;
-                        }
-                    case 3:
-                        {
-                            pop_back();
+                        break;
+                    }
+                case 4:
+                    {
+                        pop_front();
 
-                            break;
-                        }
-                    case 4:
-                        {
-                            pop_front();
+                        break;
+                    }
+                case 5:
+                    {
+                        TYPE item;
 
-                            break;
-                        }
-                    case 5:
-                        {
-                            TYPE item;
+                        item.debug_randomize(randomizer, 1.0f);
 
-                            item.debug_randomize_full(randomizer);
+                        size_t index = randomizer.get_integer_ranged(size());
 
-                            size_t index = randomizer.get_integer_ranged(size());
+                        insert(index, item);
 
-                            insert(index, item);
+                        break;
+                    }
+                case 6:
+                    {
+                        size_t index = randomizer.get_integer_ranged(size());
 
-                            break;
-                        }
-                    case 6:
-                        {
-                            size_t index = randomizer.get_integer_ranged(size());
+                        erase(index);
 
-                            erase(index);
-
-                            break;
-                        }
+                        break;
                     }
                 }
             }
         }
     }
 }
+

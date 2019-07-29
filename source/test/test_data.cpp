@@ -24,9 +24,13 @@ namespace test
 
         zen::data::Element* element_client = m_factory.construct_element(registry_id, nullptr);
 
-        element_base->debug_randomize_full(m_randomizer);
+        element_base->debug_randomize(m_randomizer, 1.0f);
 
-        element_server->debug_randomize_full(m_randomizer);
+        *element_client = *element_base;
+
+        *element_server = *element_base;
+
+        element_server->debug_randomize(m_randomizer, 0.2f);
 
         uint32_t m_data[1000];
 

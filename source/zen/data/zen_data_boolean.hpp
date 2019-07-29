@@ -112,21 +112,14 @@ namespace zen
             return in.ok();
         }
 
-        inline void Boolean::debug_randomize_full(zen::debug::Randomizer& randomizer)
+        inline void Boolean::debug_randomize(debug::Randomizer& randomizer, float probability)
         {
-            uint32_t i = randomizer.get_integer_ranged(0, 1);
+            if (randomizer.get_float_ranged(1.0f) < probability)
+            {
+                uint32_t i = randomizer.get_integer_ranged(0, 1);
 
-            set_value((i == 1));
+                set_value(i == 1);
+            }
         }
-
-        inline void Boolean::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
-        {
-            const Boolean& reference = (const Boolean&) reference_rhs;
-
-            uint32_t i = randomizer.get_integer_ranged(0, 1);
-
-            set_value((randomizer.get_integer_ranged(100) < 20) ? (i == 1) : reference.get_value());
-        }
-
     }
 }

@@ -33,8 +33,7 @@ namespace zen
 
             bool is_null() const { return m_element == nullptr; }
 
-            void debug_randomize_full(debug::Randomizer& randomizer) override;
-            void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
+            void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
         private:
             void set_registry_id(Factory::RegistryId registry_id);

@@ -265,27 +265,8 @@ namespace zen
         }
 
         template<typename TYPE>
-        void IntegerRanged<TYPE>::debug_randomize_full(debug::Randomizer& randomizer)
+        void IntegerRanged<TYPE>::debug_randomize(debug::Randomizer& randomizer, float probability)
         {
-            #undef min
-            #undef max
-            TYPE type_min   = std::numeric_limits<TYPE>::min();
-            TYPE type_max   = std::numeric_limits<TYPE>::max();
-            TYPE half_range = type_max / 2 - type_min / 2;
-            TYPE min        = randomizer.get_integer_ranged(type_min, (TYPE)(type_min + half_range));
-            TYPE max        = randomizer.get_integer_ranged(min, (TYPE)(min + half_range-1));
-            TYPE value      = randomizer.get_integer_ranged(min, max);
-
-            set_value(value);
-            set_value_min(min);
-            set_value_max(max);
-        }
-
-        template<typename TYPE>
-        void IntegerRanged<TYPE>::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
-        {
-            const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&) reference_rhs;
-
             #undef min
             #undef max
             TYPE type_min = std::numeric_limits<TYPE>::min();
@@ -294,10 +275,21 @@ namespace zen
             TYPE min = randomizer.get_integer_ranged(type_min, (TYPE)(type_min + half_range));
             TYPE max = randomizer.get_integer_ranged(min, (TYPE)(min + half_range - 1));
             TYPE value = randomizer.get_integer_ranged(min, max);
+            
+            if (randomizer.get_float_ranged(1.0f) < probability)
+            {
+                set_value_min(min);
+            }
 
-            set_value_min((randomizer.get_integer_ranged(100) < 10) ? min : reference.get_value_min());
-            set_value_max((randomizer.get_integer_ranged(100) < 10) ? max : reference.get_value_max());
-            set_value((randomizer.get_integer_ranged(100) < 20) ? value : reference.get_value());
+            if (randomizer.get_float_ranged(1.0f) < probability)
+            {
+                set_value_max(max);
+            }
+
+            if (randomizer.get_float_ranged(1.0f) < probability)
+            {
+                set_value(value);
+            }
         }
     }
 }

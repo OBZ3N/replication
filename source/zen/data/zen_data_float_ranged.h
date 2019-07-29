@@ -42,8 +42,7 @@ namespace zen
             bool set_num_bits(size_t num_bits);
             size_t get_num_bits() const;
 
-            void debug_randomize_full(debug::Randomizer& randomizer) override;
-            void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
+            void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
         private:
             TYPE calculate_precision() const;

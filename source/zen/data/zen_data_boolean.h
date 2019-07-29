@@ -29,8 +29,7 @@ namespace zen
             inline Element& operator = (const Element& rhs) override;
             Boolean& operator = (const Boolean& rhs);
 
-            void debug_randomize_full(debug::Randomizer& randomizer) override;
-            void debug_randomize_delta(const Element& reference, debug::Randomizer& randomizer) override;
+            void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
         private:
             bool m_value;

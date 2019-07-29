@@ -167,37 +167,19 @@ namespace zen
             return *this;
         }
 
-        void Component::debug_randomize_full(debug::Randomizer& randomizer)
+        void Component::debug_randomize(debug::Randomizer& randomizer, float probability)
         {
-            Factory::RegistryId registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
-
-            set_registry_id(registry_id);
-
-            // randomize object.
-            m_element = m_factory->construct_element(m_registry_id, this);
-
-            m_element->debug_randomize_full(randomizer);
-        }
-
-        void Component::debug_randomize_delta(const Element& reference_rhs, debug::Randomizer& randomizer)
-        {
-            const Component& reference = (const Component&)reference_rhs;
-
-            // randomize type.
-            Factory::RegistryId registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
-
-            set_registry_id((randomizer.get_integer_ranged(100) < 10) ? registry_id : reference.m_registry_id);
-
-            if (registry_id != reference.m_registry_id)
+            if (randomizer.get_float_ranged(1.0f) < probability)
             {
-                // randomize object fully.
-                m_element = m_factory->construct_element(m_registry_id, this);
+                // randomize type.
+                Factory::RegistryId registry_id = randomizer.get_integer_ranged((size_t)0, m_factory->get_registry_size() - 1);
 
-                m_element->debug_randomize_full(randomizer);
+                set_registry_id(registry_id);
             }
-            else
+
+            if (m_element != nullptr)
             {
-                m_element->debug_randomize_delta(*reference.m_element, randomizer);
+                m_element->debug_randomize(randomizer, probability);
             }
         }
     }
