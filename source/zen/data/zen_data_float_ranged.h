@@ -44,6 +44,8 @@ namespace zen
 
             void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
+            bool sanity_check() const;
+
         private:
             TYPE calculate_precision() const;
             TYPE m_value;

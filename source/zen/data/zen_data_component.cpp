@@ -182,5 +182,10 @@ namespace zen
                 m_element->debug_randomize(randomizer, probability);
             }
         }
+
+        bool Component::sanity_check() const
+        {
+            return true;
+        }
     }
 }

@@ -367,5 +367,11 @@ namespace zen
                 set_value(value);
             }
         }
+
+        template<typename TYPE>
+        bool FloatRanged<TYPE>::sanity_check() const
+        {
+            return true;
+        }
     }
 }

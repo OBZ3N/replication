@@ -138,5 +138,10 @@ namespace zen
                 set_value(value);
             }
         }
+
+        inline bool String::sanity_check() const
+        {
+            return true;
+        }
     }
 }

@@ -121,5 +121,10 @@ namespace zen
                 set_value(i == 1);
             }
         }
+
+        bool inline Boolean::sanity_check() const
+        {
+            return true;
+        }
     }
 }

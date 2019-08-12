@@ -566,6 +566,12 @@ namespace zen
                 }
             }
         }
+
+        template<typename TYPE>
+        bool Vector<TYPE>::sanity_check() const
+        {
+            return true;
+        }
     }
 }
 

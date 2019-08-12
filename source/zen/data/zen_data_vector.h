@@ -32,6 +32,8 @@ namespace zen
 
             void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
+            bool sanity_check() const;
+
         protected:
             void on_vector_touched() override;
 

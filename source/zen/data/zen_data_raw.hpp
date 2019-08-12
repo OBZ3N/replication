@@ -133,5 +133,11 @@ namespace zen
                 set_value(value);
             }
         }
+
+        template<typename TYPE>
+        bool Raw<TYPE>::sanity_check() const
+        {
+            return true;
+        }
     }
 }

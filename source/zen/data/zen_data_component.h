@@ -35,6 +35,8 @@ namespace zen
 
             void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
+            bool sanity_check() const;
+
         private:
             void set_registry_id(Factory::RegistryId registry_id);
 

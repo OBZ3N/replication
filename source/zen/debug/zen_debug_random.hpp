@@ -46,7 +46,7 @@ namespace zen
         {
             double rnd = get_random_value_internal();
 
-            TYPE value = (TYPE)(rnd * (range - 1.0));
+            TYPE value = (TYPE)(rnd * range);
 
             return value;
         }

@@ -107,8 +107,6 @@ namespace zen
             bool value_changed = false;
             zen::serializers::deserialize_boolean(value_changed, delta_bits);
             zen::serializers::deserialize_boolean(attributes_changed, delta_bits);
-            if (!value_changed && !attributes_changed)
-                return false;
 
             const IntegerRanged<TYPE>& reference = (const IntegerRanged<TYPE>&) element_reference;
             TYPE value       = reference.m_value;
@@ -259,7 +257,7 @@ namespace zen
         template<typename TYPE>
         Element& IntegerRanged<TYPE>::operator = (const Element& element_rhs)
         {
-            const FloatRanged<TYPE>& rhs = (const FloatRanged<TYPE>&) element_rhs;
+            const IntegerRanged<TYPE>& rhs = (const IntegerRanged<TYPE>&) element_rhs;
 
             return (*this).operator=(rhs);
         }
@@ -290,6 +288,12 @@ namespace zen
             {
                 set_value(value);
             }
+        }
+
+        template<typename TYPE>
+        bool IntegerRanged<TYPE>::sanity_check() const
+        {
+            return true;
         }
     }
 }

@@ -34,6 +34,8 @@ namespace zen
 
             void debug_randomize(debug::Randomizer& randomizer, float probability) override;
 
+            bool sanity_check() const;
+
         private:
             std::string m_value;
         };

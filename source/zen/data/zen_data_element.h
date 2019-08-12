@@ -37,6 +37,8 @@ namespace zen
 
             virtual void debug_randomize(debug::Randomizer& randomizer, float probability) = 0;
 
+            virtual bool sanity_check() const = 0;
+
         protected:
             bool m_touched;
             Element* m_container;
